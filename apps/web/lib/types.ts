@@ -46,6 +46,12 @@ export type ProductBatch = {
   createdAt: string;
   suiPackageId: string;
   suiBatchObjectId: string;
+  htsTokenId?: string;
+  htsSerialNumber?: number;
+  htsNftId?: string;
+  htsMetadataHash?: string;
+  htsMetadataPayload?: string;
+  productPageUrl?: string;
 };
 
 export type Ingredient = {
@@ -56,6 +62,47 @@ export type Ingredient = {
   description: string;
   verificationNote: string;
   relatedClaimTypes: string[];
+};
+
+export type ProductTokenMetadata = {
+  schema: "proof-of-plate.hts-product-batch.v1";
+  batchId: string;
+  productName: string;
+  category: string;
+  description: string;
+  netContents: string;
+  servingSize: string;
+  servingsPerContainer: string;
+  nutritionHighlights: string[];
+  allergens: string[];
+  storageInstructions: string;
+  ingredients: Ingredient[];
+  nutrition?: NutritionFact[];
+  productPageUrl: string;
+  hcsTopicId: string;
+  suiBatchObjectId: string;
+};
+
+export type HtsDeployment = {
+  network: string;
+  tokenId: string;
+  serialNumber: number;
+  nftId: string;
+  tokenType: "NON_FUNGIBLE_UNIQUE";
+  supplyType: "FINITE";
+  maxSupply: number;
+  treasuryAccountId?: string;
+  tokenName: string;
+  tokenSymbol: string;
+  metadataPayload: string;
+  metadataHash: string;
+  productMetadata: ProductTokenMetadata;
+  createTransactionId?: string;
+  mintTransactionId?: string;
+  updateTransactionId?: string;
+  createdAt?: string;
+  updatedAt: string;
+  source: "hedera" | "local" | "env";
 };
 
 export type Claim = {
@@ -97,4 +144,5 @@ export type Deployment = {
     topicId: string;
     network: string;
   };
+  hts?: HtsDeployment;
 };

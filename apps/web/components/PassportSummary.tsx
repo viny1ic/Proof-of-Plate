@@ -108,6 +108,7 @@ export function PassportSummary({ batch, claims, verifResults }: Props) {
         <p className="pp-summary-desc-text">
           {verifiedCount} out of {claims.length} label claims on this product have been independently
           verified with cryptographic evidence anchored on the Sui blockchain and logged on Hedera HCS.
+          Product identity, ingredients, and the passport URL are tokenized in the Hedera HTS batch token.
           {warningCount > 0
             ? " " + warningCount + " claim" + (warningCount > 1 ? "s are" : " is") + " advisory — based on supplier declarations without independent lab testing."
             : " All claims have independent lab or facility evidence."}

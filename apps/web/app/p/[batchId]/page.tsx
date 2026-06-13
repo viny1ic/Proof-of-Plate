@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { AgentChat } from "../../../components/AgentChat";
 import { ClaimList } from "../../../components/ClaimList";
+import { HtsMetadataCard } from "../../../components/HtsMetadataCard";
 import { LifecycleTimeline } from "../../../components/LifecycleTimeline";
 import { PassportRight } from "../../../components/PassportRight";
 import { PassportSummary } from "../../../components/PassportSummary";
@@ -9,8 +10,8 @@ import { ProductInfo } from "../../../components/ProductInfo";
 import { StatStrip } from "../../../components/StatStrip";
 import { SupplyChainJourney } from "../../../components/SupplyChainJourney";
 import { TamperDetection } from "../../../components/TamperDetection";
-import { hederaTopicLink, suiExplorerLink } from "../../../lib/explorer-links";
-import { getBatch, getClaims, getHcsMessages } from "../../../lib/data";
+import { hederaTokenLink, hederaTopicLink, suiExplorerLink } from "../../../lib/explorer-links";
+import { getBatch, getClaims, getHcsMessages, getHtsMetadata } from "../../../lib/data";
 import { verifyEvidenceHash } from "../../../lib/evidence";
 
 type VerifRow = { claimType: string; label: string; ok: boolean };
@@ -80,6 +81,8 @@ export default async function ProductPassport({ params }: { params: Promise<{ ba
 
   const claims = getClaims(batchId);
   const events = getHcsMessages(batch.hcsTopicId);
+  const htsStatus = getHtsMetadata(batchId);
+  const hts = htsStatus.hts;
 
   const verifResults: VerifRow[] = claims.map(claim => {
     try {
@@ -93,7 +96,9 @@ export default async function ProductPassport({ params }: { params: Promise<{ ba
   const verifContext =
     "Evidence hash verification (auto-checked on page load):\n" +
     verifResults.map(r => "- " + r.label + ": " + (r.ok ? "VERIFIED" : "MISMATCH")).join("\n") +
-    "\nTotal: " + verifResults.filter(r => r.ok).length + "/" + verifResults.length + " verified.";
+    "\nTotal: " + verifResults.filter(r => r.ok).length + "/" + verifResults.length + " verified." +
+    "\nHTS product metadata: " +
+    (hts ? `${htsStatus.ok ? "PARSED" : "WARNING"} token ${hts.tokenId} serial ${hts.serialNumber}, metadata hash ${hts.metadataHash}, product URL ${hts.productMetadata.productPageUrl}.` : "not configured.");
 
   return (
     <main className="pp-shell">
@@ -119,6 +124,7 @@ export default async function ProductPassport({ params }: { params: Promise<{ ba
           <HashVerificationBanner results={verifResults} />
           <SupplyChainJourney claims={claims} />
           <ProductInfo batch={batch} />
+          <HtsMetadataCard hts={hts} ok={htsStatus.ok} errors={htsStatus.errors} />
 
           <div className="pp-footer">
             <div className="pp-footer-chain">
@@ -138,9 +144,19 @@ export default async function ProductPassport({ params }: { params: Promise<{ ba
               >
                 Hedera HCS
               </a>
+              {hts && (
+                <a
+                  className="pp-footer-chip hedera"
+                  href={hederaTokenLink(hts.tokenId) ?? undefined}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Hedera HTS
+                </a>
+              )}
             </div>
             <div className="pp-footer-note">
-              All claims are immutably anchored on-chain. Scan QR or share URL to verify.
+              Product metadata is tokenized with HTS; claims are verified with Sui, HCS, and evidence hashes.
             </div>
             <div className="pp-footer-dpp inspector-only">
               EU Digital Product Passport (DPP) - ESPR compliant structure

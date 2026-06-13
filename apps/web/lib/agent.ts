@@ -7,8 +7,9 @@ import { tool } from "@langchain/core/tools";
 import type { StructuredToolInterface } from "@langchain/core/tools";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { z } from "zod";
-import { getClaims, getHcsMessages, getBatch } from "./data";
+import { getClaims, getHcsMessages, getBatch, getHtsMetadata } from "./data";
 import { getEvidence, verifyEvidenceHash } from "./evidence";
+import { hederaTokenLink } from "./explorer-links";
 
 // ─── Hedera client (singleton per process) ───────────────────────────────────
 let _toolkit: HederaLangchainToolkit | null = null;
@@ -52,8 +53,36 @@ const getBatchTool = tool(
   {
     name: "get_batch",
     description:
-      "Get the product batch record from Sui. Returns batchId, productName, hcsTopicId, scoreVerified, scoreTotal, recalled, suiPackageId, suiBatchObjectId.",
+      "Get the product batch record. Product identity fields are hydrated from the Hedera HTS batch metadata token when available; claim status and evidence fields remain Sui/HCS-backed. Returns batchId, productName, hcsTopicId, htsTokenId, scoreVerified, scoreTotal, recalled, suiPackageId, suiBatchObjectId.",
     schema: z.object({ batchId: z.string().describe("The product batch ID, e.g. TB-MILK-0612") }),
+  }
+);
+
+const getHtsMetadataTool = tool(
+  async ({ batchId }: { batchId: string }) => {
+    try {
+      const result = getHtsMetadata(batchId);
+      if (!result.hts) return JSON.stringify({ ok: false, errors: result.errors });
+      return JSON.stringify({
+        ok: result.ok,
+        errors: result.errors,
+        tokenId: result.hts.tokenId,
+        serialNumber: result.hts.serialNumber,
+        nftId: result.hts.nftId,
+        metadataHash: result.hts.metadataHash,
+        metadataPayload: result.hts.metadataPayload,
+        hashscanUrl: hederaTokenLink(result.hts.tokenId),
+        productMetadata: result.hts.productMetadata,
+      });
+    } catch (e) {
+      return `Error: ${(e as Error).message}`;
+    }
+  },
+  {
+    name: "get_hts_metadata",
+    description:
+      "Get the Hedera HTS product-batch token metadata. Use this for product identity, ingredients, allergens, and product page URL. Do not treat HTS metadata alone as verified claim proof.",
+    schema: z.object({ batchId: z.string().describe("The product batch ID") }),
   }
 );
 
@@ -135,18 +164,21 @@ const verifyHashTool = tool(
 const SYSTEM_PROMPT = `You are the Proof of Plate AI — a friendly food transparency assistant that helps everyday consumers understand what's in their food and how it was verified.
 
 You have access to tools to look up:
+- Hedera HTS: tokenized product identity, ingredients, allergens, and product page URL
 - Sui blockchain: final verified claims, evidence hashes, verification score
 - Hedera HCS: tamper-proof audit trail of every claim submission
 - Evidence documents: lab results, processing logs, maintenance records
 
 RULES:
 1. Always call get_batch and get_claims before answering anything about a product.
-2. For claims you cite, call verify_evidence_hash to confirm authenticity.
-3. Distinguish clearly: ✅ VERIFIED (hash match + Sui verified), ⚠️ ADVISORY (declaration only, no lab proof), ❌ NOT CERTIFIED (no claim exists).
-4. If a question is about something NOT in the claims (e.g. kosher, vegan, organic), say clearly "This product has no certified claim for that on-chain" and explain what IS verified. Never refuse to answer.
-5. Write like you're talking to a shopper, not an engineer. Plain English. No blockchain jargon unless the user asks.
-6. When you reference a Sui object or Hedera topic, include the full explorer URL so it renders as a clickable link (e.g. https://suiscan.xyz/testnet/object/OBJECT_ID or https://hashscan.io/testnet/topic/TOPIC_ID).
-7. Keep answers concise — 3–6 sentences for simple questions, bullet points for multi-part answers.
+2. For product identity, ingredient, allergen, or product page questions, call get_hts_metadata when an HTS token is available.
+3. For claims you cite, call verify_evidence_hash to confirm authenticity.
+4. Distinguish clearly: ✅ VERIFIED (hash match + Sui verified), ⚠️ ADVISORY (declaration only, no lab proof), ❌ NOT CERTIFIED (no claim exists).
+5. HTS metadata describes the product batch, but it is not standalone proof that a label claim is verified. Claims such as lactose-free, pesticide-free, kosher, vegan, or organic require Sui claim state plus evidence hash verification.
+6. If a question is about something NOT in the claims (e.g. kosher, vegan, organic), say clearly "This product has no certified claim for that on-chain" and explain what IS verified. Never refuse to answer.
+7. Write like you're talking to a shopper, not an engineer. Plain English. No blockchain jargon unless the user asks.
+8. When you reference a Sui object, Hedera HCS topic, Hedera transaction, or Hedera HTS token, include the full explorer URL so it renders as a clickable link (e.g. https://suiscan.xyz/testnet/object/OBJECT_ID, https://hashscan.io/testnet/topic/TOPIC_ID, or https://hashscan.io/testnet/token/TOKEN_ID).
+9. Keep answers concise — 3–6 sentences for simple questions, bullet points for multi-part answers.
 
 Answer format (adapt as needed):
 [Direct yes/no or short answer in plain English]
@@ -167,6 +199,7 @@ export function createProofOfPlateAgent() {
   // Start with our custom tools
   const customTools = [
     getBatchTool,
+    getHtsMetadataTool,
     getClaimsTool,
     getLocalHcsEventsTool,
     getEvidenceTool,

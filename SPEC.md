@@ -22,8 +22,11 @@ The verifier answers by checking:
 
 - Sui product batch and claim records
 - Hedera Consensus Service (HCS) ingestion events
+- Hedera Token Service (HTS) batch metadata token
 - SHA-256 evidence hashes
 - Static evidence JSON records
+
+HTS metadata is used for product-level label information such as product name, batch ID, ingredient list, allergens, nutrition details, and the product page URL. It is not treated as proof of claim validity by itself; claim validity still comes from Sui finalized claims, HCS intake events, and matching evidence hashes.
 
 If no claim exists for a topic (e.g. kosher, vegan, organic), the agent says so clearly and explains what IS verified on-chain. It never refuses to answer.
 
@@ -38,6 +41,7 @@ The project was renamed from TraceBite to Proof of Plate. Branding, package name
 | Product passport for `TB-MILK-0612` | `main` | Implemented |
 | Sui testnet IDs and claim objects | `main` | Implemented via `data/deployment.json` |
 | Hedera HCS testnet topic and events | `main` | Implemented via `data/hcs-events.json` |
+| Hedera HTS product-batch metadata token | `main` | Implemented via `scripts/create-hts-token.ts`, `Deployment.hts`, and HTS metadata-backed UI fields |
 | AI verifier with Claude + Hedera Agent Kit tools | `main` | Implemented |
 | Server-side evidence hash verification on page load | `main` | Implemented |
 | Hash verification banner in left panel | `main` | Implemented |
@@ -84,6 +88,20 @@ HCS provides:
 - Transaction IDs
 - Pre-finalization audit trail
 
+### Hedera HTS
+
+Hedera Token Service is the tokenized product-batch metadata layer. Each product batch has one HTS `NON_FUNGIBLE_UNIQUE` token with max supply 1 and serial 1. The token metadata payload stores a compact `pop:<batchId>:<metadataHash>` pointer, while `data/deployment.json` caches the parsed metadata used by the UI.
+
+HTS provides:
+
+- Tokenized batch identity
+- Product name, category, and product page URL
+- Ingredients, allergens, nutrition highlights, storage, and nutrition facts
+- Hash of the canonical product metadata payload
+- HashScan token page link for inspectors and judges
+
+HTS does not replace Sui as the finalized claim truth layer. It describes the product batch; Sui claims, HCS audit events, and matching evidence hashes determine whether label claims are verified.
+
 ### Static Evidence JSON
 
 Static JSON files represent lab results, processing logs, maintenance records, feed pesticide declarations, and the final pesticide residue test. Each evidence file is hashed with SHA-256. The hash is included in both the HCS message and the Sui claim.
@@ -110,6 +128,7 @@ The current workspace is configured with real testnet artifacts.
 | Hedera network | `testnet` |
 | Hedera account used in event transaction IDs | `0.0.9185855` |
 | HCS topic ID | `0.0.9219010` |
+| HTS batch metadata token | local fallback `0.0.tracebite_local_token` until a real token is created or supplied via `HEDERA_TOKEN_ID` |
 | Sui network | `testnet` |
 | Sui package ID | `0x4d456546f2254ef39edbacda57b87d0cbb9a808e41d225362c0fa9dca46e100c` |
 | Sui batch object | `0xd73ce78b97ebe620044ac0e107c536458d228437f2d305305ee77f2093250193` |
@@ -185,6 +204,41 @@ The UI renders this as an FDA-style nutrition facts panel with thick dividers, b
 
 Ingredients render as cards with claim tag chips. Each chip links to the relevant on-chain claim.
 
+### HTS Tokenized Batch Metadata
+
+The product batch is represented by one Hedera HTS token. The implementation uses a `NON_FUNGIBLE_UNIQUE` token with max supply 1 and serial 1. Because full product metadata can exceed HTS metadata byte limits, the minted NFT metadata payload is compact:
+
+```text
+pop:TB-MILK-0612:0x<sha256-of-canonical-product-metadata>
+```
+
+The parsed product metadata is cached in `data/deployment.json` under `hts.productMetadata` and mirrored into `batch` by `getBatch()`. The UI uses that HTS-backed batch object for product name, category, ingredients, allergens, nutrition, storage, and the product page URL.
+
+Canonical metadata shape:
+
+```json
+{
+  "schema": "proof-of-plate.hts-product-batch.v1",
+  "batchId": "TB-MILK-0612",
+  "productName": "Proof of Plate Ultra-Filtered Milk",
+  "category": "Dairy",
+  "description": "Ultra-filtered lowfat milk with lactase enzyme and vitamin fortification.",
+  "netContents": "52 fl oz (1.54 L)",
+  "servingSize": "1 cup (240 mL)",
+  "servingsPerContainer": "About 6",
+  "nutritionHighlights": ["13g protein per serving", "Lactose-free", "Ultra-filtered", "Pasteurized"],
+  "allergens": ["Milk"],
+  "ingredients": [
+    { "slug": "ultra-filtered-lowfat-milk", "name": "Ultra-filtered lowfat milk", "role": "Primary dairy base" }
+  ],
+  "productPageUrl": "http://localhost:3000/p/TB-MILK-0612",
+  "hcsTopicId": "0.0.9219010",
+  "suiBatchObjectId": "0xd73ce78b97ebe620044ac0e107c536458d228437f2d305305ee77f2093250193"
+}
+```
+
+HTS metadata is descriptive product metadata. It is not sufficient proof that a claim is verified.
+
 ---
 
 ## Claims
@@ -225,7 +279,12 @@ Next.js Frontend (apps/web)
       |
       +--> Hedera HCS testnet
       |      Ordered claim intake messages
-      |      Explorer: hashscan.io/testnet
+      |      Explorer: hashscan.io/testnet/topic/{topicId}
+      |
+      +--> Hedera HTS testnet
+      |      One token per product batch
+      |      Token metadata: product name, ingredients, nutrition, product page URL
+      |      Explorer: hashscan.io/testnet/token/{tokenId}
       |
       +--> Static Evidence JSON
       |      Source records used for hash verification
@@ -246,8 +305,9 @@ The passport UI is a two-column layout: sticky left panel + scrollable right pan
 - **Stat strip** — claims count, HCS events count, verification speed vs FDA recall window
 - **Hash verification banner** — auto-runs server-side SHA-256 check on every page load; shows `N/N hashes verified` in green or a warning listing which claim mismatched
 - **Supply chain journey** — visual step tracker (Farm → Facility → Lab → Certified) with HCS sequence ranges, progress bar, larger icons (38px), thicker connector line (3px)
-- **Product details** — net contents, serving size, allergens, storage; FDA-style nutrition facts table; ingredient cards with claim tag chips
-- **Footer** — Sui Explorer and HashScan links for the batch object and HCS topic
+- **Product details** — product name, net contents, serving size, allergens, storage; FDA-style nutrition facts table; ingredient cards with claim tag chips; core product metadata is parsed from the HTS batch token cache/reference when available
+- **HTS metadata card** — token ID, serial, metadata parse status, metadata hash, product page URL, and HashScan token link
+- **Footer** — Sui Explorer and HashScan links for the batch object, HCS topic, and HTS token
 
 ### Right Panel
 
@@ -293,13 +353,16 @@ Tab show/hide uses inline `style={{ display: tab === X ? "block" : "none" }}` in
 4. `submit-hcs-events.ts` submits one HCS message per claim and writes `data/hcs-events.json`.
 5. `deploy-sui.ts` records the Sui package ID in `data/deployment.json`.
 6. `seed-sui-batch.ts` creates the Sui batch and finalizes claims using evidence hashes and HCS sequence numbers.
-7. The product page (`app/p/[batchId]/page.tsx`) runs server-side:
-   - reads `deployment.json` and `hcs-events.json`
+7. `create-hts-token.ts` creates or records one HTS batch metadata token, computes the canonical product metadata hash, stores a compact `pop:<batchId>:<hash>` metadata payload, and writes parsed product metadata to `deployment.hts`.
+8. The product page (`app/p/[batchId]/page.tsx`) runs server-side:
+   - reads `deployment.json`, `hcs-events.json`, and `deployment.hts`
+   - hydrates product display fields from HTS metadata through `getBatch()`
    - runs `verifyEvidenceHash()` for every claim (SHA-256 against the on-chain hash)
-   - builds a `verifContext` string with pass/fail per claim
-   - passes the context to `AgentChat` so every AI response is hash-aware
-8. The AI agent answers questions through tool calls against the batch, claims, HCS events, and evidence hashes.
-9. The admin demo action runs `demo-add-claim.ts`, which adds the final pesticide residue claim and updates the score to `5/6`.
+   - builds a `verifContext` string with pass/fail per claim and HTS token status
+   - passes the context to `AgentChat` so every AI response is hash-aware and token-aware
+9. The UI displays product metadata from the HTS token cache/reference with a HashScan token link when available.
+10. The AI agent answers questions through tool calls against the batch, HTS metadata, claims, HCS events, and evidence hashes.
+11. The admin demo action runs `demo-add-claim.ts`, which adds the final pesticide residue claim and updates the score to `5/6`.
 
 Implementation note: the primary configured path is real testnet. Some scripts still retain a credentialless/local fallback so the app remains demoable when Hedera credentials or the Sui CLI are absent.
 
@@ -329,6 +392,59 @@ Each claim submission is posted as compact JSON:
 ```
 
 HCS submission results are persisted to `data/hcs-events.json` with sequence numbers, transaction IDs, and consensus timestamps.
+
+---
+
+## Hedera HTS Product Metadata Design
+
+One HTS token is used for each product batch.
+
+For `TB-MILK-0612`:
+
+- Token type: `NON_FUNGIBLE_UNIQUE`
+- Max supply: `1`
+- Serial number: `1`
+- Local fallback token ID: `0.0.tracebite_local_token`
+- Real token source: `npm run hedera:create-token` with Hedera credentials, or `HEDERA_TOKEN_ID` to reuse an existing token
+- Explorer: `https://hashscan.io/testnet/token/{tokenId}`
+
+### Token Purpose
+
+The HTS token is the product metadata handle for the batch. It gives the product passport a Hedera-native token representing the batch itself, separate from:
+
+- HCS topic: ordered claim intake events
+- Sui batch/claim objects: finalized claim truth and claim state
+- Static JSON evidence: source records used for SHA-256 verification
+
+### Metadata Rules
+
+The canonical product metadata is stable-stringified and SHA-256 hashed by `apps/web/lib/hts.ts`. The minted NFT metadata payload is compact so it fits HTS metadata constraints:
+
+```text
+pop:<batchId>:<metadataHash>
+```
+
+The full parsed metadata is cached in `data/deployment.json`:
+
+```json
+{
+  "hts": {
+    "tokenId": "0.0.tracebite_local_token",
+    "serialNumber": 1,
+    "nftId": "0.0.tracebite_local_token/1",
+    "metadataPayload": "pop:TB-MILK-0612:0x...",
+    "metadataHash": "0x...",
+    "productMetadata": {
+      "schema": "proof-of-plate.hts-product-batch.v1",
+      "batchId": "TB-MILK-0612",
+      "productName": "Proof of Plate Ultra-Filtered Milk",
+      "ingredients": []
+    }
+  }
+}
+```
+
+Invalid or unavailable token metadata does not block claim verification. The UI shows a warning while still rendering Sui claims, HCS events, and evidence hash results.
 
 ---
 
@@ -412,7 +528,8 @@ File: `apps/web/lib/agent.ts`
 
 | Tool | Source | Description |
 |---|---|---|
-| `get_batch` | Custom | Reads ProductBatch from `deployment.json` |
+| `get_batch` | Custom | Reads ProductBatch from `deployment.json`, hydrated with HTS product metadata when present |
+| `get_hts_metadata` | Custom | Reads the batch HTS token ID, parsed product metadata, metadata hash, and HashScan token URL |
 | `get_claims` | Custom | Reads all finalized Claim objects for a batch |
 | `get_hcs_events` | Custom | Reads cached HCS intake events from `hcs-events.json` |
 | `get_evidence` | Custom | Fetches a static evidence JSON document by URI |
@@ -427,12 +544,14 @@ Hedera Agent Kit tools are attached only when Hedera credentials are present. Th
 The system prompt enforces these rules:
 
 1. Always call `get_batch` and `get_claims` before answering any product question.
-2. For any cited claim, call `verify_evidence_hash` to confirm authenticity.
-3. Distinguish clearly: ✅ VERIFIED (hash match + Sui verified), ⚠️ ADVISORY (declaration only, no lab proof), ❌ NOT CERTIFIED (no claim exists on-chain).
-4. If a question is about something NOT in the claims (e.g. kosher, vegan, organic), say clearly "This product has no certified claim for that on-chain" and explain what IS verified. Never refuse to answer.
-5. Write like talking to a shopper, not an engineer. Plain English. No blockchain jargon unless the user asks.
-6. When referencing a Sui object or Hedera topic, include the full explorer URL so it renders as a clickable link (e.g. `https://suiscan.xyz/testnet/object/OBJECT_ID` or `https://hashscan.io/testnet/topic/TOPIC_ID`).
-7. Keep answers concise — 3–6 sentences for simple questions, bullet points for multi-part answers.
+2. For product identity, ingredient, allergen, or product-page questions, call `get_hts_metadata` when an HTS token ID is available.
+3. For any cited claim, call `verify_evidence_hash` to confirm authenticity.
+4. Distinguish clearly: ✅ VERIFIED (hash match + Sui verified), ⚠️ ADVISORY (declaration only, no lab proof), ❌ NOT CERTIFIED (no claim exists on-chain).
+5. Do not treat HTS metadata alone as proof that a label claim is verified. HTS metadata may describe ingredients and product identity, but claims such as lactose-free, pesticide-free, kosher, vegan, or organic still require Sui claims and evidence hash verification.
+6. If a question is about something NOT in the claims (e.g. kosher, vegan, organic), say clearly "This product has no certified claim for that on-chain" and explain what IS verified. Never refuse to answer.
+7. Write like talking to a shopper, not an engineer. Plain English. No blockchain jargon unless the user asks.
+8. When referencing a Sui object, Hedera HCS topic, Hedera transaction, or Hedera HTS token, include the full explorer URL so it renders as a clickable link (e.g. `https://suiscan.xyz/testnet/object/OBJECT_ID`, `https://hashscan.io/testnet/topic/TOPIC_ID`, or `https://hashscan.io/testnet/token/TOKEN_ID`).
+9. Keep answers concise — 3–6 sentences for simple questions, bullet points for multi-part answers.
 
 Answer format (adapted as needed):
 
@@ -593,7 +712,8 @@ A fraudulent version of `lab-results.json` changes the lactose result from a pas
 
 | Route | Description |
 |---|---|
-| `GET /api/batch/[batchId]` | Returns ProductBatch from `deployment.json` |
+| `GET /api/batch/[batchId]` | Returns ProductBatch from `deployment.json`, hydrated with HTS product metadata when available |
+| `GET /api/hts/[tokenId]` | Returns parsed HTS token metadata, metadata hash, and HashScan token URL |
 | `GET /api/claims/[batchId]` | Returns all claims for a batch |
 | `GET /api/hcs/[topicId]` | Returns HCS events from `hcs-events.json` |
 | `GET /api/evidence?uri=&expectedHash=` | Returns evidence document and hash verification result |

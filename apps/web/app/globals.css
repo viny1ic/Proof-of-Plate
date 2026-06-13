@@ -134,6 +134,27 @@ body:not(.inspector) .inspector-only{display:none !important;}
 .pp-ingredient-name{font-size:13px;font-weight:500;color:var(--navy);}
 .pp-ingredient-role{font-size:11px;color:var(--muted);margin-top:1px;}
 
+/* == HTS METADATA CARD ======================================== */
+.pp-hts-card{margin:11px 12px 0;background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:13px 16px;overflow:hidden;}
+@media(min-width:768px){.pp-hts-card{margin:11px 0 0;}}
+.pp-hts-card.ok{border-color:rgba(139,92,246,.28);background:linear-gradient(180deg,#fff,rgba(139,92,246,.035));}
+.pp-hts-card.warn{border-color:var(--amber-bd);background:linear-gradient(180deg,#fff,var(--amber-bg));}
+.pp-hts-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
+.pp-hts-title{font-size:13px;font-weight:700;color:var(--navy);}
+.pp-hts-pill{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;border-radius:999px;padding:3px 8px;white-space:nowrap;}
+.pp-hts-pill.ok{color:var(--hedera);background:rgba(139,92,246,.09);border:1px solid rgba(139,92,246,.24);}
+.pp-hts-pill.warn{color:var(--amber);background:var(--amber-bg);border:1px solid var(--amber-bd);}
+.pp-hts-desc{font-size:12px;color:var(--muted);line-height:1.55;margin:0;}
+.pp-hts-desc code{font-family:var(--m);font-size:11px;color:var(--navy);}
+.pp-hts-token-row,.pp-hts-page-row{display:grid;gap:3px;margin-bottom:10px;}
+.pp-hts-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;}
+.pp-hts-token,.pp-hts-page{font-family:var(--m);font-size:11px;color:var(--hedera);word-break:break-all;text-decoration:underline;text-underline-offset:2px;}
+.pp-hts-token.local{color:var(--muted);text-decoration:none;}
+.pp-hts-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px;}
+.pp-hts-value{font-size:12px;font-weight:600;color:var(--navy);line-height:1.35;display:block;}
+.pp-hts-value.mono{font-family:var(--m);font-size:11px;word-break:break-all;}
+.pp-hts-errors{font-size:11px;color:var(--amber);background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:var(--rs);padding:8px 10px;line-height:1.5;}
+
 /* == SECTION WRAPPER ========================================== */
 .pp-section{margin:12px 12px 0;background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;}
 @media(min-width:768px){.pp-section{margin:0 0 14px;}}

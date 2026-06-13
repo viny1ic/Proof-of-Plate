@@ -62,13 +62,96 @@
         "relatedClaimTypes": []
       }
     ],
+    "nutrition": [
+      {
+        "label": "Calories",
+        "amount": "80",
+        "bold": true
+      },
+      {
+        "label": "Total Fat",
+        "amount": "2.5g",
+        "dailyValue": "3%"
+      },
+      {
+        "label": "Saturated Fat",
+        "amount": "1.5g",
+        "dailyValue": "8%",
+        "sub": true
+      },
+      {
+        "label": "Trans Fat",
+        "amount": "0g",
+        "sub": true
+      },
+      {
+        "label": "Cholesterol",
+        "amount": "15mg",
+        "dailyValue": "5%",
+        "divider": true
+      },
+      {
+        "label": "Sodium",
+        "amount": "95mg",
+        "dailyValue": "4%"
+      },
+      {
+        "label": "Total Carbohydrate",
+        "amount": "6g",
+        "dailyValue": "2%"
+      },
+      {
+        "label": "Dietary Fiber",
+        "amount": "0g",
+        "dailyValue": "0%",
+        "sub": true
+      },
+      {
+        "label": "Total Sugars",
+        "amount": "6g",
+        "sub": true
+      },
+      {
+        "label": "Protein",
+        "amount": "13g",
+        "dailyValue": "26%",
+        "divider": true,
+        "bold": true
+      },
+      {
+        "label": "Calcium",
+        "amount": "350mg",
+        "dailyValue": "25%"
+      },
+      {
+        "label": "Vitamin D",
+        "amount": "3.7mcg",
+        "dailyValue": "20%"
+      },
+      {
+        "label": "Potassium",
+        "amount": "420mg",
+        "dailyValue": "10%"
+      },
+      {
+        "label": "Vitamin A",
+        "amount": "150mcg RAE",
+        "dailyValue": "15%"
+      }
+    ],
     "hcsTopicId": "0.0.tracebite_local",
     "scoreVerified": 4,
     "scoreTotal": 5,
     "recalled": false,
     "createdAt": "2026-06-13T00:21:10Z",
     "suiPackageId": "0x4d456546f2254ef39edbacda57b87d0cbb9a808e41d225362c0fa9dca46e100c",
-    "suiBatchObjectId": "0xd73ce78b97ebe620044ac0e107c536458d228437f2d305305ee77f2093250193"
+    "suiBatchObjectId": "0xd73ce78b97ebe620044ac0e107c536458d228437f2d305305ee77f2093250193",
+    "htsTokenId": "0.0.9226184",
+    "htsSerialNumber": 1,
+    "htsNftId": "0.0.9226184/1",
+    "htsMetadataHash": "0x8b8e82cb1567b57d3cde1649b8f7cdc9eb3f00dc7fe0aa1a0511cd1a99455740",
+    "htsMetadataPayload": "pop:TB-MILK-0612:0x8b8e82cb1567b57d3cde1649b8f7cdc9eb3f00dc7fe0aa1a0511cd1a99455740",
+    "productPageUrl": "http://localhost:3000/p/TB-MILK-0612"
   },
   "claims": [
     {
@@ -146,5 +229,169 @@
   "hcs": {
     "topicId": "0.0.tracebite_local",
     "network": "testnet"
+  },
+  "hts": {
+    "network": "testnet",
+    "tokenId": "0.0.9226184",
+    "serialNumber": 1,
+    "nftId": "0.0.9226184/1",
+    "tokenType": "NON_FUNGIBLE_UNIQUE",
+    "supplyType": "FINITE",
+    "maxSupply": 1,
+    "treasuryAccountId": "0.0.9185855",
+    "tokenName": "Proof of Plate TB-MILK-0612",
+    "tokenSymbol": "TBMILK0612",
+    "metadataPayload": "pop:TB-MILK-0612:0x8b8e82cb1567b57d3cde1649b8f7cdc9eb3f00dc7fe0aa1a0511cd1a99455740",
+    "metadataHash": "0x8b8e82cb1567b57d3cde1649b8f7cdc9eb3f00dc7fe0aa1a0511cd1a99455740",
+    "productMetadata": {
+      "schema": "proof-of-plate.hts-product-batch.v1",
+      "batchId": "TB-MILK-0612",
+      "productName": "Proof of Plate Ultra-Filtered Milk",
+      "category": "Dairy",
+      "description": "Ultra-filtered lowfat milk with lactase enzyme and vitamin fortification. Built as a Proof of Plate product passport for label-claim verification.",
+      "netContents": "52 fl oz (1.54 L)",
+      "servingSize": "1 cup (240 mL)",
+      "servingsPerContainer": "About 6",
+      "nutritionHighlights": [
+        "13g protein per serving",
+        "Lactose-free",
+        "Ultra-filtered",
+        "Pasteurized"
+      ],
+      "allergens": [
+        "Milk"
+      ],
+      "storageInstructions": "Keep refrigerated at or below 40 F. Use within 7 days after opening.",
+      "ingredients": [
+        {
+          "slug": "ultra-filtered-lowfat-milk",
+          "name": "Ultra-filtered lowfat milk",
+          "role": "Primary dairy base",
+          "source": "Proof of Plate Demo Dairy Cooperative",
+          "description": "Lowfat milk concentrated through ultra-filtration to increase protein density while reducing lactose and some sugars.",
+          "verificationNote": "Linked to the ultra-filtration, pasteurization, and lactose-free claims for this batch.",
+          "relatedClaimTypes": [
+            "ultra_filtered",
+            "pasteurized",
+            "lactose_free"
+          ]
+        },
+        {
+          "slug": "lactase-enzyme",
+          "name": "Lactase enzyme",
+          "role": "Lactose breakdown aid",
+          "source": "Proof of Plate Demo Ingredient Supplier",
+          "description": "Food-grade lactase enzyme used to break lactose into simpler sugars as part of the lactose-free process.",
+          "verificationNote": "Supported by the lactose-free lab result evidence for the finished batch.",
+          "relatedClaimTypes": [
+            "lactose_free"
+          ]
+        },
+        {
+          "slug": "vitamin-a-palmitate",
+          "name": "Vitamin A palmitate",
+          "role": "Vitamin fortification",
+          "source": "Proof of Plate Demo Nutrient Supplier",
+          "description": "Vitamin A fortificant commonly added to lowfat dairy products to restore vitamin A levels after fat reduction.",
+          "verificationNote": "Included as product formulation information; not represented as a separate verified label claim.",
+          "relatedClaimTypes": []
+        },
+        {
+          "slug": "vitamin-d3",
+          "name": "Vitamin D3",
+          "role": "Vitamin fortification",
+          "source": "Proof of Plate Demo Nutrient Supplier",
+          "description": "Vitamin D3 fortificant added to support the product nutrition profile for the demo milk batch.",
+          "verificationNote": "Included as product formulation information; not represented as a separate verified label claim.",
+          "relatedClaimTypes": []
+        }
+      ],
+      "nutrition": [
+        {
+          "label": "Calories",
+          "amount": "80",
+          "bold": true
+        },
+        {
+          "label": "Total Fat",
+          "amount": "2.5g",
+          "dailyValue": "3%"
+        },
+        {
+          "label": "Saturated Fat",
+          "amount": "1.5g",
+          "dailyValue": "8%",
+          "sub": true
+        },
+        {
+          "label": "Trans Fat",
+          "amount": "0g",
+          "sub": true
+        },
+        {
+          "label": "Cholesterol",
+          "amount": "15mg",
+          "dailyValue": "5%",
+          "divider": true
+        },
+        {
+          "label": "Sodium",
+          "amount": "95mg",
+          "dailyValue": "4%"
+        },
+        {
+          "label": "Total Carbohydrate",
+          "amount": "6g",
+          "dailyValue": "2%"
+        },
+        {
+          "label": "Dietary Fiber",
+          "amount": "0g",
+          "dailyValue": "0%",
+          "sub": true
+        },
+        {
+          "label": "Total Sugars",
+          "amount": "6g",
+          "sub": true
+        },
+        {
+          "label": "Protein",
+          "amount": "13g",
+          "dailyValue": "26%",
+          "divider": true,
+          "bold": true
+        },
+        {
+          "label": "Calcium",
+          "amount": "350mg",
+          "dailyValue": "25%"
+        },
+        {
+          "label": "Vitamin D",
+          "amount": "3.7mcg",
+          "dailyValue": "20%"
+        },
+        {
+          "label": "Potassium",
+          "amount": "420mg",
+          "dailyValue": "10%"
+        },
+        {
+          "label": "Vitamin A",
+          "amount": "150mcg RAE",
+          "dailyValue": "15%"
+        }
+      ],
+      "productPageUrl": "http://localhost:3000/p/TB-MILK-0612",
+      "hcsTopicId": "0.0.tracebite_local",
+      "suiBatchObjectId": "0xd73ce78b97ebe620044ac0e107c536458d228437f2d305305ee77f2093250193"
+    },
+    "createTransactionId": "0.0.9185855@1781385044.095719521",
+    "mintTransactionId": "0.0.9185855@1781385045.213073131",
+    "updateTransactionId": "0.0.9185855@1781385390.455656373",
+    "createdAt": "2026-06-13T20:26:59.870Z",
+    "updatedAt": "2026-06-13T21:16:38.707Z",
+    "source": "hedera"
   }
 }

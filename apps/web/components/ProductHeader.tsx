@@ -53,7 +53,7 @@ export function ProductHeader({ batch }: { batch: ProductBatch }) {
           </div>
           <div>
             <div className="pp-score-label">{scoreLabel} Claims Verified</div>
-            <div className="pp-score-sub">Sui blockchain - Hedera HCS</div>
+            <div className="pp-score-sub">Sui claims - Hedera HCS + HTS</div>
           </div>
         </div>
       </div>

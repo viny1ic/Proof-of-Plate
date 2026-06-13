@@ -10,6 +10,39 @@ export const deploymentPath = path.join(dataDir, "deployment.json");
 export const manifestPath = path.join(dataDir, "evidence-manifest.json");
 export const hcsEventsPath = path.join(dataDir, "hcs-events.json");
 
+function parseEnvFile(filePath: string) {
+  if (!existsSync(filePath)) return;
+  const lines = readFileSync(filePath, "utf8").split(/\r?\n/);
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith("#") || !line.includes("=")) continue;
+    const key = line.slice(0, line.indexOf("=")).trim();
+    let value = line.slice(line.indexOf("=") + 1).trim();
+    if (!key || process.env[key] !== undefined) continue;
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    process.env[key] = value;
+  }
+}
+
+/**
+ * Standalone tsx scripts do not get Next.js env loading for free. Load the root
+ * and app env files so Hedera/Sui scripts see the same credentials as Next.js.
+ */
+export function loadScriptEnv() {
+  for (const envPath of [
+    path.join(root, ".env"),
+    path.join(root, ".env.local"),
+    path.join(root, "apps", "web", ".env"),
+    path.join(root, "apps", "web", ".env.local"),
+  ]) {
+    parseEnvFile(envPath);
+  }
+}
+
+loadScriptEnv();
+
 export function ensureDataDir() {
   mkdirSync(dataDir, { recursive: true });
 }
@@ -50,6 +83,11 @@ export function loadManifest(): Record<string, string> {
  *  as plain text rather than a clickable explorer link. */
 export function buildLocalTopicId(): string {
   return "0.0.tracebite_local";
+}
+
+/** Deterministic local HTS token ID used when Hedera credentials are absent. */
+export function buildLocalHtsTokenId(): string {
+  return "0.0.tracebite_local_token";
 }
 
 // ─── Claim metadata (label, status, reason) keyed by claimType ───────────────
@@ -203,6 +241,22 @@ function buildBatch(
         relatedClaimTypes: [],
       },
     ],
+    nutrition: [
+      { label: "Calories", amount: "80", bold: true },
+      { label: "Total Fat", amount: "2.5g", dailyValue: "3%" },
+      { label: "Saturated Fat", amount: "1.5g", dailyValue: "8%", sub: true },
+      { label: "Trans Fat", amount: "0g", sub: true },
+      { label: "Cholesterol", amount: "15mg", dailyValue: "5%", divider: true },
+      { label: "Sodium", amount: "95mg", dailyValue: "4%" },
+      { label: "Total Carbohydrate", amount: "6g", dailyValue: "2%" },
+      { label: "Dietary Fiber", amount: "0g", dailyValue: "0%", sub: true },
+      { label: "Total Sugars", amount: "6g", sub: true },
+      { label: "Protein", amount: "13g", dailyValue: "26%", divider: true, bold: true },
+      { label: "Calcium", amount: "350mg", dailyValue: "25%" },
+      { label: "Vitamin D", amount: "3.7mcg", dailyValue: "20%" },
+      { label: "Potassium", amount: "420mg", dailyValue: "10%" },
+      { label: "Vitamin A", amount: "150mcg RAE", dailyValue: "15%" },
+    ],
     hcsTopicId: topicId,
     scoreVerified,
     scoreTotal,
@@ -211,6 +265,13 @@ function buildBatch(
     // Preserve Sui IDs written by sui:deploy / sui:seed if already present
     suiPackageId: existing?.suiPackageId ?? "0xtracebite_local_package",
     suiBatchObjectId: existing?.suiBatchObjectId ?? "0xtracebite_local_batch",
+    // Preserve HTS token metadata references written by hedera:create-token.
+    htsTokenId: existing?.htsTokenId,
+    htsSerialNumber: existing?.htsSerialNumber,
+    htsNftId: existing?.htsNftId,
+    htsMetadataHash: existing?.htsMetadataHash,
+    htsMetadataPayload: existing?.htsMetadataPayload,
+    productPageUrl: existing?.productPageUrl,
   };
 }
 
@@ -253,6 +314,7 @@ export function writeDeployment(
     batch,
     claims,
     hcs: { topicId, network: process.env.HEDERA_NETWORK ?? "testnet" },
+    hts: existing?.hts,
   };
 
   writeJson(deploymentPath, deployment);
@@ -277,5 +339,5 @@ export async function buildHederaClient() {
       : sdk.PrivateKey.fromString(rawKey);
 
   client.setOperator(process.env.HEDERA_ACCOUNT_ID, privateKey);
-  return { sdk, client };
+  return { sdk, client, accountId: process.env.HEDERA_ACCOUNT_ID, privateKey };
 }

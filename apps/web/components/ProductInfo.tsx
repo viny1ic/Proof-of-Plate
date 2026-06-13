@@ -1,16 +1,17 @@
 import Link from "next/link";
 import type { NutritionFact, ProductBatch } from "../lib/types";
 
-function NutritionTable({ facts }: { facts: NutritionFact[] }) {
+function NutritionTable({ facts, servingSize }: { facts: NutritionFact[]; servingSize: string }) {
+  const calories = facts.find((fact) => fact.label.toLowerCase() === "calories")?.amount ?? "—";
   return (
     <div className="pp-nutrition">
       <div className="pp-nutrition-header">
         <div className="pp-nutrition-title">Nutrition Facts</div>
-        <div className="pp-nutrition-serving">Per 1 cup (240 mL)</div>
+        <div className="pp-nutrition-serving">Per {servingSize}</div>
       </div>
       <div className="pp-nutrition-cal-row">
         <span className="pp-nutrition-cal-label">Calories</span>
-        <span className="pp-nutrition-cal-val">80</span>
+        <span className="pp-nutrition-cal-val">{calories}</span>
       </div>
       <div className="pp-nutrition-dv-note">% Daily Value*</div>
       {facts.filter(f => f.label !== "Calories").map((f, i) => (
@@ -45,7 +46,7 @@ export function ProductInfo({ batch }: { batch: ProductBatch }) {
     <div className="pp-info-panel">
       <div className="pp-info-head">
         <span className="pp-info-title">Product Details</span>
-        <span className="pp-info-sub">{batch.category}</span>
+        <span className="pp-info-sub">HTS metadata · {batch.category}</span>
       </div>
 
       <div className="pp-facts-grid">
@@ -82,7 +83,7 @@ export function ProductInfo({ batch }: { batch: ProductBatch }) {
       {/* Nutrition Facts */}
       {batch.nutrition && batch.nutrition.length > 0 && (
         <div style={{ padding: "12px 16px", borderTop: "1px solid var(--border)" }}>
-          <NutritionTable facts={batch.nutrition} />
+          <NutritionTable facts={batch.nutrition} servingSize={batch.servingSize} />
         </div>
       )}
 

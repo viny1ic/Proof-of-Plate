@@ -19,3 +19,14 @@ export function hederaTransactionLink(transactionId: string) {
   if (!transactionId || isLocalPlaceholder(transactionId)) return null;
   return `https://hashscan.io/testnet/transaction/${encodeURIComponent(transactionId)}`;
 }
+
+export function hederaTokenLink(tokenId: string) {
+  if (!tokenId || isLocalPlaceholder(tokenId)) return null;
+  return `https://hashscan.io/testnet/token/${encodeURIComponent(tokenId)}`;
+}
+
+export function hederaNftLink(tokenId: string, serialNumber?: number) {
+  if (!tokenId || isLocalPlaceholder(tokenId)) return null;
+  const suffix = typeof serialNumber === "number" ? `/${serialNumber}` : "";
+  return `https://hashscan.io/testnet/token/${encodeURIComponent(tokenId)}${suffix}`;
+}

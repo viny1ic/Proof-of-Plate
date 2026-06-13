@@ -1,6 +1,12 @@
 import { existsSync } from "node:fs";
-import type { Claim, Deployment, HcsEvent, Ingredient, ProductBatch } from "./types";
+import type { Claim, Deployment, HcsEvent, HtsDeployment, Ingredient, ProductBatch } from "./types";
 import { readJsonFile, resolveProofOfPlatePath } from "./files";
+import {
+  hashProductTokenMetadata,
+  mergeBatchWithHtsMetadata,
+  parseHtsMetadataPayload,
+  parseProductTokenMetadata,
+} from "./hts";
 
 function deploymentFile() {
   return resolveProofOfPlatePath("data", "deployment.json");
@@ -105,7 +111,55 @@ export function getBatch(batchId: string): ProductBatch {
   if (deployment.batch.batchId !== batchId) {
     throw new Error(`Unknown batch ${batchId}`);
   }
-  return deployment.batch;
+  return mergeBatchWithHtsMetadata(deployment.batch, deployment.hts);
+}
+
+export function getHtsMetadata(batchId: string): {
+  hts?: HtsDeployment;
+  ok: boolean;
+  errors: string[];
+} {
+  const deployment = getDeployment();
+  if (deployment.batch.batchId !== batchId) {
+    throw new Error(`Unknown batch ${batchId}`);
+  }
+  if (!deployment.hts) {
+    return { ok: false, errors: ["No HTS token metadata configured for this batch."] };
+  }
+  const parsed = parseProductTokenMetadata(deployment.hts.productMetadata, batchId);
+  const payload = parseHtsMetadataPayload(deployment.hts.metadataPayload);
+  const errors = [...parsed.errors, ...payload.errors];
+
+  if (payload.ok && payload.batchId !== batchId) {
+    errors.push(`HTS token metadata batchId ${payload.batchId} does not match expected batchId ${batchId}.`);
+  }
+  if (parsed.ok && parsed.metadata && payload.ok) {
+    const computedHash = hashProductTokenMetadata(parsed.metadata);
+    if (computedHash !== payload.metadataHash) {
+      errors.push(`HTS token metadata hash mismatch: token has ${payload.metadataHash}, computed ${computedHash}.`);
+    }
+    if (computedHash !== deployment.hts.metadataHash) {
+      errors.push(`Cached HTS metadata hash mismatch: deployment has ${deployment.hts.metadataHash}, computed ${computedHash}.`);
+    }
+  }
+
+  return {
+    hts: deployment.hts,
+    ok: errors.length === 0,
+    errors,
+  };
+}
+
+export function getHtsMetadataByToken(tokenId: string): {
+  hts?: HtsDeployment;
+  ok: boolean;
+  errors: string[];
+} {
+  const deployment = getDeployment();
+  if (deployment.hts?.tokenId !== tokenId) {
+    return { ok: false, errors: [`Unknown HTS token ${tokenId}.`] };
+  }
+  return getHtsMetadata(deployment.batch.batchId);
 }
 
 export function getClaims(batchId: string): Claim[] {
