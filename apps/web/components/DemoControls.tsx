@@ -8,9 +8,13 @@ export function DemoControls() {
 
   async function addClaim() {
     setState("Adding claim...");
-    const res = await fetch("/api/demo/add-claim", { method: "POST" });
-    const data = await res.json();
-    setState(data.ok ? "Added final pesticide residue claim. Refresh the product page." : data.error);
+    try {
+      const res = await fetch("/api/demo/add-claim", { method: "POST" });
+      const data = await res.json();
+      setState(data.ok ? "Added final pesticide residue claim. Refresh the product page." : (data.error ?? "Unknown error"));
+    } catch (err) {
+      setState(`Request failed: ${(err as Error).message}`);
+    }
   }
 
   return (

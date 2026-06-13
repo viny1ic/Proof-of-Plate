@@ -1,15 +1,15 @@
-import { execFileSync } from "node:child_process";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { NextResponse } from "next/server";
 
-function isLocalhost(request: Request) {
-  const hostname = new URL(request.url).hostname;
-  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
-}
+const execFileAsync = promisify(execFile);
 
 function isAuthorized(request: Request) {
-  if (isLocalhost(request)) return true;
+  // In non-production environments, allow without a token
   if (process.env.NODE_ENV !== "production") return true;
 
+  // In production, require an explicit DEMO_ADMIN_TOKEN — never rely on the
+  // request hostname, which can be spoofed behind a reverse proxy.
   const token = process.env.DEMO_ADMIN_TOKEN;
   const supplied =
     request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ||
@@ -23,9 +23,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    execFileSync("npm", ["run", "demo:add-claim"], {
+    await execFileAsync("npm", ["run", "demo:add-claim"], {
       cwd: process.cwd().endsWith("apps/web") ? "../.." : ".",
-      stdio: "pipe",
     });
     return NextResponse.json({ ok: true });
   } catch (error) {

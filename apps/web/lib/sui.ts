@@ -1,9 +1,3 @@
-import { getBatch, getClaims } from "./data";
-
-export async function getSuiBatch(batchId: string) {
-  return getBatch(batchId);
-}
-
-export async function getSuiClaims(batchId: string) {
-  return getClaims(batchId);
-}
+// This file is a thin pass-through that adds no value — prefer importing
+// getBatch/getClaims directly from "./data". Safe to delete.
+export { getBatch as getSuiBatch, getClaims as getSuiClaims } from "./data";

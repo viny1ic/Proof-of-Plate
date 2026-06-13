@@ -1,5 +1,14 @@
 export type ClaimStatus = "pending" | "verified" | "warning" | "failed" | "revoked";
 
+export type NutritionFact = {
+  label: string;
+  amount: string;
+  dailyValue?: string;
+  sub?: boolean;
+  bold?: boolean;
+  divider?: boolean;
+};
+
 export type EvidenceFact = {
   key: string;
   value: string | number | boolean;
@@ -29,6 +38,7 @@ export type ProductBatch = {
   allergens: string[];
   storageInstructions: string;
   ingredients: Ingredient[];
+  nutrition?: NutritionFact[];
   hcsTopicId: string;
   scoreVerified: number;
   scoreTotal: number;
@@ -66,7 +76,7 @@ export type Claim = {
 
 export type HcsEvent = {
   v: "1.0";
-  type: "CLAIM_SUBMITTED";
+  type: "CLAIM_SUBMITTED" | string;
   batchId: string;
   claimType: string;
   issuerRole: string;

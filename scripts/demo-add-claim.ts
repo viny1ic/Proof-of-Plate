@@ -74,7 +74,10 @@ async function main() {
   console.log(`Hashed evidence: ${evidenceHash}`);
 
   // 2. Submit HCS message
-  const newSeq = hcs.events.length + 1;
+  // Derive next sequence number from actual stored sequence numbers, not array length,
+  // to stay correct even if events are filtered or reordered.
+  const maxSeq = hcs.events.reduce((m, e) => Math.max(m, e.sequenceNumber), 0);
+  let newSeq = maxSeq + 1;
   let transactionId = `${topicId}@${Date.now()}`;
   let consensusTimestamp = new Date().toISOString();
 
@@ -101,9 +104,12 @@ async function main() {
 
       const receipt = await tx.getReceipt(client);
       transactionId = tx.transactionId?.toString() || transactionId;
-      const seq = Number(receipt.topicSequenceNumber || newSeq);
+      // Use the sequence number confirmed by the network, not the locally predicted one.
+      if (receipt.topicSequenceNumber) {
+        newSeq = Number(receipt.topicSequenceNumber);
+      }
       consensusTimestamp = new Date().toISOString();
-      console.log(`HCS submitted: seq=${seq}, txId=${transactionId}`);
+      console.log(`HCS submitted: seq=${newSeq}, txId=${transactionId}`);
     } finally {
       client.close();
     }

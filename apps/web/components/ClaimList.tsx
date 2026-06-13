@@ -1,95 +1,160 @@
 "use client";
-
-import { FileSearch } from "lucide-react";
 import { useState } from "react";
 import { hederaTopicLink, suiExplorerLink } from "../lib/explorer-links";
 import type { Claim, EvidenceDocument } from "../lib/types";
 import { EvidenceDrawer } from "./EvidenceDrawer";
 
+const ICONS: Record<string, string> = {
+  lactose_free: "Lab",
+  ultra_filtered: "Fac",
+  pasteurized: "Tmp",
+  equipment_cleaned: "Cln",
+  feed_pesticide_declaration: "Agr",
+  final_pesticide_residue_test: "Tst",
+};
+
 type Verification = { ok: boolean; actualHash: string; expectedHash: string };
 
-function ExplorerValue({ href, value }: { href: string | null; value: string }) {
-  if (!href) return <span className="mono">{value}</span>;
-  return (
-    <a className="mono explorer-link" href={href} target="_blank" rel="noreferrer">
-      {value}
-    </a>
-  );
-}
-
 export function ClaimList({ claims }: { claims: Claim[] }) {
+  const [openClaim, setOpenClaim] = useState<string | null>(null);
   const [evidence, setEvidence] = useState<EvidenceDocument | null>(null);
   const [verification, setVerification] = useState<Verification | null>(null);
-  const [claimVerifications, setClaimVerifications] = useState<Record<string, Verification>>({});
+  const [claimVers, setClaimVers] = useState<Record<string, Verification>>({});
+  const [evidenceErr, setEvidenceErr] = useState<string | null>(null);
+  const [copiedHash, setCopiedHash] = useState<string | null>(null);
 
-  async function openEvidence(claim: Claim) {
-    const params = new URLSearchParams({ uri: claim.evidenceUri, expectedHash: claim.evidenceHash });
-    const res = await fetch(`/api/evidence?${params}`);
-    const data = await res.json();
-    setEvidence(data.evidence);
-    setVerification(data.verification);
-    if (data.verification) {
-      setClaimVerifications((current) => ({ ...current, [claim.claimType]: data.verification }));
+  function toggle(ct: string) {
+    setOpenClaim(prev => prev === ct ? null : ct);
+  }
+
+  async function openEvidence(claim: Claim, e: React.MouseEvent) {
+    e.stopPropagation();
+    setEvidenceErr(null);
+    try {
+      const p = new URLSearchParams({ uri: claim.evidenceUri, expectedHash: claim.evidenceHash });
+      const res = await fetch("/api/evidence?" + p);
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "HTTP " + res.status);
+      setEvidence(data.evidence);
+      setVerification(data.verification);
+      if (data.verification) {
+        setClaimVers(c => ({ ...c, [claim.claimType]: data.verification }));
+      }
+    } catch (err) {
+      setEvidenceErr((err as Error).message);
     }
   }
 
+  async function copyHash(hash: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(hash);
+      setCopiedHash(hash);
+      setTimeout(() => setCopiedHash(null), 1500);
+    } catch {}
+  }
+
+  const warnCount = claims.filter(c => c.status === "warning" || c.status === "failed").length;
+  const verCount  = claims.filter(c => c.status === "verified").length;
+
   return (
-    <section className="panel">
-      <div className="row">
-        <div>
-          <h2>Claims</h2>
-          <p className="muted">Final product claims stored as Sui truth and linked to HCS intake events.</p>
+    <>
+      <div className="pp-section">
+        <div className="pp-section-head">
+          <span className="pp-section-title">Verified Claims</span>
+          <span className="pp-section-meta">
+            {warnCount > 0 ? warnCount + " advisory" : verCount + " verified"}
+          </span>
         </div>
-      </div>
-      <div className="grid claim-grid">
-        {claims.map((claim) => {
-          const hashVerification = claimVerifications[claim.claimType];
+
+        {claims.map(claim => {
+          const isOpen = openClaim === claim.claimType;
+          const hv = claimVers[claim.claimType];
+          const icon = ICONS[claim.claimType] ?? "?";
           return (
-            <article className="panel claim-card" key={claim.claimType}>
-              <div className="row">
-                <h3>{claim.label}</h3>
-                <span className={`badge ${claim.status}`}>{claim.status}</span>
+            <div className={"pp-claim-row" + (isOpen ? " open" : "")} key={claim.claimType}>
+              <div className="pp-claim-main" onClick={() => toggle(claim.claimType)}>
+                <div className={"pp-claim-icon " + claim.status}>
+                  {icon}
+                </div>
+                <div className="pp-claim-text">
+                  <div className="pp-claim-name">{claim.label}</div>
+                  <div className="pp-claim-issuer">{claim.issuerName}</div>
+                </div>
+                <div className="pp-claim-right">
+                  <span className={"pp-status-dot " + claim.status} />
+                  <span className={"pp-status-text " + claim.status}>
+                    {claim.status.charAt(0).toUpperCase() + claim.status.slice(1)}
+                  </span>
+                  <span className="pp-chevron">v</span>
+                </div>
               </div>
-              <p className="muted">{claim.reason || `${claim.issuerName} issued this claim.`}</p>
-              <dl>
-                <dt>Issuer name</dt>
-                <dd>{claim.issuerName}</dd>
-                <dt>Issuer role</dt>
-                <dd>{claim.issuerRole}</dd>
-                <dt>Sui claim object</dt>
-                <dd>
-                  <ExplorerValue href={suiExplorerLink(claim.suiObjectId)} value={claim.suiObjectId} />
-                </dd>
-                <dt>Evidence</dt>
-                <dd className="mono">{claim.evidenceUri}</dd>
-                <dt>Evidence hash</dt>
-                <dd className="mono">{claim.evidenceHash}</dd>
-                <dt>Hash verification</dt>
-                <dd>
-                  {hashVerification ? (
-                    <span className={`badge ${hashVerification.ok ? "verified" : "failed"}`}>
-                      {hashVerification.ok ? "hash verified" : "hash mismatch"}
-                    </span>
-                  ) : (
-                    <span className="badge pending">not checked</span>
+
+              {isOpen && (
+                <div className="pp-claim-detail">
+                  {claim.reason && (
+                    <div className="pp-warning-reason">{claim.reason}</div>
                   )}
-                </dd>
-                <dt>HCS topic</dt>
-                <dd>
-                  <ExplorerValue href={hederaTopicLink(claim.hcsTopicId)} value={claim.hcsTopicId} />
-                </dd>
-                <dt>HCS sequence</dt>
-                <dd>#{claim.hcsSequence}</dd>
-              </dl>
-              <button className="btn" onClick={() => openEvidence(claim)}>
-                <FileSearch size={16} />
-                Verify hash
-              </button>
-            </article>
+                  <div className="pp-detail-grid inspector-only">
+                    <div className="pp-detail-item">
+                      <div className="pp-detail-label">HCS Sequence</div>
+                      <div className="pp-detail-val">{"#" + claim.hcsSequence}</div>
+                    </div>
+                    <div className="pp-detail-item">
+                      <div className="pp-detail-label">Issuer Role</div>
+                      <div className="pp-detail-val">{claim.issuerRole}</div>
+                    </div>
+                    <div className="pp-detail-item pp-detail-full">
+                      <div className="pp-detail-label">Sui Object ID</div>
+                      <div className="pp-detail-val mono">{claim.suiObjectId}</div>
+                    </div>
+                    <div className="pp-detail-item pp-detail-full">
+                      <div className="pp-detail-label">
+                        Evidence Hash
+                        <button className="pp-copy-btn" onClick={e => copyHash(claim.evidenceHash, e)}>
+                          {copiedHash === claim.evidenceHash ? "Copied" : "Copy"}
+                        </button>
+                      </div>
+                      <div className="pp-detail-val mono">{claim.evidenceHash}</div>
+                      {hv && (
+                        <div style={{ marginTop: 6 }}>
+                          <span className={"badge " + (hv.ok ? "verified" : "failed")}>
+                            {hv.ok ? "Hash Verified" : "Hash Mismatch"}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="pp-chain-links">
+                    <a className="pp-chain-link sui" href={suiExplorerLink(claim.suiObjectId) ?? undefined} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
+                      Sui Explorer
+                    </a>
+                    <a className="pp-chain-link hedera" href={hederaTopicLink(claim.hcsTopicId) ?? undefined} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
+                      HashScan
+                    </a>
+                    <button className="pp-verify-btn inspector-only" onClick={e => openEvidence(claim, e)}>
+                      Verify Hash
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           );
         })}
+
+        {evidenceErr && (
+          <div style={{ padding: "10px 16px", fontSize: 12, color: "var(--red)" }}>
+            Failed to load evidence: {evidenceErr}
+          </div>
+        )}
       </div>
-      <EvidenceDrawer evidence={evidence} verification={verification} onClose={() => setEvidence(null)} />
-    </section>
+
+      <EvidenceDrawer
+        evidence={evidence}
+        verification={verification}
+        onClose={() => { setEvidence(null); setEvidenceErr(null); }}
+      />
+    </>
   );
 }

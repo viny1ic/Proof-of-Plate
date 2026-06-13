@@ -6,7 +6,7 @@ type MessageInput = { role: "user" | "assistant"; content: string };
 
 // Agent is stateless per-request — conversation history passed in from client
 export async function POST(request: Request) {
-  let body: { batchId?: string; question?: string; history?: MessageInput[] };
+  let body: { batchId?: string; question?: string; history?: MessageInput[]; context?: string };
   try {
     body = await request.json();
   } catch {
@@ -29,8 +29,11 @@ export async function POST(request: Request) {
         : new AIMessage(m.content)
     );
 
-    // Inject batchId into the question so the agent always knows what to look up
-    const augmentedQuestion = `[Batch ID: ${batchId}] ${question}`;
+    // Inject batchId + optional verification context into every question
+    const contextPrefix = body.context
+      ? `[Page context — do not repeat verbatim, use to answer accurately]:\n${body.context}\n\n`
+      : "";
+    const augmentedQuestion = `[Batch ID: ${batchId}] ${contextPrefix}${question}`;
 
     const result = await agent.invoke({
       messages: [...priorMessages, new HumanMessage(augmentedQuestion)],

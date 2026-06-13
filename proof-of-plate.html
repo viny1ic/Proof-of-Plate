@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proof of Plate — TB-MILK-0612</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F8FA;--surface:#FFFFFF;--navy:#0A0F1E;--navy2:#1C2333;
+  --muted:#6B7280;--border:#E5E7EB;--border2:#D1D5DB;
+  --green:#00875A;--green-bg:#ECFDF5;--green-bd:#A7F3D0;
+  --amber:#D97706;--amber-bg:#FFFBEB;--amber-bd:#FCD34D;
+  --red:#DC2626;--red-bg:#FEF2F2;--red-bd:#FECACA;
+  --blue:#2563EB;--blue-bg:#EFF6FF;--blue-bd:#BFDBFE;
+  --sui:#4F8EF7;--hedera:#8B5CF6;
+  --f:'DM Sans',sans-serif;--m:'JetBrains Mono',monospace;
+  --r:14px;--rs:8px;
+}
+html{background:var(--bg);scroll-behavior:smooth}
+body{font-family:var(--f);color:var(--navy);-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* ── LAYOUT ──────────────────────────────────────────── */
+/* Mobile: single column, everything stacks */
+.app{display:block}
+/* Desktop: two-column side-by-side */
+@media(min-width:768px){
+  .app{display:flex;align-items:flex-start;max-width:1160px;margin:0 auto;padding:24px;gap:22px}
+  .col-left{width:340px;flex-shrink:0;position:sticky;top:24px;max-height:calc(100vh - 48px);overflow-y:auto;scrollbar-width:none}
+  .col-left::-webkit-scrollbar{display:none}
+  .col-right{flex:1;min-width:0}
+}
+
+/* Mobile sticky mini-header (hidden on desktop) */
+.mobile-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 16px;background:var(--navy);
+  position:sticky;top:0;z-index:200;
+}
+@media(min-width:768px){.mobile-bar{display:none}}
+.mbar-left{display:flex;align-items:center;gap:7px}
+.mbar-dot{width:7px;height:7px;border-radius:50%;background:#22C55E;box-shadow:0 0 5px #22C55E}
+.mbar-info{display:flex;flex-direction:column}
+.mbar-brand{font-size:10px;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:.06em;text-transform:uppercase}
+.mbar-prod{font-size:12px;font-weight:600;color:#fff}
+.mbar-score{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.08);border-radius:20px;padding:4px 10px}
+.mbar-score span{font-size:12px;font-weight:700;color:#22C55E}
+.mbar-score small{font-size:10px;color:rgba(255,255,255,.4)}
+
+/* Bottom tab bar (mobile only) */
+.tab-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:var(--surface);border-top:1px solid var(--border);
+  display:grid;grid-template-columns:repeat(4,1fr);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media(min-width:768px){.tab-bar{display:none}}
+.tab-btn{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:8px 4px 7px;border:none;background:none;cursor:pointer;
+  font-family:var(--f);font-size:9px;font-weight:600;color:var(--muted);
+  letter-spacing:.04em;text-transform:uppercase;transition:color .15s;
+  -webkit-tap-highlight-color:transparent;min-height:52px;
+}
+.tab-btn.active{color:var(--navy)}
+.tab-btn svg{width:19px;height:19px;stroke:currentColor;stroke-width:1.75;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* Tab panels — mobile: only active shows; desktop: all show */
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+@media(min-width:768px){.tab-panel{display:block!important}}
+
+/* ── HERO ─────────────────────────────────────────────── */
+.hero{background:var(--navy);padding:20px 20px 0;position:relative;overflow:hidden}
+@media(min-width:768px){.hero{border-radius:var(--r)}}
+.hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 82% 0%,rgba(79,142,247,.22) 0%,transparent 55%),
+             radial-gradient(ellipse at 12% 100%,rgba(139,92,246,.17) 0%,transparent 55%);
+}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1}
+.brand-chip{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:5px 10px}
+.brand-dot{width:6px;height:6px;border-radius:50%;background:#22C55E;box-shadow:0 0 6px #22C55E;flex-shrink:0}
+.brand-name{font-size:11px;font-weight:600;color:rgba(255,255,255,.85);letter-spacing:.05em;text-transform:uppercase}
+.mode-toggle{display:flex;background:rgba(255,255,255,.08);border-radius:20px;padding:3px}
+.mode-btn{font-family:var(--f);font-size:11px;font-weight:500;color:rgba(255,255,255,.5);background:none;border:none;padding:5px 11px;border-radius:16px;cursor:pointer;transition:all .2s;min-height:32px;-webkit-tap-highlight-color:transparent}
+.mode-btn.active{background:rgba(255,255,255,.15);color:#fff}
+.hero-product{margin:16px 0 0;position:relative;z-index:1}
+.product-category{font-size:11px;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.product-name{font-size:22px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:5px}
+.batch-id{font-family:var(--m);font-size:12px;color:rgba(255,255,255,.38)}
+.hero-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.recall-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:600;color:#4ADE80}
+.recall-dot{width:5px;height:5px;border-radius:50%;background:#4ADE80;box-shadow:0 0 4px #4ADE80}
+.dpp-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(37,99,235,.15);border:1px solid rgba(37,99,235,.3);border-radius:20px;padding:4px 10px;font-size:10px;font-weight:600;color:#93C5FD}
+.score-bar{margin:16px 0 0;background:rgba(255,255,255,.05);border-top:1px solid rgba(255,255,255,.08);padding:13px 0 15px;display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.score-left{display:flex;align-items:center;gap:10px}
+.score-ring{position:relative;width:46px;height:46px}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff}
+.score-label{font-size:13px;color:rgba(255,255,255,.9);font-weight:500}
+.score-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+.warning-pill{display:flex;align-items:center;gap:5px;background:rgba(217,119,6,.2);border:1px solid rgba(217,119,6,.4);border-radius:20px;padding:5px 10px}
+.warning-pill span{font-size:11px;font-weight:600;color:#FCD34D}
+
+/* ── STAT STRIP ───────────────────────────────────────── */
+.stat-strip{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--surface);border-bottom:1px solid var(--border)}
+@media(min-width:768px){.stat-strip{border-radius:0 0 var(--r) var(--r);border:1px solid var(--border);border-top:none}}
+.stat{padding:12px 8px;text-align:center;border-right:1px solid var(--border)}
+.stat:last-child{border-right:none}
+.stat-val{font-size:17px;font-weight:700;color:var(--navy);line-height:1}
+.stat-lbl{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.3}
+
+/* ── SUPPLY CHAIN JOURNEY ─────────────────────────────── */
+.journey{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:14px 16px;margin:12px 12px 0}
+@media(min-width:768px){.journey{margin:11px 0 0}}
+.journey-title{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:13px}
+.journey-steps{display:flex;align-items:flex-start;position:relative}
+.journey-line{position:absolute;top:13px;left:14px;right:14px;height:1px;background:var(--border);z-index:0}
+.journey-line-fill{height:100%;width:75%;background:var(--green)}
+.journey-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;z-index:1}
+.journey-icon{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid;background:var(--surface)}
+.journey-icon.done{border-color:var(--green);background:var(--green-bg)}
+.journey-icon.warn{border-color:var(--amber);background:var(--amber-bg)}
+.journey-step-name{font-size:9px;font-weight:600;color:var(--muted);text-align:center;letter-spacing:.03em;text-transform:uppercase;line-height:1.3}
+.journey-step-sub{font-size:9px;color:var(--muted);text-align:center;line-height:1.3}
+
+/* ── PRODUCT FACTS ────────────────────────────────────── */
+.product-facts{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;margin:11px 12px 0}
+@media(min-width:768px){.product-facts{margin:11px 0 0}}
+.facts-head{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.facts-title{font-size:13px;font-weight:600;color:var(--navy)}
+.facts-sub{font-size:11px;color:var(--muted)}
+.facts-body{padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fact-item{display:flex;flex-direction:column;gap:2px}
+.fact-label{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.fact-val{font-size:13px;font-weight:500;color:var(--navy);line-height:1.4}
+.allergen-tag{display:inline-flex;align-items:center;gap:3px;background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:10px;padding:2px 8px;font-size:11px;font-weight:600;color:var(--amber)}
+
+/* ── SECTIONS ─────────────────────────────────────────── */
+.section{margin:12px 12px 0;background:var(--surface);border-radius:var(--r);overflow:hidden;border:1px solid var(--border)}
+@media(min-width:768px){.section{margin:0 0 14px}}
+.section:first-child{margin-top:0}
+.section-head{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.section-title{font-size:13px;font-weight:600;color:var(--navy)}
+.section-meta{font-size:11px;color:var(--muted)}
+
+/* ── CLAIMS ───────────────────────────────────────────── */
+.claim-row{border-bottom:1px solid var(--border);transition:background .15s}
+.claim-row:last-child{border-bottom:none}
+.claim-main{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:60px}
+.claim-main:hover{background:#F9FAFB}
+.claim-icon{width:32px;height:32px;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.claim-icon.verified{background:var(--green-bg)}
+.claim-icon.warning{background:var(--amber-bg)}
+.claim-text{flex:1;min-width:0}
+.claim-name{font-size:13px;font-weight:500;color:var(--navy)}
+.claim-issuer{font-size:11px;color:var(--muted);margin-top:1px}
+.claim-status{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.status-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.status-dot.verified{background:var(--green)}
+.status-dot.warning{background:var(--amber)}
+.status-text{font-size:11px;font-weight:600}
+.status-text.verified{color:var(--green)}
+.status-text.warning{color:var(--amber)}
+.chevron{font-size:10px;color:var(--muted);transition:transform .2s;margin-left:4px}
+.claim-row.open .chevron{transform:rotate(180deg)}
+.claim-detail{display:none;padding:0 16px 14px;border-top:1px solid var(--border);background:#FAFAFA}
+.claim-row.open .claim-detail{display:block;animation:slideIn .15s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.detail-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:10px}
+.detail-label{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px;display:flex;align-items:center;justify-content:space-between;gap:4px}
+.detail-val{font-size:12px;font-weight:500;color:var(--navy)}
+.detail-val.mono{font-family:var(--m);font-size:11px;word-break:break-all;line-height:1.4}
+.detail-full{grid-column:1/-1}
+.copy-btn{background:none;border:none;cursor:pointer;font-family:var(--f);font-size:10px;font-weight:600;color:var(--muted);padding:0;transition:color .15s;flex-shrink:0}
+.copy-btn:hover{color:var(--blue)}
+.chain-links{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.chain-link{display:flex;align-items:center;gap:4px;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600;text-decoration:none;transition:opacity .2s;min-height:34px}
+.chain-link:hover{opacity:.8}
+.chain-link.sui{background:rgba(79,142,247,.1);color:var(--sui);border:1px solid rgba(79,142,247,.25)}
+.chain-link.hedera{background:rgba(139,92,246,.1);color:var(--hedera);border:1px solid rgba(139,92,246,.25)}
+.warning-reason{margin-top:12px;background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:var(--rs);padding:10px 12px;font-size:12px;color:var(--amber);line-height:1.5}
+
+/* ── HCS TIMELINE ─────────────────────────────────────── */
+.hcs-event{display:flex;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border)}
+.hcs-event:last-child{border-bottom:none}
+.hcs-line{display:flex;flex-direction:column;align-items:center}
+.hcs-dot{width:10px;height:10px;border-radius:50%;background:var(--hedera);flex-shrink:0;margin-top:2px;box-shadow:0 0 5px rgba(139,92,246,.4)}
+.hcs-dot.warn{background:var(--amber);box-shadow:0 0 5px rgba(217,119,6,.4)}
+.hcs-vert{flex:1;width:1px;background:var(--border);min-height:22px;margin:4px 0}
+.hcs-body{flex:1;min-width:0;padding-bottom:2px}
+.hcs-seq{font-family:var(--m);font-size:10px;font-weight:500;color:var(--hedera);margin-bottom:3px}
+.hcs-seq.warn{color:var(--amber)}
+.hcs-claim{font-size:13px;font-weight:500;color:var(--navy)}
+.hcs-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.hcs-time{font-size:10px;color:var(--muted);margin-top:3px;font-family:var(--m)}
+.hcs-tx{font-family:var(--m);font-size:10px;color:var(--hedera);margin-top:3px;word-break:break-all;line-height:1.4}
+
+/* ── TAMPER DEMO ──────────────────────────────────────── */
+.tamper-card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;margin:12px 12px 0}
+@media(min-width:768px){.tamper-card{margin:0 0 14px}}
+.tamper-head{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.tamper-title{font-size:13px;font-weight:600;color:var(--navy)}
+.tamper-tag{font-size:10px;font-weight:600;color:var(--blue);background:var(--blue-bg);border:1px solid var(--blue-bd);border-radius:10px;padding:2px 8px}
+.tamper-body{padding:14px 16px}
+.tamper-file{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:var(--rs);border:1px solid var(--border);margin-bottom:8px;transition:all .3s}
+.tamper-file.flagged{border-color:var(--red-bd);background:var(--red-bg)}
+.tamper-filename{font-family:var(--m);font-size:11px;color:var(--navy)}
+.tamper-badge{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:10px}
+.tamper-badge.pass{background:var(--green-bg);color:var(--green)}
+.tamper-badge.fail{background:var(--red-bg);color:var(--red)}
+.tamper-btn{width:100%;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer;margin-top:4px;transition:all .2s;min-height:44px;-webkit-tap-highlight-color:transparent}
+.tamper-btn:hover:not(:disabled){opacity:.85}
+.tamper-btn:disabled{cursor:default;opacity:.8}
+.tamper-result{margin-top:12px;display:none}
+.tamper-result.show{display:block}
+.tamper-alert{display:flex;align-items:center;gap:8px;background:var(--red-bg);border:1px solid var(--red-bd);border-radius:var(--rs);padding:10px 12px;font-size:12px;font-weight:600;color:var(--red);margin-bottom:10px}
+.diff-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.diff-cell{padding:10px;border-radius:var(--rs);font-family:var(--m);font-size:11px;line-height:1.65}
+.diff-cell.orig{background:var(--green-bg);border:1px solid var(--green-bd);color:var(--green)}
+.diff-cell.tampered{background:var(--red-bg);border:1px solid var(--red-bd);color:var(--red)}
+.diff-label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px;opacity:.75}
+.hash-compare{margin-top:10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:10px 12px}
+.hash-row{display:flex;align-items:flex-start;gap:8px;font-size:10px;line-height:1.5;margin-bottom:5px}
+.hash-row:last-child{margin-bottom:0}
+.hash-key{font-weight:700;color:var(--muted);min-width:68px;flex-shrink:0;text-transform:uppercase;letter-spacing:.04em}
+.hash-val{font-family:var(--m);color:var(--navy);word-break:break-all}
+.hash-val.bad{color:var(--red)}
+
+/* ── CHAT ─────────────────────────────────────────────── */
+.chat-section{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;margin:12px 12px 0}
+@media(min-width:768px){.chat-section{margin:0}}
+.chat-head{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.chat-avatar{width:32px;height:32px;border-radius:var(--rs);background:linear-gradient(135deg,var(--sui),var(--hedera));display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.chat-name{font-size:13px;font-weight:600;color:var(--navy)}
+.chat-sub{font-size:10px;color:var(--muted);margin-top:1px}
+.quick-qs{padding:8px 12px 4px;display:flex;flex-wrap:wrap;gap:6px}
+.quick-q{background:var(--bg);border:1px solid var(--border2);border-radius:20px;padding:6px 12px;font-family:var(--f);font-size:11px;font-weight:500;color:var(--navy);cursor:pointer;transition:all .15s;min-height:32px;-webkit-tap-highlight-color:transparent}
+.quick-q:hover{background:var(--blue-bg);border-color:var(--blue-bd);color:var(--blue)}
+.chat-messages{padding:12px 14px;display:flex;flex-direction:column;gap:10px;min-height:160px;max-height:300px;overflow-y:auto;scroll-behavior:smooth}
+@media(min-width:768px){.chat-messages{max-height:380px}}
+.msg{max-width:90%}
+.msg.user{align-self:flex-end}
+.msg.agent{align-self:flex-start;max-width:95%}
+.msg-bubble{padding:10px 13px;border-radius:14px;font-size:13px;line-height:1.55}
+.msg.user .msg-bubble{background:var(--navy);color:#fff;border-bottom-right-radius:4px}
+.msg.agent .msg-bubble{background:var(--bg);border:1px solid var(--border);color:var(--navy);border-bottom-left-radius:4px}
+.msg-meta{font-size:10px;color:var(--muted);margin-top:3px;padding:0 2px}
+.msg.user .msg-meta{text-align:right}
+.verified-tag{display:inline-flex;align-items:center;gap:3px;background:var(--green-bg);border:1px solid var(--green-bd);border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;color:var(--green);margin-top:4px}
+.chain-ref{font-family:var(--m);font-size:10px;color:var(--muted);margin-top:2px}
+.chat-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border)}
+.chat-input{flex:1;border:1px solid var(--border2);border-radius:10px;padding:10px 12px;font-family:var(--f);font-size:13px;color:var(--navy);outline:none;transition:border-color .2s;background:var(--surface);-webkit-appearance:none}
+.chat-input:focus{border-color:var(--blue)}
+.chat-send{background:var(--navy);color:#fff;border:none;border-radius:10px;width:40px;height:40px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px;transition:opacity .2s;-webkit-tap-highlight-color:transparent}
+.chat-send:hover{opacity:.8}
+
+/* ── FOOTER ───────────────────────────────────────────── */
+.footer{margin:12px 12px 16px;padding:14px 16px;background:var(--surface);border-radius:var(--r);border:1px solid var(--border)}
+@media(min-width:768px){.footer{margin:14px 0 0}}
+.footer-chain{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.footer-chip{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600}
+.footer-chip.sui{color:var(--sui);border:1px solid rgba(79,142,247,.3);background:rgba(79,142,247,.05)}
+.footer-chip.hedera{color:var(--hedera);border:1px solid rgba(139,92,246,.3);background:rgba(139,92,246,.05)}
+.footer-note{text-align:center;font-size:10px;color:var(--muted);margin-top:9px;line-height:1.5}
+.footer-dpp{text-align:center;font-size:10px;color:var(--muted);margin-top:5px}
+
+/* ── MODE ─────────────────────────────────────────────── */
+body.inspector .consumer-only{display:none!important}
+body:not(.inspector) .inspector-only{display:none!important}
+
+/* ── TYPING ───────────────────────────────────────────── */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.typing-dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--muted);margin:0 1px;animation:blink 1.2s infinite}
+.typing-dot:nth-child(2){animation-delay:.2s}
+.typing-dot:nth-child(3){animation-delay:.4s}
+
+/* Mobile safe padding for tab bar */
+@media(max-width:767px){
+  .tab-spacer{height:68px}
+  /* Left column content on mobile: show journey/facts/footer in Info tab only */
+  .desktop-only{display:none}
+}
+@media(min-width:768px){
+  .desktop-only{display:block}
+  /* Info panel is mobile-only */
+  #panel-info{display:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- Mobile sticky mini-header -->
+<div class="mobile-bar">
+  <div class="mbar-left">
+    <div class="mbar-dot"></div>
+    <div class="mbar-info">
+      <span class="mbar-brand">Proof of Plate</span>
+      <span class="mbar-prod">TB-MILK-0612</span>
+    </div>
+  </div>
+  <div class="mbar-score">
+    <span>4/5</span>
+    <small>verified</small>
+  </div>
+</div>
+
+<div class="app">
+
+<!-- ══ LEFT COLUMN ══════════════════════════════════════ -->
+<div class="col-left">
+
+  <div class="hero">
+    <div class="hero-top">
+      <div class="brand-chip">
+        <div class="brand-dot"></div>
+        <span class="brand-name">Proof of Plate</span>
+      </div>
+      <div class="mode-toggle">
+        <button class="mode-btn active" onclick="setMode('consumer',this)">Consumer</button>
+        <button class="mode-btn" onclick="setMode('inspector',this)">Inspector</button>
+      </div>
+    </div>
+    <div class="hero-product">
+      <div class="product-category">Dairy · Ultra-Filtered</div>
+      <div class="product-name">Proof of Plate<br>Ultra-Filtered Milk</div>
+      <div class="batch-id">Batch · TB-MILK-0612</div>
+      <div class="hero-badges">
+        <div class="recall-badge"><div class="recall-dot"></div>Active · No Recall</div>
+        <div class="dpp-badge inspector-only">🇪🇺 EU DPP Compliant</div>
+      </div>
+    </div>
+    <div class="score-bar">
+      <div class="score-left">
+        <div class="score-ring">
+          <svg width="46" height="46" viewBox="0 0 46 46">
+            <circle cx="23" cy="23" r="18" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="3.5"/>
+            <circle cx="23" cy="23" r="18" fill="none" stroke="#22C55E" stroke-width="3.5"
+              stroke-dasharray="113.1" stroke-dashoffset="22.6" stroke-linecap="round"/>
+          </svg>
+          <div class="score-ring-num">4/5</div>
+        </div>
+        <div>
+          <div class="score-label">Verification Score</div>
+          <div class="score-sub">4 verified · 1 warning</div>
+        </div>
+      </div>
+      <div class="warning-pill"><span>⚠ 1 Warning</span></div>
+    </div>
+  </div>
+
+  <div class="stat-strip">
+    <div class="stat">
+      <div class="stat-val" style="color:var(--green)">4</div>
+      <div class="stat-lbl">Claims on-chain</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val" style="color:var(--hedera)">5</div>
+      <div class="stat-lbl">HCS audit events</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">&lt;3s</div>
+      <div class="stat-lbl">vs 48hr FDA recall</div>
+    </div>
+  </div>
+
+  <!-- Supply chain journey (desktop left col + mobile Info tab) -->
+  <div class="journey desktop-only">
+    <div class="journey-title">Supply Chain Journey</div>
+    <div class="journey-steps">
+      <div class="journey-line"><div class="journey-line-fill"></div></div>
+      <div class="journey-step">
+        <div class="journey-icon done">🐄</div>
+        <div class="journey-step-name">Farm</div>
+        <div class="journey-step-sub">HCS #5</div>
+      </div>
+      <div class="journey-step">
+        <div class="journey-icon done">🏭</div>
+        <div class="journey-step-name">Facility</div>
+        <div class="journey-step-sub">HCS #2–4</div>
+      </div>
+      <div class="journey-step">
+        <div class="journey-icon done">🧪</div>
+        <div class="journey-step-name">Lab</div>
+        <div class="journey-step-sub">HCS #1</div>
+      </div>
+      <div class="journey-step">
+        <div class="journey-icon warn">⚠</div>
+        <div class="journey-step-name">Certified</div>
+        <div class="journey-step-sub">4/5 claims</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product facts (desktop left col + mobile Info tab) -->
+  <div class="product-facts consumer-only desktop-only">
+    <div class="facts-head">
+      <span class="facts-title">Product Info</span>
+      <span class="facts-sub">Demo Dairy Co.</span>
+    </div>
+    <div class="facts-body">
+      <div class="fact-item">
+        <div class="fact-label">Net Contents</div>
+        <div class="fact-val">52 fl oz (1.54 L)</div>
+      </div>
+      <div class="fact-item">
+        <div class="fact-label">Serving Size</div>
+        <div class="fact-val">1 cup (240 mL)</div>
+      </div>
+      <div class="fact-item">
+        <div class="fact-label">Protein</div>
+        <div class="fact-val">13g per serving</div>
+      </div>
+      <div class="fact-item">
+        <div class="fact-label">Allergens</div>
+        <div class="fact-val"><span class="allergen-tag">⚠ Milk</span></div>
+      </div>
+      <div class="fact-item" style="grid-column:1/-1">
+        <div class="fact-label">Storage</div>
+        <div class="fact-val" style="font-size:12px">Keep refrigerated ≤40°F · Use within 7 days of opening</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer (desktop) -->
+  <div class="footer desktop-only">
+    <div class="footer-chain">
+      <div class="footer-chip sui">⬡ Sui Testnet · 0x4d4565…</div>
+      <div class="footer-chip hedera">◈ Hedera · 0.0.9219010</div>
+    </div>
+    <div class="footer-note">All claims verified on-chain · No marketing claims · Cryptographic proof only</div>
+    <div class="footer-dpp inspector-only" style="color:var(--muted)">EU Digital Product Passport Reg. (EU) 2024/1781 · GS1 QR standard</div>
+  </div>
+
+</div><!-- /col-left -->
+
+
+<!-- ══ RIGHT COLUMN ══════════════════════════════════════ -->
+<div class="col-right">
+
+<!-- Claims tab panel -->
+<div class="tab-panel active" id="panel-claims">
+  <div class="section" style="margin-top:12px">
+    <div class="section-head">
+      <span class="section-title">Product Claims</span>
+      <span class="section-meta">Tap to inspect</span>
+    </div>
+
+    <!-- Lactose-free -->
+    <div class="claim-row" onclick="toggleClaim(this)">
+      <div class="claim-main">
+        <div class="claim-icon verified">🧪</div>
+        <div class="claim-text">
+          <div class="claim-name">Lactose-free lab test passed</div>
+          <div class="claim-issuer">Proof of Plate Demo Lab · HCS #1</div>
+        </div>
+        <div class="claim-status">
+          <div class="status-dot verified"></div>
+          <span class="status-text verified">Verified</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="claim-detail">
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="detail-label">HCS Sequence</div>
+            <div class="detail-val mono">#1 · 0.0.9219010</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Issuer Role</div>
+            <div class="detail-val">Lab</div>
+          </div>
+          <div class="detail-item detail-full">
+            <div class="detail-label">Sui Object ID <button class="copy-btn inspector-only" onclick="cp('0xtracebite_local_claim_1',event)">⧉ Copy</button></div>
+            <div class="detail-val mono">0xtracebite_local_claim_1</div>
+          </div>
+          <div class="detail-item detail-full inspector-only">
+            <div class="detail-label">Evidence Hash (SHA-256) <button class="copy-btn" onclick="cp('0x6ed40ae8a118447f6dcf03f216ae2b610a9cd25dcfa4050ac20b658df3d6a3a4',event)">⧉ Copy</button></div>
+            <div class="detail-val mono" style="color:var(--green)">0x6ed40ae8a118447f6dcf03f216ae2b610a9cd25dcfa4050ac20b658df3d6a3a4 ✓</div>
+          </div>
+        </div>
+        <div class="chain-links">
+          <a class="chain-link sui" href="https://suiscan.xyz/testnet/object/0x7a5242b543e7c20e584e8d4045bb277226a826c2cecd95f4f9b8f8083dddf345" target="_blank" rel="noreferrer">↗ Sui Explorer</a>
+          <a class="chain-link hedera" href="https://hashscan.io/testnet/topic/0.0.9219010" target="_blank" rel="noreferrer">↗ HashScan</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ultra-filtered -->
+    <div class="claim-row" onclick="toggleClaim(this)">
+      <div class="claim-main">
+        <div class="claim-icon verified">🏭</div>
+        <div class="claim-text">
+          <div class="claim-name">Ultra-filtration completed</div>
+          <div class="claim-issuer">Proof of Plate Demo Facility · HCS #2</div>
+        </div>
+        <div class="claim-status">
+          <div class="status-dot verified"></div>
+          <span class="status-text verified">Verified</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="claim-detail">
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="detail-label">HCS Sequence</div>
+            <div class="detail-val mono">#2 · 0.0.9219010</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Issuer Role</div>
+            <div class="detail-val">Facility</div>
+          </div>
+          <div class="detail-item detail-full">
+            <div class="detail-label">Sui Object ID <button class="copy-btn inspector-only" onclick="cp('0xtracebite_local_claim_2',event)">⧉ Copy</button></div>
+            <div class="detail-val mono">0xtracebite_local_claim_2</div>
+          </div>
+          <div class="detail-item detail-full inspector-only">
+            <div class="detail-label">Evidence Hash (SHA-256) <button class="copy-btn" onclick="cp('0x1a97c896ed2984186b80d0865df68ea528c5474ce25102276a5aac6b408fee99',event)">⧉ Copy</button></div>
+            <div class="detail-val mono" style="color:var(--green)">0x1a97c896ed2984186b80d0865df68ea528c5474ce25102276a5aac6b408fee99 ✓</div>
+          </div>
+        </div>
+        <div class="chain-links">
+          <a class="chain-link sui" href="https://suiscan.xyz/testnet/object/0x0a34481f337ecd4e08c001cb8181cd9ddf5bdcd392388c2985d9bfaef42656bb" target="_blank" rel="noreferrer">↗ Sui Explorer</a>
+          <a class="chain-link hedera" href="https://hashscan.io/testnet/topic/0.0.9219010" target="_blank" rel="noreferrer">↗ HashScan</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pasteurized -->
+    <div class="claim-row" onclick="toggleClaim(this)">
+      <div class="claim-main">
+        <div class="claim-icon verified">🌡️</div>
+        <div class="claim-text">
+          <div class="claim-name">Pasteurization completed</div>
+          <div class="claim-issuer">Proof of Plate Demo Facility · HCS #3</div>
+        </div>
+        <div class="claim-status">
+          <div class="status-dot verified"></div>
+          <span class="status-text verified">Verified</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="claim-detail">
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="detail-label">HCS Sequence</div>
+            <div class="detail-val mono">#3 · 0.0.9219010</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Issuer Role</div>
+            <div class="detail-val">Facility</div>
+          </div>
+          <div class="detail-item detail-full">
+            <div class="detail-label">Sui Object ID <button class="copy-btn inspector-only" onclick="cp('0xtracebite_local_claim_3',event)">⧉ Copy</button></div>
+            <div class="detail-val mono">0xtracebite_local_claim_3</div>
+          </div>
+          <div class="detail-item detail-full inspector-only">
+            <div class="detail-label">Evidence Hash (SHA-256) <button class="copy-btn" onclick="cp('0x1a97c896ed2984186b80d0865df68ea528c5474ce25102276a5aac6b408fee99',event)">⧉ Copy</button></div>
+            <div class="detail-val mono" style="color:var(--green)">0x1a97c896ed2984186b80d0865df68ea528c5474ce25102276a5aac6b408fee99 ✓</div>
+          </div>
+        </div>
+        <div class="chain-links">
+          <a class="chain-link sui" href="https://suiscan.xyz/testnet/object/0x9512a099b57d0f1990d3716771104975e4e139a58ad41770de0424c5956f0bc4" target="_blank" rel="noreferrer">↗ Sui Explorer</a>
+          <a class="chain-link hedera" href="https://hashscan.io/testnet/topic/0.0.9219010" target="_blank" rel="noreferrer">↗ HashScan</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Equipment cleaned -->
+    <div class="claim-row" onclick="toggleClaim(this)">
+      <div class="claim-main">
+        <div class="claim-icon verified">🔧</div>
+        <div class="claim-text">
+          <div class="claim-name">CIP equipment cleaning</div>
+          <div class="claim-issuer">Proof of Plate Demo Facility · HCS #4</div>
+        </div>
+        <div class="claim-status">
+          <div class="status-dot verified"></div>
+          <span class="status-text verified">Verified</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="claim-detail">
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="detail-label">HCS Sequence</div>
+            <div class="detail-val mono">#4 · 0.0.9219010</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Issuer Role</div>
+            <div class="detail-val">Facility</div>
+          </div>
+          <div class="detail-item detail-full">
+            <div class="detail-label">Sui Object ID <button class="copy-btn inspector-only" onclick="cp('0xtracebite_local_claim_4',event)">⧉ Copy</button></div>
+            <div class="detail-val mono">0xtracebite_local_claim_4</div>
+          </div>
+          <div class="detail-item detail-full inspector-only">
+            <div class="detail-label">Evidence Hash (SHA-256) <button class="copy-btn" onclick="cp('0x3ab220b2472f3e4594e250d6f580459dea7aa81705c1eb5e63a8ae0adaef4678',event)">⧉ Copy</button></div>
+            <div class="detail-val mono" style="color:var(--green)">0x3ab220b2472f3e4594e250d6f580459dea7aa81705c1eb5e63a8ae0adaef4678 ✓</div>
+          </div>
+        </div>
+        <div class="chain-links">
+          <a class="chain-link sui" href="https://suiscan.xyz/testnet/object/0xa29f6bee487ed365782fb49ea8bbf038cdfe76f54ca59f38dc343b85cfe43c40" target="_blank" rel="noreferrer">↗ Sui Explorer</a>
+          <a class="chain-link hedera" href="https://hashscan.io/testnet/topic/0.0.9219010" target="_blank" rel="noreferrer">↗ HashScan</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pesticide warning -->
+    <div class="claim-row" onclick="toggleClaim(this)">
+      <div class="claim-main">
+        <div class="claim-icon warning">🌱</div>
+        <div class="claim-text">
+          <div class="claim-name">Feed pesticide declaration</div>
+          <div class="claim-issuer">Proof of Plate Demo Feed Supplier · HCS #5</div>
+        </div>
+        <div class="claim-status">
+          <div class="status-dot warning"></div>
+          <span class="status-text warning">Warning</span>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="claim-detail">
+        <div class="warning-reason">⚠ Supplier declaration exists on-chain (HCS #5), but no independent pesticide residue lab test has been submitted. Claim is partially verified only.</div>
+        <div class="detail-grid" style="margin-top:10px">
+          <div class="detail-item">
+            <div class="detail-label">HCS Sequence</div>
+            <div class="detail-val mono">#5 · 0.0.9219010</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Issuer Role</div>
+            <div class="detail-val">Supplier</div>
+          </div>
+          <div class="detail-item detail-full">
+            <div class="detail-label">Sui Object ID</div>
+            <div class="detail-val mono">0xtracebite_local_claim_5</div>
+          </div>
+          <div class="detail-item detail-full inspector-only">
+            <div class="detail-label">Evidence Hash (SHA-256) <button class="copy-btn" onclick="cp('0x3e143f6b184ec579bdda900de28e29613f21f74be55a61b6c284b25acbd3125d',event)">⧉ Copy</button></div>
+            <div class="detail-val mono" style="color:var(--amber)">0x3e143f6b184ec579bdda900de28e29613f21f74be55a61b6c284b25acbd3125d ⚠</div>
+          </div>
+        </div>
+        <div class="chain-links">
+          <a class="chain-link sui" href="https://suiscan.xyz/testnet/object/0x5866a7de2068d49b625caa2d86e9218d9c998bab5b1bb1d878ccb5030a90bc61" target="_blank" rel="noreferrer">↗ Sui Explorer</a>
+          <a class="chain-link hedera" href="https://hashscan.io/testnet/topic/0.0.9219010" target="_blank" rel="noreferrer">↗ HashScan</a>
+        </div>
+      </div>
+    </div>
+  </div><!-- /claims section -->
+
+  <!-- Tamper demo -->
+  <div class="tamper-card">
+    <div class="tamper-head">
+      <span class="tamper-title">🔐 Tamper Detection</span>
+      <span class="tamper-tag">Key enterprise pitch</span>
+    </div>
+    <div class="tamper-body">
+      <div class="tamper-file" id="file-orig">
+        <span class="tamper-filename">lab-results.json</span>
+        <span class="tamper-badge pass">✓ Hash match</span>
+      </div>
+      <div class="tamper-file" id="file-tampered">
+        <span class="tamper-filename">tampered-lab-results.json</span>
+        <span class="tamper-badge fail">✗ Hash mismatch</span>
+      </div>
+      <button class="tamper-btn" id="tamperBtn" onclick="runTamperDemo()">▶ Run Tamper Detection</button>
+      <div class="tamper-result" id="tamperResult">
+        <div class="tamper-alert">⚠ Tampering detected — document modified after certification</div>
+        <div class="diff-row">
+          <div class="diff-cell orig">
+            <div class="diff-label">Original</div>
+            lactose: 80 ppm<br>e_coli: not_detected<br>result: pass
+          </div>
+          <div class="diff-cell tampered">
+            <div class="diff-label">Tampered</div>
+            lactose: 48,000 ppm<br>e_coli: detected<br>result: fail
+          </div>
+        </div>
+        <div class="hash-compare inspector-only">
+          <div class="hash-row">
+            <span class="hash-key">On-chain</span>
+            <span class="hash-val">0x6ed40ae8a118447f6dcf03f216ae2b610a9cd25dcfa4050ac20b658df3d6a3a4</span>
+          </div>
+          <div class="hash-row">
+            <span class="hash-key">Computed</span>
+            <span class="hash-val bad">0xff9b3241cc87a3f2d9012b1a7e83c4b91d5e66f230849a12ce34a91c7f22b09</span>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:var(--muted);line-height:1.5" class="consumer-only">
+          This is why blockchain matters: any modification to a certified document changes its cryptographic hash — making tampering immediately visible, no matter who submits it.
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /panel-claims -->
+
+<!-- Trace tab panel -->
+<div class="tab-panel" id="panel-trace">
+  <div class="section" style="margin-top:12px">
+    <div class="section-head">
+      <span class="section-title">Hedera HCS Audit Trail</span>
+      <a class="section-meta" style="color:var(--hedera);text-decoration:none" href="https://hashscan.io/testnet/topic/0.0.9219010" target="_blank" rel="noreferrer">0.0.9219010 ↗</a>
+    </div>
+    <div class="hcs-event">
+      <div class="hcs-line"><div class="hcs-dot"></div><div class="hcs-vert"></div></div>
+      <div class="hcs-body">
+        <div class="hcs-seq">#1 · CLAIM_SUBMITTED</div>
+        <div class="hcs-claim">Lactose-free · Lab</div>
+        <div class="hcs-meta">Proof of Plate Demo Lab</div>
+        <div class="hcs-time">2026-06-12T21:00:00.000Z</div>
+        <div class="hcs-tx inspector-only">txId: 0.0.tracebite_local@1</div>
+      </div>
+    </div>
+    <div class="hcs-event">
+      <div class="hcs-line"><div class="hcs-dot"></div><div class="hcs-vert"></div></div>
+      <div class="hcs-body">
+        <div class="hcs-seq">#2 · CLAIM_SUBMITTED</div>
+        <div class="hcs-claim">Ultra-filtered · Facility</div>
+        <div class="hcs-meta">Proof of Plate Demo Facility</div>
+        <div class="hcs-time">2026-06-12T21:01:00.000Z</div>
+        <div class="hcs-tx inspector-only">txId: 0.0.tracebite_local@2</div>
+      </div>
+    </div>
+    <div class="hcs-event">
+      <div class="hcs-line"><div class="hcs-dot"></div><div class="hcs-vert"></div></div>
+      <div class="hcs-body">
+        <div class="hcs-seq">#3 · CLAIM_SUBMITTED</div>
+        <div class="hcs-claim">Pasteurized · Facility</div>
+        <div class="hcs-meta">Proof of Plate Demo Facility</div>
+        <div class="hcs-time">2026-06-12T21:02:00.000Z</div>
+        <div class="hcs-tx inspector-only">txId: 0.0.tracebite_local@3</div>
+      </div>
+    </div>
+    <div class="hcs-event">
+      <div class="hcs-line"><div class="hcs-dot"></div><div class="hcs-vert"></div></div>
+      <div class="hcs-body">
+        <div class="hcs-seq">#4 · CLAIM_SUBMITTED</div>
+        <div class="hcs-claim">CIP equipment cleaned · Facility</div>
+        <div class="hcs-meta">Proof of Plate Demo Facility</div>
+        <div class="hcs-time">2026-06-12T21:03:00.000Z</div>
+        <div class="hcs-tx inspector-only">txId: 0.0.tracebite_local@4</div>
+      </div>
+    </div>
+    <div class="hcs-event">
+      <div class="hcs-line"><div class="hcs-dot warn"></div></div>
+      <div class="hcs-body">
+        <div class="hcs-seq warn">#5 · CLAIM_SUBMITTED</div>
+        <div class="hcs-claim">Feed pesticide declaration · Supplier</div>
+        <div class="hcs-meta">Demo Feed Supplier · ⚠ Partial verification only</div>
+        <div class="hcs-time">2026-06-12T21:04:00.000Z</div>
+        <div class="hcs-tx inspector-only">txId: 0.0.tracebite_local@5</div>
+      </div>
+    </div>
+  </div>
+</div><!-- /panel-trace -->
+
+<!-- Ask tab panel -->
+<div class="tab-panel" id="panel-ask">
+  <div class="chat-section" style="margin-top:12px">
+    <div class="chat-head">
+      <div class="chat-avatar">🤖</div>
+      <div>
+        <div class="chat-name">Ask the Verifier</div>
+        <div class="chat-sub">Hedera Agent Kit + Claude · On-chain data only</div>
+      </div>
+    </div>
+    <div class="quick-qs">
+      <button class="quick-q" onclick="askQ('Is this lactose-free?')">Lactose-free?</button>
+      <button class="quick-q" onclick="askQ('Were pesticides used?')">Pesticides?</button>
+      <button class="quick-q" onclick="askQ('Was equipment cleaned?')">Equipment?</button>
+      <button class="quick-q" onclick="askQ('How does tamper detection work?')">Tamper detection?</button>
+      <button class="quick-q" onclick="askQ('Is this batch recalled?')">Recall status?</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg agent">
+        <div class="msg-bubble">Hi! I verify claims on batch TB-MILK-0612 using live blockchain data only — I never guess or use marketing copy. What would you like to know?</div>
+        <div class="msg-meta">Verifier · Hedera Agent Kit</div>
+      </div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chatInput" type="text" placeholder="Ask about this product…" onkeydown="if(event.key==='Enter')sendChat()" autocomplete="off">
+      <button class="chat-send" onclick="sendChat()" aria-label="Send">↑</button>
+    </div>
+  </div>
+</div><!-- /panel-ask -->
+
+<!-- Info tab panel (mobile only — desktop shows in left col) -->
+<div class="tab-panel" id="panel-info">
+  <div class="journey" style="margin-top:12px">
+    <div class="journey-title">Supply Chain Journey</div>
+    <div class="journey-steps">
+      <div class="journey-line"><div class="journey-line-fill"></div></div>
+      <div class="journey-step">
+        <div class="journey-icon done">🐄</div>
+        <div class="journey-step-name">Farm</div>
+        <div class="journey-step-sub">HCS #5</div>
+      </div>
+      <div class="journey-step">
+        <div class="journey-icon done">🏭</div>
+        <div class="journey-step-name">Facility</div>
+        <div class="journey-step-sub">HCS #2–4</div>
+      </div>
+      <div class="journey-step">
+        <div class="journey-icon done">🧪</div>
+        <div class="journey-step-name">Lab</div>
+        <div class="journey-step-sub">HCS #1</div>
+      </div>
+      <div class="journey-step">
+        <div class="journey-icon warn">⚠</div>
+        <div class="journey-step-name">Certified</div>
+        <div class="journey-step-sub">4/5 claims</div>
+      </div>
+    </div>
+  </div>
+  <div class="product-facts consumer-only" style="margin:11px 12px 0">
+    <div class="facts-head">
+      <span class="facts-title">Product Info</span>
+    </div>
+    <div class="facts-body">
+      <div class="fact-item">
+        <div class="fact-label">Net Contents</div>
+        <div class="fact-val">52 fl oz (1.54 L)</div>
+      </div>
+      <div class="fact-item">
+        <div class="fact-label">Serving Size</div>
+        <div class="fact-val">1 cup (240 mL)</div>
+      </div>
+      <div class="fact-item">
+        <div class="fact-label">Protein</div>
+        <div class="fact-val">13g per serving</div>
+      </div>
+      <div class="fact-item">
+        <div class="fact-label">Allergens</div>
+        <div class="fact-val"><span class="allergen-tag">⚠ Milk</span></div>
+      </div>
+      <div class="fact-item" style="grid-column:1/-1">
+        <div class="fact-label">Storage</div>
+        <div class="fact-val" style="font-size:12px">Keep refrigerated ≤40°F · Use within 7 days of opening</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer" style="margin:11px 12px 0">
+    <div class="footer-chain">
+      <div class="footer-chip sui">⬡ Sui Testnet · 0x4d4565…</div>
+      <div class="footer-chip hedera">◈ Hedera · 0.0.9219010</div>
+    </div>
+    <div class="footer-note">All claims verified on-chain · No marketing claims · Cryptographic proof only</div>
+    <div class="footer-dpp inspector-only" style="color:var(--muted);text-align:center;font-size:10px;margin-top:5px">EU Digital Product Passport Reg. (EU) 2024/1781 · GS1 QR standard</div>
+  </div>
+</div><!-- /panel-info -->
+
+<div class="tab-spacer"></div>
+</div><!-- /col-right -->
+</div><!-- /app -->
+
+<!-- Mobile bottom tab bar -->
+<nav class="tab-bar" role="tablist">
+  <button class="tab-btn active" id="tb-claims" onclick="switchTab('claims',this)" role="tab" aria-selected="true">
+    <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+    Claims
+  </button>
+  <button class="tab-btn" id="tb-trace" onclick="switchTab('trace',this)" role="tab" aria-selected="false">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+    Trace
+  </button>
+  <button class="tab-btn" id="tb-ask" onclick="switchTab('ask',this)" role="tab" aria-selected="false">
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    Ask
+  </button>
+  <button class="tab-btn" id="tb-info" onclick="switchTab('info',this)" role="tab" aria-selected="false">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="8"/><polyline points="12 12 12 16"/></svg>
+    Info
+  </button>
+</nav>
+
+<script>
+// ── MODE ──────────────────────────────────────────────
+function setMode(mode, btn) {
+  document.querySelectorAll('.mode-btn').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  document.body.classList.toggle('inspector', mode === 'inspector');
+}
+
+// ── CLAIMS ────────────────────────────────────────────
+function toggleClaim(row) { row.classList.toggle('open'); }
+
+// ── TABS (mobile) ─────────────────────────────────────
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active')});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');b.setAttribute('aria-selected','false')});
+  var panel = document.getElementById('panel-' + id);
+  if (panel) { panel.classList.add('active'); }
+  btn.classList.add('active');
+  btn.setAttribute('aria-selected', 'true');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// ── COPY ──────────────────────────────────────────────
+function cp(text, e) {
+  e.stopPropagation();
+  navigator.clipboard.writeText(text).then(function() {
+    var b = e.target; var orig = b.textContent;
+    b.textContent = '✓ Copied'; b.style.color = 'var(--green)';
+    setTimeout(function(){ b.textContent = orig; b.style.color = ''; }, 1500);
+  });
+}
+
+// ── TAMPER DEMO ───────────────────────────────────────
+function runTamperDemo() {
+  var btn = document.getElementById('tamperBtn');
+  var result = document.getElementById('tamperResult');
+  var tf = document.getElementById('file-tampered');
+  btn.disabled = true;
+  btn.textContent = 'Verifying hashes…';
+  setTimeout(function() {
+    tf.classList.add('flagged');
+    result.classList.add('show');
+    btn.textContent = '⚠ Tampering detected';
+    btn.style.background = 'var(--red)';
+  }, 900);
+}
+
+// ── CHAT ──────────────────────────────────────────────
+var ANSWERS = {
+  'lactose': {
+    text: 'Yes — verified on-chain. Lab test confirmed lactose below detection threshold (80 ppm vs. 48,000 ppm in the rejected batch). Evidence hash matches exactly.',
+    tags: ['HCS #1 · 0.0.9219010', 'Claim: 0xtracebite_local_claim_1'], warn: false
+  },
+  'pesticide': {
+    text: '⚠ Partially verified. A supplier feed declaration is recorded on-chain at HCS #5, but no independent residue lab test has been submitted. I cannot fully confirm this claim.',
+    tags: ['HCS #5 · PARTIAL', 'Claim: 0xtracebite_local_claim_5'], warn: true
+  },
+  'equipment': {
+    text: 'Yes — CIP (clean-in-place) cleaning verified. The maintenance log was SHA-256 hashed and recorded on Hedera before this batch run.',
+    tags: ['HCS #4 · 0.0.9219010', 'Claim: 0xtracebite_local_claim_4'], warn: false
+  },
+  'processing': {
+    text: 'Two verified processing steps: (1) Ultra-filtration — membrane filtration to concentrate protein, HCS #2. (2) Pasteurization — heat treatment completed, HCS #3. Both hashes confirmed on-chain.',
+    tags: ['HCS #2 · Ultra-filtered', 'HCS #3 · Pasteurized'], warn: false
+  },
+  'pasteur': {
+    text: 'Yes — pasteurization is verified. Facility submitted the processing log; hash matches the Sui claim object.',
+    tags: ['HCS #3 · 0.0.9219010', 'Claim: 0xtracebite_local_claim_3'], warn: false
+  },
+  'recall': {
+    text: 'No recall on this batch. Batch TB-MILK-0612 is active and unrecalled as of the last on-chain state. The Sui recall_batch function has not been called.',
+    tags: ['Sui batch: 0xd73ce78b…'], warn: false
+  },
+  'tamper': {
+    text: 'Every evidence file is SHA-256 hashed before submission to Hedera HCS. The hash is then stored as an immutable Sui claim object. Any post-certification modification changes the hash — making tampering immediately detectable, without trusting any individual party.',
+    tags: ['SHA-256 + Sui immutability + HCS ordering'], warn: false
+  },
+  'dpp': {
+    text: 'Yes — Proof of Plate generates a product passport aligned with EU Digital Product Passport regulation (EU) 2024/1781. Each claim is cryptographically verifiable, time-ordered on HCS, and accessible via GS1 QR scan.',
+    tags: ['EU DPP Reg. (EU) 2024/1781'], warn: false
+  },
+};
+
+function addMsg(role, text, tags, warn) {
+  var box = document.getElementById('chatMessages');
+  var d = document.createElement('div');
+  d.className = 'msg ' + role;
+  var inner = '<div class="msg-bubble">' + text;
+  if (tags && tags.length) {
+    tags.forEach(function(t){ inner += '<div class="chain-ref">↗ ' + t + '</div>'; });
+  }
+  if (!warn && role === 'agent' && tags && tags.length) {
+    inner += '<span class="verified-tag">✓ On-chain verified</span>';
+  }
+  inner += '</div><div class="msg-meta">' + (role === 'user' ? 'You' : 'Verifier · live data') + '</div>';
+  d.innerHTML = inner;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+
+function addTyping() {
+  var box = document.getElementById('chatMessages');
+  var d = document.createElement('div');
+  d.className = 'msg agent'; d.id = 'typing-ind';
+  d.innerHTML = '<div class="msg-bubble"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>';
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+  return d;
+}
+
+function askQ(q) {
+  // On mobile, switch to Ask tab first if not already active
+  if (window.innerWidth < 768) {
+    var panel = document.getElementById('panel-ask');
+    if (!panel.classList.contains('active')) {
+      switchTab('ask', document.getElementById('tb-ask'));
+      setTimeout(function(){ document.getElementById('chatInput').value = q; sendChat(); }, 250);
+      return;
+    }
+  }
+  document.getElementById('chatInput').value = q;
+  sendChat();
+}
+
+function sendChat() {
+  var input = document.getElementById('chatInput');
+  var q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  addMsg('user', q, [], false);
+  var typing = addTyping();
+  setTimeout(function() {
+    typing.remove();
+    var ql = q.toLowerCase();
+    var found = null;
+    Object.keys(ANSWERS).forEach(function(k){ if (ql.indexOf(k) > -1) found = ANSWERS[k]; });
+    if (found) {
+      addMsg('agent', found.text, found.tags, found.warn);
+    } else {
+      addMsg('agent', 'I can only answer using verified on-chain data for batch TB-MILK-0612. Try asking about: lactose, pesticides, pasteurization, equipment, recalls, tamper detection, or EU DPP compliance.', [], false);
+    }
+  }, 1100);
+}
+</script>
+</body>
+</html>

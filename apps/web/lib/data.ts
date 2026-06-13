@@ -62,17 +62,42 @@ export function buildCompleteProductInfo() {
     servingsPerContainer: "About 6",
     nutritionHighlights: ["13g protein per serving", "Lactose-free", "Ultra-filtered", "Pasteurized"],
     allergens: ["Milk"],
-    storageInstructions: "Keep refrigerated at or below 40 F. Use within 7 days after opening.",
+    storageInstructions: "Keep refrigerated at or below 40°F. Use within 7 days after opening.",
     ingredients: PRODUCT_INGREDIENTS,
+    nutrition: [
+      { label: "Calories", amount: "80", bold: true },
+      { label: "Total Fat", amount: "2.5g", dailyValue: "3%" },
+      { label: "Saturated Fat", amount: "1.5g", dailyValue: "8%", sub: true },
+      { label: "Trans Fat", amount: "0g", sub: true },
+      { label: "Cholesterol", amount: "15mg", dailyValue: "5%", divider: true },
+      { label: "Sodium", amount: "95mg", dailyValue: "4%" },
+      { label: "Total Carbohydrate", amount: "6g", dailyValue: "2%" },
+      { label: "Dietary Fiber", amount: "0g", dailyValue: "0%", sub: true },
+      { label: "Total Sugars", amount: "6g", sub: true },
+      { label: "Protein", amount: "13g", dailyValue: "26%", divider: true, bold: true },
+      { label: "Calcium", amount: "350mg", dailyValue: "25%" },
+      { label: "Vitamin D", amount: "3.7mcg", dailyValue: "20%" },
+      { label: "Potassium", amount: "420mg", dailyValue: "10%" },
+      { label: "Vitamin A", amount: "150mcg RAE", dailyValue: "15%" },
+    ],
   };
 }
 
+// Cache deployment in memory
+let _deployment: Deployment | null = null;
+
 export function getDeployment(): Deployment {
+  if (_deployment) return _deployment;
   const file = deploymentFile();
   if (!existsSync(file)) {
     throw new Error("data/deployment.json not found. Run npm run demo:seed or the testnet seed scripts first.");
   }
-  return readJsonFile<Deployment>(file);
+  _deployment = readJsonFile<Deployment>(file);
+  return _deployment;
+}
+
+export function invalidateDeploymentCache() {
+  _deployment = null;
 }
 
 export function getBatch(batchId: string): ProductBatch {
@@ -105,7 +130,7 @@ export function getHcsMessages(topicId: string): HcsEvent[] {
     const hcs = readJsonFile<{ topicId: string; events: HcsEvent[] }>(file);
     if (hcs.topicId === topicId) return hcs.events;
   }
-  // fallback: reconstruct from deployment claims (ensures UI always has event data)
+  // fallback: reconstruct from deployment claims
   return getDeployment().claims.map((claim) => ({
     v: "1.0",
     type: "CLAIM_SUBMITTED",

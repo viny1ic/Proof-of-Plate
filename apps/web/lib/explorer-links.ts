@@ -7,7 +7,7 @@ function isLocalPlaceholder(value: string) {
 
 export function suiExplorerLink(id: string, kind: "object" | "package" = "object") {
   if (!id || isLocalPlaceholder(id)) return null;
-  return `https://suiscan.xyz/testnet/object/${encodeURIComponent(id)}`;
+  return `https://suiscan.xyz/testnet/${kind}/${encodeURIComponent(id)}`;
 }
 
 export function hederaTopicLink(topicId: string) {

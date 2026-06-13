@@ -1,7 +1,7 @@
 import type { ProductBatch } from "../lib/types";
 
 export function VerificationScore({ batch }: { batch: ProductBatch }) {
-  const percent = Math.round((batch.scoreVerified / batch.scoreTotal) * 100);
+  const percent = batch.scoreTotal > 0 ? Math.round((batch.scoreVerified / batch.scoreTotal) * 100) : 0;
 
   return (
     <section className="panel row">

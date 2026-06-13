@@ -1,5 +1,5 @@
 {
-  "topicId": "0.0.9219010",
+  "topicId": "0.0.tracebite_local",
   "events": [
     {
       "v": "1.0",
@@ -12,8 +12,7 @@
       "evidenceHash": "0x6ed40ae8a118447f6dcf03f216ae2b610a9cd25dcfa4050ac20b658df3d6a3a4",
       "createdAt": "2026-06-12T21:00:00.000Z",
       "sequenceNumber": 1,
-      "transactionId": "0.0.9185855@1781309926.486473244",
-      "consensusTimestamp": "2026-06-13T00:18:50Z"
+      "transactionId": "0.0.tracebite_local@1"
     },
     {
       "v": "1.0",
@@ -26,8 +25,7 @@
       "evidenceHash": "0x1a97c896ed2984186b80d0865df68ea528c5474ce25102276a5aac6b408fee99",
       "createdAt": "2026-06-12T21:01:00.000Z",
       "sequenceNumber": 2,
-      "transactionId": "0.0.9185855@1781309930.522476202",
-      "consensusTimestamp": "2026-06-13T00:18:52Z"
+      "transactionId": "0.0.tracebite_local@2"
     },
     {
       "v": "1.0",
@@ -40,8 +38,7 @@
       "evidenceHash": "0x1a97c896ed2984186b80d0865df68ea528c5474ce25102276a5aac6b408fee99",
       "createdAt": "2026-06-12T21:02:00.000Z",
       "sequenceNumber": 3,
-      "transactionId": "0.0.9185855@1781309930.881751870",
-      "consensusTimestamp": "2026-06-13T00:18:54Z"
+      "transactionId": "0.0.tracebite_local@3"
     },
     {
       "v": "1.0",
@@ -54,8 +51,7 @@
       "evidenceHash": "0x3ab220b2472f3e4594e250d6f580459dea7aa81705c1eb5e63a8ae0adaef4678",
       "createdAt": "2026-06-12T21:03:00.000Z",
       "sequenceNumber": 4,
-      "transactionId": "0.0.9185855@1781309930.057087137",
-      "consensusTimestamp": "2026-06-13T00:18:55Z"
+      "transactionId": "0.0.tracebite_local@4"
     },
     {
       "v": "1.0",
@@ -68,8 +64,7 @@
       "evidenceHash": "0x3e143f6b184ec579bdda900de28e29613f21f74be55a61b6c284b25acbd3125d",
       "createdAt": "2026-06-12T21:04:00.000Z",
       "sequenceNumber": 5,
-      "transactionId": "0.0.9185855@1781309934.483720972",
-      "consensusTimestamp": "2026-06-13T00:18:57Z"
+      "transactionId": "0.0.tracebite_local@5"
     }
   ]
 }

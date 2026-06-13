@@ -62,7 +62,7 @@
         "relatedClaimTypes": []
       }
     ],
-    "hcsTopicId": "0.0.9219010",
+    "hcsTopicId": "0.0.tracebite_local",
     "scoreVerified": 4,
     "scoreTotal": 5,
     "recalled": false,
@@ -80,10 +80,10 @@
       "issuerName": "Proof of Plate Demo Lab",
       "evidenceUri": "/evidence/lab-results.json",
       "evidenceHash": "0x6ed40ae8a118447f6dcf03f216ae2b610a9cd25dcfa4050ac20b658df3d6a3a4",
-      "hcsTopicId": "0.0.9219010",
+      "hcsTopicId": "0.0.tracebite_local",
       "hcsSequence": 1,
-      "suiObjectId": "0x7a5242b543e7c20e584e8d4045bb277226a826c2cecd95f4f9b8f8083dddf345",
-      "createdAt": "2026-06-13T00:18:50Z"
+      "suiObjectId": "0xtracebite_local_claim_1",
+      "createdAt": "2026-06-12T21:00:00.000Z"
     },
     {
       "batchId": "TB-MILK-0612",
@@ -94,10 +94,10 @@
       "issuerName": "Proof of Plate Demo Facility",
       "evidenceUri": "/evidence/processing-log.json",
       "evidenceHash": "0x1a97c896ed2984186b80d0865df68ea528c5474ce25102276a5aac6b408fee99",
-      "hcsTopicId": "0.0.9219010",
+      "hcsTopicId": "0.0.tracebite_local",
       "hcsSequence": 2,
-      "suiObjectId": "0x0a34481f337ecd4e08c001cb8181cd9ddf5bdcd392388c2985d9bfaef42656bb",
-      "createdAt": "2026-06-13T00:18:52Z"
+      "suiObjectId": "0xtracebite_local_claim_2",
+      "createdAt": "2026-06-12T21:01:00.000Z"
     },
     {
       "batchId": "TB-MILK-0612",
@@ -108,10 +108,10 @@
       "issuerName": "Proof of Plate Demo Facility",
       "evidenceUri": "/evidence/processing-log.json",
       "evidenceHash": "0x1a97c896ed2984186b80d0865df68ea528c5474ce25102276a5aac6b408fee99",
-      "hcsTopicId": "0.0.9219010",
+      "hcsTopicId": "0.0.tracebite_local",
       "hcsSequence": 3,
-      "suiObjectId": "0x9512a099b57d0f1990d3716771104975e4e139a58ad41770de0424c5956f0bc4",
-      "createdAt": "2026-06-13T00:18:54Z"
+      "suiObjectId": "0xtracebite_local_claim_3",
+      "createdAt": "2026-06-12T21:02:00.000Z"
     },
     {
       "batchId": "TB-MILK-0612",
@@ -122,10 +122,10 @@
       "issuerName": "Proof of Plate Demo Facility",
       "evidenceUri": "/evidence/maintenance-log.json",
       "evidenceHash": "0x3ab220b2472f3e4594e250d6f580459dea7aa81705c1eb5e63a8ae0adaef4678",
-      "hcsTopicId": "0.0.9219010",
+      "hcsTopicId": "0.0.tracebite_local",
       "hcsSequence": 4,
-      "suiObjectId": "0xa29f6bee487ed365782fb49ea8bbf038cdfe76f54ca59f38dc343b85cfe43c40",
-      "createdAt": "2026-06-13T00:18:55Z"
+      "suiObjectId": "0xtracebite_local_claim_4",
+      "createdAt": "2026-06-12T21:03:00.000Z"
     },
     {
       "batchId": "TB-MILK-0612",
@@ -136,15 +136,15 @@
       "issuerName": "Proof of Plate Demo Feed Supplier",
       "evidenceUri": "/evidence/feed-declaration.json",
       "evidenceHash": "0x3e143f6b184ec579bdda900de28e29613f21f74be55a61b6c284b25acbd3125d",
-      "hcsTopicId": "0.0.9219010",
+      "hcsTopicId": "0.0.tracebite_local",
       "hcsSequence": 5,
-      "suiObjectId": "0x5866a7de2068d49b625caa2d86e9218d9c998bab5b1bb1d878ccb5030a90bc61",
-      "createdAt": "2026-06-13T00:18:57Z",
+      "suiObjectId": "0xtracebite_local_claim_5",
+      "createdAt": "2026-06-12T21:04:00.000Z",
       "reason": "Supplier declaration exists, but no final pesticide residue lab test exists."
     }
   ],
   "hcs": {
-    "topicId": "0.0.9219010",
+    "topicId": "0.0.tracebite_local",
     "network": "testnet"
   }
 }

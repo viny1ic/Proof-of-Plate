@@ -1,68 +1,95 @@
 # Proof of Plate
 
-Proof of Plate is a hackathon MVP for verifiable food product labels.
+Proof of Plate is a hackathon MVP for verifiable food product labels — a consumer-facing product passport that anchors every label claim on Sui blockchain and Hedera HCS, verifies evidence hashes cryptographically, and lets a Claude-powered AI agent answer questions about the product in plain English.
 
-The demo product is `TB-MILK-0612`, a Proof of Plate ultra-filtered milk batch. The app starts with five product claims, links each claim to a Hedera HCS intake event, stores final claim truth in Sui-shaped data, verifies static evidence hashes, and lets a consumer ask an AI verifier questions. The admin demo action adds a sixth final pesticide residue test and updates the score to `5/6`.
+The demo product is `TB-MILK-0612`, an ultra-filtered milk batch. It ships with five initial claims, a real Hedera HCS topic (`0.0.9219010`), real Sui testnet objects, and static JSON evidence files that are SHA-256 hashed and verified on every page load.
+
+---
 
 ## Architecture
 
-- Sui: final product truth layer for batch, claims, evidence hashes, score, and recall state.
-- Hedera HCS: ordered intake/audit trail for supplier/facility/lab/auditor claim submissions.
-- Static JSON evidence: hackathon-friendly lab, processing, maintenance, and feed records.
-- AI verifier: deterministic tool-based explainer over Sui claims, HCS events, and evidence hashes.
+| Layer | Role |
+|---|---|
+| **Sui blockchain** | Final product truth — batch record, claims, evidence hashes, verification score, recall state |
+| **Hedera HCS** | Tamper-proof intake/audit log — ordered sequence of claim submission events per topic |
+| **Static JSON evidence** | Hackathon-friendly lab results, processing logs, maintenance records, feed declarations |
+| **Claude AI verifier** | Tool-based agent that looks up Sui claims, HCS events, and evidence before answering |
+| **Next.js 14 (App Router)** | Server-rendered product passport with RSC + client components |
 
 ENS is intentionally not part of this version.
+
+---
+
+## Frontend
+
+The passport UI is a two-column layout (sticky left panel + scrollable right panel on desktop, bottom tab bar on mobile).
+
+### Left panel
+- **Dark navy hero** — product name, batch ID, verification score ring, Consumer / Inspector mode toggle, recall badge
+- **Stat strip** — claims count, HCS events count, verification speed vs FDA recall window
+- **Hash verification banner** — server-side SHA-256 check on every page load; shows `6/6 verified` in green or a warning with which claim mismatched
+- **Supply chain journey** — visual step tracker (Farm → Facility → Lab → Certified) with HCS sequence ranges and progress bar
+- **Product details** — net contents, serving size, allergens, storage; FDA-style nutrition facts table; ingredient cards with linked claim tags
+- **Footer** — Sui Explorer and HashScan links for the batch object and HCS topic
+
+### Right panel
+- **Summary** — trust score percentage, hash check result, recall status, claims-at-a-glance table, plain-English explanation of what the verification means
+- **AI chat** — always visible below the summary; Claude answers questions about the product using live on-chain data; responses include clickable Sui Explorer / HashScan links; quick-question chips for common queries; verification context injected automatically so the agent knows hash status without being asked
+- **Claims tab** — expandable claim rows with status indicators; inspector-only detail grid (HCS sequence, Sui object ID, evidence hash with copy button, hash verification badge); Sui Explorer and HashScan links per claim; "Verify Hash" button fetches and compares evidence on demand
+- **Trace tab** — Hedera HCS audit log with timeline dots, evidence hash links (linking to the Sui object that anchors each claim), transaction IDs (inspector-only)
+- **Tamper detection** — side-by-side hash diff demo showing what a modified evidence file would look like
+
+### Consumer / Inspector mode
+Toggle in the hero switches between two views:
+- **Consumer** — hides blockchain IDs, transaction hashes, and technical detail
+- **Inspector** — reveals Sui object IDs, HCS sequences, evidence hashes, and full transaction IDs
+
+---
 
 ## Local Demo Mode
 
 ```bash
 npm install
 npm run demo:seed
-npm run build
 npm run dev
 ```
 
 Open:
 
-```txt
+```
 http://localhost:3000/p/TB-MILK-0612
 http://localhost:3000/admin
 ```
 
-Local mode needs no Hedera or Sui credentials. The scripts write deterministic local-demo IDs into `data/deployment.json` and `data/hcs-events.json`, and local placeholder IDs remain plain monospace text in the UI instead of explorer links.
+Local mode needs no Hedera or Sui credentials. The scripts write deterministic local-demo IDs into `data/deployment.json` and `data/hcs-events.json`. Local placeholder IDs render as plain monospace text instead of explorer links.
+
+---
 
 ## Environment
 
 ```bash
+# Anthropic (required for AI chat)
+ANTHROPIC_API_KEY=
+
+# Sui testnet
 SUI_NETWORK=testnet
 SUI_PACKAGE_ID=
 SUI_ADMIN_PRIVATE_KEY=
 
+# Hedera testnet
 HEDERA_NETWORK=testnet
 HEDERA_ACCOUNT_ID=
 HEDERA_PRIVATE_KEY=
 HEDERA_TOPIC_ID=
 
+# App
 NEXT_PUBLIC_BATCH_ID=TB-MILK-0612
-OPENAI_API_KEY=
 DEMO_ADMIN_TOKEN=
 ```
 
-The app runs locally without credentials. When Hedera credentials are present, `create-hcs-topic.ts` and `submit-hcs-events.ts` use the real Hedera SDK. When credentials are missing, they write deterministic local demo data so the passport remains runnable.
+The app runs locally without credentials. When Hedera credentials are present, the seed scripts use the real Hedera SDK. When missing, they write deterministic local demo data so the passport remains runnable without any accounts.
 
-The Sui deploy script records a deterministic local package ID unless `SUI_PACKAGE_ID` is provided. If the Sui CLI is installed, build/publish the Move package manually:
-
-```bash
-sui move build --path contracts/sui
-sui client publish contracts/sui --gas-budget 100000000
-```
-
-Then set `SUI_PACKAGE_ID` and rerun:
-
-```bash
-npm run sui:deploy
-npm run sui:seed
-```
+---
 
 ## Testnet Mode
 
@@ -73,73 +100,106 @@ Use testnet mode when you have real Hedera and Sui identifiers to show in the pa
 3. Run `npm run hedera:submit` to append real HCS intake events.
 4. Build and publish the Sui Move package, then set `SUI_PACKAGE_ID`.
 5. Run `npm run sui:deploy` and `npm run sui:seed`.
-6. Run `npm run build` and open `/p/TB-MILK-0612`.
+6. Run `npm run dev` and open `/p/TB-MILK-0612`.
 
-Non-local Sui package, batch, and claim IDs link to Sui Explorer. Non-local Hedera topic and transaction IDs link to HashScan testnet.
+Non-local Sui object IDs link to Sui Explorer. Non-local Hedera topic and transaction IDs link to HashScan testnet. Evidence hashes in the HCS log link to the Sui claim object that anchors them.
+
+---
 
 ## Current Testnet Deployment
 
-This workspace is currently configured with real testnet artifacts:
+| Artifact | Value |
+|---|---|
+| Hedera testnet topic | `0.0.9219010` |
+| Sui testnet package | `0x4d456546f2254ef39edbacda57b87d0cbb9a808e41d225362c0fa9dca46e100c` |
+| Sui testnet batch object | `0xd73ce78b97ebe620044ac0e107c536458d228437f2d305305ee77f2093250193` |
+| Sui publish tx | `5zLEd68pgwZ1wNHS77py9bWbLhnKk3DnhRjmusgFjEbh` |
+| Sui batch tx | `7QbzcngvxTiPY3xkjpE7gdKLmHxyWgE5hk9Xn4LZM4nQ` |
+| Sui score update tx | `FtAHAq8d6bbMnFXuTaoVXzLf1ENZ6KCjBGgSUHV823dJ` |
 
-- Hedera testnet topic: `0.0.9219010`
-- Sui testnet package: `0x4d456546f2254ef39edbacda57b87d0cbb9a808e41d225362c0fa9dca46e100c`
-- Sui testnet batch object: `0xd73ce78b97ebe620044ac0e107c536458d228437f2d305305ee77f2093250193`
-- Sui publish transaction: `5zLEd68pgwZ1wNHS77py9bWbLhnKk3DnhRjmusgFjEbh`
-- Sui batch transaction: `7QbzcngvxTiPY3xkjpE7gdKLmHxyWgE5hk9Xn4LZM4nQ`
-- Sui score update transaction: `FtAHAq8d6bbMnFXuTaoVXzLf1ENZ6KCjBGgSUHV823dJ`
+The five initial claims in `data/deployment.json` have real Sui object IDs and HCS sequence numbers 1–5.
 
-The five initial claims in `data/deployment.json` have real Sui object IDs and HCS sequence numbers `1` through `5`.
-
-## Security Notes
-
-- `/api/evidence?uri=` only serves JSON files inside `public/evidence`. Traversal paths, filesystem absolute paths outside `/evidence`, non-JSON files, and paths resolving outside that directory are rejected.
-- `/api/demo/add-claim` runs a local script and is intended for the hackathon demo. In production, keep the deployment in `local-demo`, call it from localhost, or set `DEMO_ADMIN_TOKEN` and send it as `Authorization: Bearer <token>` or `x-demo-admin-token`.
-- Do not commit `.env` files or private Hedera/Sui keys. The export zip excludes env files and build artifacts.
-- ENS is intentionally not part of this version.
+---
 
 ## Demo Flow
 
 1. Open `/p/TB-MILK-0612`.
-2. Show score `4/5 verified`.
-3. Show Sui package/object IDs and Hedera topic ID.
-4. Show claim cards and HCS sequence numbers.
-5. Ask the AI verifier: `Is this actually lactose-free?`
-6. Ask: `Were pesticides used?`
-7. The verifier should explain that supplier declaration exists, but no final residue lab test exists.
-8. Open `/admin`.
-9. Click `Add final residue test`.
-10. Refresh the product page and show the added claim, inline hash verification, and updated `5/6` score.
+2. Note the hash verification banner — **6/6 hashes verified** loads server-side on every page load.
+3. Check the summary panel — trust score, claims-at-a-glance, plain-English explanation.
+4. Ask the AI (chat is always visible): **"Is this lactose-free?"** — agent cites Sui claim + HCS sequence + evidence hash.
+5. Ask: **"Were pesticides used?"** — agent distinguishes between the supplier declaration (advisory ⚠️) and the final residue lab test (verified ✅).
+6. Ask: **"Is this kosher?"** — agent correctly states no kosher certification claim exists on-chain.
+7. Switch to **Inspector mode** — Sui object IDs, HCS sequences, and evidence hashes appear.
+8. Expand a claim row to see the full hash detail and "Verify Hash" button.
+9. Click the **Trace** tab to see the Hedera HCS audit log — each event shows the evidence hash as a link to the Sui claim object.
+10. Open `/admin` and click **Add final residue test** — refreshing `/p/TB-MILK-0612` shows the new claim and updated score.
 
-## Finish-Line Testnet Checklist
+---
 
-```bash
-npm run demo:seed
-npm run typecheck
-npm run build
-sui move build --path contracts/sui
-```
+## Security Notes
 
-If the Sui CLI is not installed, the Next.js app and scripts can still be verified locally, but the Move package build remains unverified.
+- `/api/evidence?uri=` only serves JSON files inside `public/evidence`. Traversal paths, absolute paths, non-JSON files, and paths resolving outside that directory are rejected.
+- `/api/demo/add-claim` is intended for the hackathon demo. In production, set `DEMO_ADMIN_TOKEN` and send it as `Authorization: Bearer <token>` or `x-demo-admin-token`.
+- Do not commit `.env` files or private Hedera/Sui keys.
+- ENS is intentionally not part of this version.
+
+---
 
 ## Scripts
 
 ```bash
-npm run hash:evidence
-npm run hedera:create-topic
-npm run hedera:submit
-npm run sui:deploy
-npm run sui:seed
-npm run demo:add-claim
+npm run dev                  # start Next.js dev server
+npm run build                # production build
+npm run typecheck            # TypeScript check only
+
+npm run hash:evidence        # SHA-256 hash all public/evidence/*.json files
+npm run hedera:create-topic  # create Hedera HCS topic
+npm run hedera:submit        # submit claim events to HCS
+npm run sui:deploy           # deploy Move package (or write local placeholder)
+npm run sui:seed             # seed batch + claim objects on Sui
+npm run demo:seed            # run all of the above in sequence
+npm run demo:add-claim       # add the sixth pesticide residue test claim
 ```
+
+---
 
 ## Spec Alignment
 
 This implementation follows `../plans/proof-of-plate-mvp-implementation-plan.md`:
 
-- One demo milk batch
-- Five initial claims
-- One HCS topic
-- One Sui Move package
-- Static JSON evidence
-- Tool-based AI verifier
+- One demo milk batch (`TB-MILK-0612`)
+- Five initial claims + one admin-added claim
+- One Hedera HCS topic per batch
+- One Sui Move package with batch and claim objects
+- Static JSON evidence with SHA-256 hashes
+- Tool-based Claude AI verifier (get_batch, get_claims, get_hcs_events, get_evidence, verify_evidence_hash)
+- Server-side hash verification on every page load
+- Consumer / Inspector dual-mode UI
 - No ENS path
+
+## Key Files
+
+```
+apps/web/
+  app/
+    p/[batchId]/page.tsx       # product passport page (server component, runs hash verification)
+    globals.css                # design tokens + all component styles
+  components/
+    ProductHeader.tsx          # dark navy hero, score ring, mode toggle
+    StatStrip.tsx              # 3-stat bar (claims, HCS events, speed)
+    SupplyChainJourney.tsx     # Farm → Facility → Lab → Certified tracker
+    ProductInfo.tsx            # nutrition facts, ingredients with claim tags
+    PassportSummary.tsx        # right-panel summary card
+    AgentChat.tsx              # AI chat with link rendering + verification context
+    ClaimList.tsx              # expandable claims with hash verification
+    LifecycleTimeline.tsx      # HCS audit log with evidence hash links
+    TamperDetection.tsx        # hash diff demo
+    PassportRight.tsx          # summary + chat always-on, Claims/Trace tabs
+    ModeToggle.tsx             # consumer / inspector toggle
+  lib/
+    agent.ts                   # Claude ReAct agent with Sui + Hedera + evidence tools
+    data.ts                    # deployment.json + hcs-events.json readers
+    evidence.ts                # SHA-256 hash verification
+    explorer-links.ts          # Sui Explorer + HashScan URL builders
+    types.ts                   # ProductBatch, Claim, HcsEvent, NutritionFact
+```

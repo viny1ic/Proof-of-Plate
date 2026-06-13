@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import type { Claim, Deployment, HcsEvent, ProductBatch } from "../apps/web/lib/types";
+import type { Claim, ClaimStatus, Deployment, HcsEvent, ProductBatch } from "../apps/web/lib/types";
 
 export const root = path.resolve(process.cwd());
 export const dataDir = path.join(root, "data");
@@ -42,6 +42,224 @@ export function loadManifest(): Record<string, string> {
   }
   return readJson<Record<string, string>>(manifestPath);
 }
+
+// ─── Local placeholder IDs ────────────────────────────────────────────────────
+
+/** Returns a deterministic local topic ID used when Hedera credentials are absent.
+ *  The "tracebite_local" marker is recognised by explorer-links.ts and rendered
+ *  as plain text rather than a clickable explorer link. */
+export function buildLocalTopicId(): string {
+  return "0.0.tracebite_local";
+}
+
+// ─── Claim metadata (label, status, reason) keyed by claimType ───────────────
+
+type ClaimMeta = { label: string; status: ClaimStatus; reason?: string };
+
+const CLAIM_META: Record<string, ClaimMeta> = {
+  lactose_free: { label: "Lactose-free lab test passed", status: "verified" },
+  ultra_filtered: { label: "Ultra-filtration completed", status: "verified" },
+  pasteurized: { label: "Pasteurization completed", status: "verified" },
+  equipment_cleaned: { label: "CIP cleaning completed", status: "verified" },
+  feed_pesticide_declaration: {
+    label: "Feed pesticide declaration available",
+    status: "warning",
+    reason: "Supplier declaration exists, but no final pesticide residue lab test exists.",
+  },
+  final_pesticide_residue_test: {
+    label: "Final pesticide residue test passed",
+    status: "verified",
+  },
+};
+
+// ─── Initial HCS event seed definitions ──────────────────────────────────────
+
+const INITIAL_CLAIM_DEFS = [
+  {
+    claimType: "lactose_free",
+    issuerRole: "lab",
+    issuerName: "Proof of Plate Demo Lab",
+    evidenceUri: "/evidence/lab-results.json",
+    createdAt: "2026-06-12T21:00:00.000Z",
+  },
+  {
+    claimType: "ultra_filtered",
+    issuerRole: "facility",
+    issuerName: "Proof of Plate Demo Facility",
+    evidenceUri: "/evidence/processing-log.json",
+    createdAt: "2026-06-12T21:01:00.000Z",
+  },
+  {
+    claimType: "pasteurized",
+    issuerRole: "facility",
+    issuerName: "Proof of Plate Demo Facility",
+    evidenceUri: "/evidence/processing-log.json",
+    createdAt: "2026-06-12T21:02:00.000Z",
+  },
+  {
+    claimType: "equipment_cleaned",
+    issuerRole: "facility",
+    issuerName: "Proof of Plate Demo Facility",
+    evidenceUri: "/evidence/maintenance-log.json",
+    createdAt: "2026-06-12T21:03:00.000Z",
+  },
+  {
+    claimType: "feed_pesticide_declaration",
+    issuerRole: "supplier",
+    issuerName: "Proof of Plate Demo Feed Supplier",
+    evidenceUri: "/evidence/feed-declaration.json",
+    createdAt: "2026-06-12T21:04:00.000Z",
+  },
+];
+
+/** Build the five initial HCS intake events using hashes from the evidence manifest. */
+export function buildHcsEvents(
+  topicId: string,
+  manifest: Record<string, string>
+): HcsEvent[] {
+  return INITIAL_CLAIM_DEFS.map((def, i) => {
+    const seq = i + 1;
+    return {
+      v: "1.0" as const,
+      type: "CLAIM_SUBMITTED",
+      batchId: "TB-MILK-0612",
+      claimType: def.claimType,
+      issuerRole: def.issuerRole,
+      issuerName: def.issuerName,
+      evidenceUri: def.evidenceUri,
+      evidenceHash: manifest[def.evidenceUri] ?? "",
+      createdAt: def.createdAt,
+      sequenceNumber: seq,
+      transactionId: `${topicId}@${seq}`,
+    };
+  });
+}
+
+// ─── Product batch builder ────────────────────────────────────────────────────
+
+function buildBatch(
+  topicId: string,
+  claims: Claim[],
+  existing?: ProductBatch
+): ProductBatch {
+  const scoreTotal = claims.length;
+  const scoreVerified = claims.filter((c) => c.status === "verified").length;
+
+  return {
+    batchId: "TB-MILK-0612",
+    productName: "Proof of Plate Ultra-Filtered Milk",
+    category: "Dairy",
+    description:
+      "Ultra-filtered lowfat milk with lactase enzyme and vitamin fortification. Built as a Proof of Plate product passport for label-claim verification.",
+    netContents: "52 fl oz (1.54 L)",
+    servingSize: "1 cup (240 mL)",
+    servingsPerContainer: "About 6",
+    nutritionHighlights: ["13g protein per serving", "Lactose-free", "Ultra-filtered", "Pasteurized"],
+    allergens: ["Milk"],
+    storageInstructions: "Keep refrigerated at or below 40 F. Use within 7 days after opening.",
+    ingredients: [
+      {
+        slug: "ultra-filtered-lowfat-milk",
+        name: "Ultra-filtered lowfat milk",
+        role: "Primary dairy base",
+        source: "Proof of Plate Demo Dairy Cooperative",
+        description:
+          "Lowfat milk concentrated through ultra-filtration to increase protein density while reducing lactose and some sugars.",
+        verificationNote:
+          "Linked to the ultra-filtration, pasteurization, and lactose-free claims for this batch.",
+        relatedClaimTypes: ["ultra_filtered", "pasteurized", "lactose_free"],
+      },
+      {
+        slug: "lactase-enzyme",
+        name: "Lactase enzyme",
+        role: "Lactose breakdown aid",
+        source: "Proof of Plate Demo Ingredient Supplier",
+        description:
+          "Food-grade lactase enzyme used to break lactose into simpler sugars as part of the lactose-free process.",
+        verificationNote:
+          "Supported by the lactose-free lab result evidence for the finished batch.",
+        relatedClaimTypes: ["lactose_free"],
+      },
+      {
+        slug: "vitamin-a-palmitate",
+        name: "Vitamin A palmitate",
+        role: "Vitamin fortification",
+        source: "Proof of Plate Demo Nutrient Supplier",
+        description:
+          "Vitamin A fortificant commonly added to lowfat dairy products to restore vitamin A levels after fat reduction.",
+        verificationNote:
+          "Included as product formulation information; not represented as a separate verified label claim.",
+        relatedClaimTypes: [],
+      },
+      {
+        slug: "vitamin-d3",
+        name: "Vitamin D3",
+        role: "Vitamin fortification",
+        source: "Proof of Plate Demo Nutrient Supplier",
+        description:
+          "Vitamin D3 fortificant added to support the product nutrition profile for the demo milk batch.",
+        verificationNote:
+          "Included as product formulation information; not represented as a separate verified label claim.",
+        relatedClaimTypes: [],
+      },
+    ],
+    hcsTopicId: topicId,
+    scoreVerified,
+    scoreTotal,
+    recalled: false,
+    createdAt: existing?.createdAt ?? new Date().toISOString(),
+    // Preserve Sui IDs written by sui:deploy / sui:seed if already present
+    suiPackageId: existing?.suiPackageId ?? "0xtracebite_local_package",
+    suiBatchObjectId: existing?.suiBatchObjectId ?? "0xtracebite_local_batch",
+  };
+}
+
+// ─── writeDeployment ──────────────────────────────────────────────────────────
+
+/** Build and persist deployment.json from a topic ID, evidence manifest, and HCS events.
+ *  Preserves existing Sui package / batch IDs so sui:deploy output is not overwritten.
+ *  Returns the written Deployment for callers that need to inspect it. */
+export function writeDeployment(
+  topicId: string,
+  manifest: Record<string, string>,
+  events: HcsEvent[]
+): Deployment {
+  const existing = loadDeployment();
+
+  const claims: Claim[] = events.map((event) => {
+    const meta = CLAIM_META[event.claimType];
+    const claim: Claim = {
+      batchId: event.batchId,
+      claimType: event.claimType,
+      label: meta?.label ?? event.claimType,
+      status: meta?.status ?? "pending",
+      issuerRole: event.issuerRole,
+      issuerName: event.issuerName,
+      evidenceUri: event.evidenceUri,
+      evidenceHash: event.evidenceHash || manifest[event.evidenceUri] || "",
+      hcsTopicId: topicId,
+      hcsSequence: event.sequenceNumber,
+      suiObjectId: `0xtracebite_local_claim_${event.sequenceNumber}`,
+      createdAt: event.consensusTimestamp ?? event.createdAt,
+    };
+    if (meta?.reason) claim.reason = meta.reason;
+    return claim;
+  });
+
+  const batch = buildBatch(topicId, claims, existing?.batch);
+
+  const deployment: Deployment = {
+    mode: "testnet",
+    batch,
+    claims,
+    hcs: { topicId, network: process.env.HEDERA_NETWORK ?? "testnet" },
+  };
+
+  writeJson(deploymentPath, deployment);
+  return deployment;
+}
+
+// ─── Hedera client builder ────────────────────────────────────────────────────
 
 export async function buildHederaClient() {
   if (!process.env.HEDERA_ACCOUNT_ID || !process.env.HEDERA_PRIVATE_KEY) {

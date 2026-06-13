@@ -16,13 +16,16 @@ Proof of Plate is a hackathon MVP for verifiable food product labels. A consumer
 - Were pesticides used?
 - What processing happened to this product?
 - Was the equipment cleaned?
+- Is this kosher?
 
-The verifier answers only by checking:
+The verifier answers by checking:
 
 - Sui product batch and claim records
 - Hedera Consensus Service (HCS) ingestion events
 - SHA-256 evidence hashes
 - Static evidence JSON records
+
+If no claim exists for a topic (e.g. kosher, vegan, organic), the agent says so clearly and explains what IS verified on-chain. It never refuses to answer.
 
 The project was renamed from TraceBite to Proof of Plate. Branding, package names (`proof-of-plate`, `@proof-of-plate/web`), UI strings, and issuer names use Proof of Plate. The on-chain Sui module remains `tracebite::tracebite` because the contract was already deployed with that module name.
 
@@ -36,7 +39,14 @@ The project was renamed from TraceBite to Proof of Plate. Branding, package name
 | Sui testnet IDs and claim objects | `main` | Implemented via `data/deployment.json` |
 | Hedera HCS testnet topic and events | `main` | Implemented via `data/hcs-events.json` |
 | AI verifier with Claude + Hedera Agent Kit tools | `main` | Implemented |
-| Evidence hash verification drawer | `main` | Implemented |
+| Server-side evidence hash verification on page load | `main` | Implemented |
+| Hash verification banner in left panel | `main` | Implemented |
+| Consumer / Inspector dual-mode UI | `main` | Implemented |
+| PassportSummary — trust score, claims at a glance | `main` | Implemented |
+| Always-visible AI chat in right panel | `main` | Implemented |
+| Evidence hash in HCS timeline links to Sui Explorer | `main` | Implemented |
+| FDA-style nutrition facts table | `main` | Implemented |
+| Ingredient cards with claim tag chips | `main` | Implemented |
 | Admin action to add final pesticide residue claim | `main` | Implemented |
 | Tamper detection demo (`/demo/tamper`) | `feat/tamper-detection` | Implemented on separate branch |
 | Tamper-check API (`/api/demo/tamper-check`) | `feat/tamper-detection` | Implemented on separate branch |
@@ -87,7 +97,7 @@ The AI agent is the consumer-facing verifier and explainer. It is powered by:
 - LangGraph ReAct tool-calling loop
 - Custom Proof of Plate tools for Sui-shaped data, HCS events, evidence retrieval, and hash verification
 
-This is not keyword matching. The agent uses a real tool-calling loop and is instructed never to answer from model training knowledge.
+This is not keyword matching. The agent uses a real tool-calling loop and is instructed never to answer from model training knowledge. If a topic has no on-chain claim, the agent says so clearly and gives a helpful response rather than refusing.
 
 ---
 
@@ -141,7 +151,28 @@ The current workspace is configured with real testnet artifacts.
   - Ultra-filtered
   - Pasteurized
 - Allergen: Milk
-- Storage: Keep refrigerated at or below 40 F. Use within 7 days after opening.
+- Storage: Keep refrigerated at or below 40°F. Use within 7 days after opening.
+
+### Nutrition Facts (FDA-style table)
+
+| Label | Amount | % Daily Value |
+|---|---|---|
+| Calories | 80 | — |
+| Total Fat | 2.5g | 3% |
+| → Saturated Fat | 1.5g | 8% |
+| → Trans Fat | 0g | — |
+| Cholesterol | 15mg | 5% |
+| Sodium | 95mg | 4% |
+| Total Carbohydrate | 6g | 2% |
+| → Dietary Fiber | 0g | 0% |
+| → Total Sugars | 6g | — |
+| **Protein** | **13g** | **26%** |
+| Calcium | 350mg | 25% |
+| Vitamin D | 3.7mcg | 20% |
+| Potassium | 420mg | 10% |
+| Vitamin A | 150mcg RAE | 15% |
+
+The UI renders this as an FDA-style nutrition facts panel with thick dividers, bolded Calories header, indented sub-rows, and a % Daily Values column. Data is stored as `NutritionFact[]` on `ProductBatch` in `lib/types.ts`.
 
 ### Ingredients
 
@@ -151,6 +182,8 @@ The current workspace is configured with real testnet artifacts.
 | Lactase enzyme | Lactose breakdown aid | `lactose_free` |
 | Vitamin A palmitate | Vitamin fortification | none |
 | Vitamin D3 | Vitamin fortification | none |
+
+Ingredients render as cards with claim tag chips. Each chip links to the relevant on-chain claim.
 
 ---
 
@@ -203,6 +236,55 @@ Next.js Frontend (apps/web)
 
 ---
 
+## Frontend
+
+The passport UI is a two-column layout: sticky left panel + scrollable right panel on desktop, bottom tab bar on mobile.
+
+### Left Panel
+
+- **Dark navy hero** — product name, batch ID, verification score ring, Consumer / Inspector mode toggle, recall badge
+- **Stat strip** — claims count, HCS events count, verification speed vs FDA recall window
+- **Hash verification banner** — auto-runs server-side SHA-256 check on every page load; shows `N/N hashes verified` in green or a warning listing which claim mismatched
+- **Supply chain journey** — visual step tracker (Farm → Facility → Lab → Certified) with HCS sequence ranges, progress bar, larger icons (38px), thicker connector line (3px)
+- **Product details** — net contents, serving size, allergens, storage; FDA-style nutrition facts table; ingredient cards with claim tag chips
+- **Footer** — Sui Explorer and HashScan links for the batch object and HCS topic
+
+### Right Panel
+
+The right panel has a fixed top section that is always visible, followed by two tabs.
+
+**Always-visible top section:**
+
+- **PassportSummary** — trust score percentage, hash check result (N/N), recall status badge, claims-at-a-glance table (dot + name + status per claim), plain-English "What This Means" paragraph
+- **AI chat** — always visible directly below the summary; Claude answers questions about the product using live on-chain data; responses include clickable Sui Explorer / HashScan links (rendered by `renderLinks()`); quick-question chips for common queries; verification context injected automatically so the agent already knows hash status
+
+**Tab: Claims**
+
+- Expandable claim rows with status indicators (✅ / ⚠️ / ❌)
+- Inspector-only detail grid: HCS sequence, Sui object ID, evidence hash with copy button, hash verification badge
+- Sui Explorer and HashScan links per claim
+- "Verify Hash" button fetches and compares evidence on demand
+- Tamper detection panel below claims
+
+**Tab: Trace**
+
+- Hedera HCS audit log with timeline dots
+- Each event shows: claim type, issuer role, timestamp (inspector-only: transaction ID)
+- Evidence hash displayed as a short hash link (`0xABCD…`) that links to the Sui claim object anchoring that hash
+
+### Consumer / Inspector Mode
+
+Toggle in the hero switches between two CSS classes on `<body>`:
+
+- **Consumer** — hides blockchain IDs, transaction hashes, and technical detail (`.inspector-only` elements hidden)
+- **Inspector** — reveals Sui object IDs, HCS sequences, evidence hashes, and full transaction IDs
+
+### Tab Implementation Note
+
+Tab show/hide uses inline `style={{ display: tab === X ? "block" : "none" }}` instead of CSS class toggling. This avoids `!important` conflicts from responsive stylesheets that would otherwise force all panels visible on desktop.
+
+---
+
 ## Data Flow
 
 1. Evidence JSON files are created and committed to the repository.
@@ -211,7 +293,11 @@ Next.js Frontend (apps/web)
 4. `submit-hcs-events.ts` submits one HCS message per claim and writes `data/hcs-events.json`.
 5. `deploy-sui.ts` records the Sui package ID in `data/deployment.json`.
 6. `seed-sui-batch.ts` creates the Sui batch and finalizes claims using evidence hashes and HCS sequence numbers.
-7. The product page reads `data/deployment.json` and `data/hcs-events.json`.
+7. The product page (`app/p/[batchId]/page.tsx`) runs server-side:
+   - reads `deployment.json` and `hcs-events.json`
+   - runs `verifyEvidenceHash()` for every claim (SHA-256 against the on-chain hash)
+   - builds a `verifContext` string with pass/fail per claim
+   - passes the context to `AgentChat` so every AI response is hash-aware
 8. The AI agent answers questions through tool calls against the batch, claims, HCS events, and evidence hashes.
 9. The admin demo action runs `demo-add-claim.ts`, which adds the final pesticide residue claim and updates the score to `5/6`.
 
@@ -334,19 +420,31 @@ File: `apps/web/lib/agent.ts`
 | `get_topic_messages_query_tool` | Hedera Agent Kit | Optional live HCS topic message query |
 | `get_topic_info_query_tool` | Hedera Agent Kit | Optional live HCS topic metadata query |
 
-Hedera Agent Kit tools are attached only when Hedera credentials are present.
+Hedera Agent Kit tools are attached only when Hedera credentials are present. The agent is stateless per-request — a new instance is created on each API call. Conversation history is reconstructed from the client-sent `history` array.
 
 ### Agent Rules
 
 The system prompt enforces these rules:
 
-1. Never answer from model training knowledge. Always call the appropriate tool first.
-2. Always call `get_batch` and `get_claims` before answering any product question.
-3. For any cited claim, call `verify_evidence_hash` to confirm authenticity.
-4. Clearly distinguish verified facts, warning claims, and missing evidence.
-5. Always cite sources: Sui claim object ID, HCS sequence number, and evidence file.
-6. If a claim is warning-level, explain exactly why it is not fully verified.
-7. Keep answers consumer-readable.
+1. Always call `get_batch` and `get_claims` before answering any product question.
+2. For any cited claim, call `verify_evidence_hash` to confirm authenticity.
+3. Distinguish clearly: ✅ VERIFIED (hash match + Sui verified), ⚠️ ADVISORY (declaration only, no lab proof), ❌ NOT CERTIFIED (no claim exists on-chain).
+4. If a question is about something NOT in the claims (e.g. kosher, vegan, organic), say clearly "This product has no certified claim for that on-chain" and explain what IS verified. Never refuse to answer.
+5. Write like talking to a shopper, not an engineer. Plain English. No blockchain jargon unless the user asks.
+6. When referencing a Sui object or Hedera topic, include the full explorer URL so it renders as a clickable link (e.g. `https://suiscan.xyz/testnet/object/OBJECT_ID` or `https://hashscan.io/testnet/topic/TOPIC_ID`).
+7. Keep answers concise — 3–6 sentences for simple questions, bullet points for multi-part answers.
+
+Answer format (adapted as needed):
+
+```
+[Direct yes/no or short answer in plain English]
+
+[1–3 bullet points of key verified facts, each with ✅ or ⚠️]
+
+[1 line: where to verify — include the explorer URL]
+```
+
+If the question is conversational or about a topic with no claim, answer helpfully in 2–3 sentences.
 
 ### Chat API
 
@@ -358,11 +456,22 @@ Request body:
 {
   "batchId": "TB-MILK-0612",
   "question": "Is this actually lactose-free?",
-  "history": []
+  "history": [],
+  "context": "Evidence hash verification (auto-checked on page load):\n- Lactose-free lab test passed: VERIFIED\n..."
 }
 ```
 
-The API reconstructs prior turns as LangChain messages, injects the batch ID into the question, invokes the agent, and returns `{ "answer": "..." }`.
+The `context` field is optional. When present, it is prepended to the question as a system-level note (not repeated verbatim in the answer). It carries the server-side hash verification results so the agent can answer hash-related questions without re-running verification. The API reconstructs prior turns as LangChain messages, injects the batch ID and context into the question, invokes the agent, and returns `{ "answer": "..." }`.
+
+### Link Rendering
+
+`AgentChat` and any future chat surfaces use a `renderLinks()` function that converts bare URLs in agent answers into labelled `<a>` tags:
+
+- `suiscan.xyz` → "Sui Explorer"
+- `hashscan.io` → "HashScan"
+- Other URLs → the hostname as label
+
+Links open in a new tab and carry `rel="noopener noreferrer"`.
 
 ---
 
@@ -390,7 +499,24 @@ SHA-256 is computed over raw file bytes. Hashes are formatted as:
 0x<lowercase hex digest>
 ```
 
-Each claim stores the expected evidence hash. The UI can recompute the actual hash and show whether the file still matches the claim.
+Each claim stores the expected evidence hash. The page server component recomputes all hashes on every page load via `verifyEvidenceHash()` in `lib/evidence.ts` and displays the result in the hash verification banner.
+
+### Server-Side Auto-Verification
+
+`app/p/[batchId]/page.tsx` runs server-side hash verification for every claim before rendering:
+
+```typescript
+const verifResults: VerifRow[] = claims.map(claim => {
+  try {
+    const r = verifyEvidenceHash(claim.evidenceUri, claim.evidenceHash);
+    return { claimType: claim.claimType, label: claim.label, ok: r.ok };
+  } catch {
+    return { claimType: claim.claimType, label: claim.label, ok: false };
+  }
+});
+```
+
+Results are shown in the `HashVerificationBanner` (left panel) and passed as `verifContext` to `AgentChat`.
 
 ### Evidence Path Guard
 
@@ -402,6 +528,14 @@ Each claim stores the expected evidence hash. The UI can recompute the actual ha
 - `..` traversal segments
 - Non-JSON files
 - Paths that resolve outside `public/evidence/`
+
+### Evidence Hash in HCS Timeline
+
+`LifecycleTimeline` displays each HCS event's evidence hash as a short clickable link (`0xABCD…`) that points to the Sui claim object anchoring that hash. The mapping is built from `claims` by matching `claimType`:
+
+```typescript
+const claimSuiMap = new Map(claims.map(c => [c.claimType, c.suiObjectId]));
+```
 
 ---
 
@@ -463,7 +597,7 @@ A fraudulent version of `lab-results.json` changes the lactose result from a pas
 | `GET /api/claims/[batchId]` | Returns all claims for a batch |
 | `GET /api/hcs/[topicId]` | Returns HCS events from `hcs-events.json` |
 | `GET /api/evidence?uri=&expectedHash=` | Returns evidence document and hash verification result |
-| `POST /api/chat` | Runs the Hedera Agent Kit + Claude ReAct verifier |
+| `POST /api/chat` | Runs the Hedera Agent Kit + Claude ReAct verifier; accepts optional `context` field |
 | `POST /api/demo/add-claim` | Runs `demo-add-claim.ts` |
 
 ### `feat/tamper-detection`
@@ -535,7 +669,8 @@ proof-of-plate/
     web/
       app/
         page.tsx                         Redirects to /p/TB-MILK-0612
-        p/[batchId]/page.tsx             Consumer product passport
+        globals.css                      Design tokens + all component styles
+        p/[batchId]/page.tsx             Consumer product passport (RSC, runs hash verification)
         p/[batchId]/ingredients/[slug]/page.tsx
         ingredients/[slug]/page.tsx
         admin/page.tsx                   Demo controls
@@ -544,27 +679,33 @@ proof-of-plate/
           claims/[batchId]/route.ts
           hcs/[topicId]/route.ts
           evidence/route.ts
-          chat/route.ts                  Hedera Agent Kit + Claude
+          chat/route.ts                  Hedera Agent Kit + Claude; accepts context field
           demo/add-claim/route.ts
       components/
-        AgentChat.tsx
-        ClaimList.tsx
-        DemoControls.tsx
-        EvidenceDrawer.tsx
-        LifecycleTimeline.tsx
-        ProductHeader.tsx
-        ProductInfo.tsx
-        VerificationScore.tsx
+        AgentChat.tsx                    AI chat with link rendering + verification context
+        ClaimList.tsx                    Expandable claims with hash verification
+        DemoControls.tsx                 Admin demo button
+        EvidenceDrawer.tsx               Evidence document viewer
+        LifecycleTimeline.tsx            HCS audit log; evidence hash links to Sui claim object
+        ModeToggle.tsx                   Consumer / Inspector toggle
+        PassportRight.tsx                Right panel: summary+chat always-on, Claims/Trace tabs
+        PassportSummary.tsx              Trust score, hash check, recall, claims at a glance
+        ProductHeader.tsx                Dark navy hero, score ring, mode toggle
+        ProductInfo.tsx                  FDA nutrition facts table, ingredient cards with claim tags
+        StatStrip.tsx                    3-stat bar (claims, HCS events, speed)
+        SupplyChainJourney.tsx           Farm → Facility → Lab → Certified tracker
+        TamperDetection.tsx              Hash diff demo
+        VerificationScore.tsx            Score ring component
       lib/
-        agent.ts
-        claims.ts
-        data.ts
-        evidence.ts
-        explorer-links.ts
-        files.ts
-        hedera.ts
-        sui.ts
-        types.ts
+        agent.ts                         Claude ReAct agent with Sui + Hedera + evidence tools
+        claims.ts                        Claim helpers
+        data.ts                          deployment.json + hcs-events.json readers; nutrition data
+        evidence.ts                      SHA-256 hash verification + path guard
+        explorer-links.ts                Sui Explorer + HashScan URL builders
+        files.ts                         File read utilities
+        hedera.ts                        Hedera client setup
+        sui.ts                           Sui helpers
+        types.ts                         ProductBatch, Claim, HcsEvent, NutritionFact
   contracts/
     sui/
       Move.toml
@@ -620,6 +761,12 @@ https://hashscan.io/testnet/transaction/{transactionId}
 
 Local-placeholder IDs are rendered as plain monospace text instead of external links.
 
+Evidence hash links in the HCS timeline (`LifecycleTimeline`) point to the Sui claim object for that claim type:
+
+```text
+https://suiscan.xyz/testnet/object/{claimSuiObjectId}
+```
+
 ---
 
 ## Success Criteria
@@ -632,8 +779,11 @@ The final demo should prove:
 4. The UI displays real HCS sequence numbers and Sui object IDs with working explorer links.
 5. The AI agent uses Hedera Agent Kit tools and Claude to answer through tool calls, not keyword matching.
 6. The AI agent correctly surfaces the pesticide warning: supplier declaration exists, but no final lab test exists yet.
-7. A live-style claim can be added through the admin demo action and finalized into local deployment data, with Sui/Hedera testnet calls used when credentials and CLI support are present.
-8. On `feat/tamper-detection`, the tamper detection demo catches modified evidence by hash mismatch and shows the diff.
+7. The AI agent handles off-topic questions gracefully (e.g. "Is this kosher?") by stating no on-chain claim exists and describing what IS verified.
+8. Server-side hash verification runs on every page load; the banner shows `N/N hashes verified` without any client-side JS.
+9. Evidence hashes in the HCS timeline link to the Sui claim object that anchors them.
+10. A live-style claim can be added through the admin demo action and finalized into local deployment data.
+11. On `feat/tamper-detection`, the tamper detection demo catches modified evidence by hash mismatch and shows the diff.
 
 ---
 
@@ -642,17 +792,21 @@ The final demo should prove:
 ### Main branch demo
 
 1. Open `/p/TB-MILK-0612`.
-2. Show the score: `4/5 verified`.
-3. Show the Sui batch and claim links on `suiscan.xyz/testnet`.
-4. Show the Hedera HCS topic and timeline on `hashscan.io/testnet`.
-5. Ask the AI agent: "Is this actually lactose-free?"
-   - Expected behavior: agent calls `get_batch`, `get_claims`, `get_evidence`, and `verify_evidence_hash`, then returns a verified answer with Sui claim object ID and HCS sequence #1.
-6. Ask: "Were pesticides used?"
-   - Expected behavior: agent explains the supplier declaration exists at HCS sequence #5 but the claim is only warning-level because no final residue lab test exists in the initial state.
-7. Open `/admin`.
-8. Click "Add final residue test".
-9. Refresh the product page.
-10. Show the added claim and updated score `5/6`.
+2. Note the hash verification banner — **5/5 hashes verified** (or 6/6 after admin action) loaded server-side.
+3. Check the **PassportSummary** at the top of the right panel — trust score %, hash check, recall status, claims at a glance.
+4. Ask the AI (chat visible directly below summary): **"Is this lactose-free?"**
+   - Expected: agent calls `get_batch`, `get_claims`, `get_evidence`, `verify_evidence_hash`, returns verified answer with Sui claim object link and HCS sequence #1.
+5. Ask: **"Were pesticides used?"**
+   - Expected: agent explains supplier declaration exists at HCS sequence #5 but claim is only ⚠️ advisory because no final residue lab test exists in the initial state.
+6. Ask: **"Is this kosher?"**
+   - Expected: agent says no kosher certification claim exists on-chain, explains what IS verified.
+7. Show the score: **4/5 verified**.
+8. Click the **Trace** tab — HCS audit log with evidence hash links to Sui claim objects.
+9. Switch to **Inspector mode** — Sui object IDs, HCS sequences, and evidence hashes appear throughout.
+10. Click **Claims** tab — expand a claim to see full hash detail and "Verify Hash" button.
+11. Open `/admin`.
+12. Click **Add final residue test**.
+13. Refresh `/p/TB-MILK-0612` — new claim and updated score **5/6** visible.
 
 ### Tamper branch demo
 

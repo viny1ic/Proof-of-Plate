@@ -18,25 +18,30 @@ function getHederaToolkit() {
   const accountId = process.env.HEDERA_ACCOUNT_ID;
   const privateKey = process.env.HEDERA_PRIVATE_KEY;
   if (!accountId || !privateKey) return null;
-  const raw = privateKey.startsWith("0x") ? privateKey.slice(2) : privateKey;
-  const client = Client.forTestnet().setOperator(
-    accountId,
-    PrivateKey.fromStringECDSA(raw)
-  );
-  _toolkit = new HederaLangchainToolkit({
-    client,
-    configuration: {
-      plugins: allCorePlugins,
-      context: { mode: AgentMode.AUTONOMOUS },
-    },
-  });
+  try {
+    const raw = privateKey.startsWith("0x") ? privateKey.slice(2) : privateKey;
+    const client = Client.forTestnet().setOperator(
+      accountId,
+      PrivateKey.fromStringECDSA(raw)
+    );
+    _toolkit = new HederaLangchainToolkit({
+      client,
+      configuration: {
+        plugins: allCorePlugins,
+        context: { mode: AgentMode.AUTONOMOUS },
+      },
+    });
+  } catch (err) {
+    console.error("Hedera toolkit init failed — live HCS tools disabled:", err);
+    return null;
+  }
   return _toolkit;
 }
 
 // ─── Custom Proof of Plate tools ─────────────────────────────────────────────
 
 const getBatchTool = tool(
-  async ({ batchId }) => {
+  async ({ batchId }: { batchId: string }) => {
     try {
       const batch = getBatch(batchId);
       return JSON.stringify(batch);
@@ -53,7 +58,7 @@ const getBatchTool = tool(
 );
 
 const getClaimsTool = tool(
-  async ({ batchId }) => {
+  async ({ batchId }: { batchId: string }) => {
     try {
       const claims = getClaims(batchId);
       return JSON.stringify(claims);
@@ -70,7 +75,7 @@ const getClaimsTool = tool(
 );
 
 const getLocalHcsEventsTool = tool(
-  async ({ batchId }) => {
+  async ({ batchId }: { batchId: string }) => {
     try {
       const claims = getClaims(batchId);
       const topicId = claims[0]?.hcsTopicId;
@@ -90,7 +95,7 @@ const getLocalHcsEventsTool = tool(
 );
 
 const getEvidenceTool = tool(
-  async ({ uri }) => {
+  async ({ uri }: { uri: string }) => {
     try {
       const doc = getEvidence(uri);
       return JSON.stringify(doc);
@@ -107,7 +112,7 @@ const getEvidenceTool = tool(
 );
 
 const verifyHashTool = tool(
-  async ({ uri, expectedHash }) => {
+  async ({ uri, expectedHash }: { uri: string; expectedHash: string }) => {
     try {
       const result = verifyEvidenceHash(uri, expectedHash);
       return JSON.stringify(result);
@@ -127,36 +132,30 @@ const verifyHashTool = tool(
 );
 
 // ─── Agent factory ────────────────────────────────────────────────────────────
+const SYSTEM_PROMPT = `You are the Proof of Plate AI — a friendly food transparency assistant that helps everyday consumers understand what's in their food and how it was verified.
 
-const SYSTEM_PROMPT = `You are the Proof of Plate AI verifier — a consumer-facing agent that answers questions about food product authenticity.
+You have access to tools to look up:
+- Sui blockchain: final verified claims, evidence hashes, verification score
+- Hedera HCS: tamper-proof audit trail of every claim submission
+- Evidence documents: lab results, processing logs, maintenance records
 
-You have access to tools that let you inspect:
-- Sui blockchain: final product truth (batch, claims, evidence hashes, verification score)
-- Hedera HCS: ordered intake and audit trail (claim submission events, sequence numbers, timestamps)
-- Evidence documents: static JSON files with lab results, processing logs, maintenance records
+RULES:
+1. Always call get_batch and get_claims before answering anything about a product.
+2. For claims you cite, call verify_evidence_hash to confirm authenticity.
+3. Distinguish clearly: ✅ VERIFIED (hash match + Sui verified), ⚠️ ADVISORY (declaration only, no lab proof), ❌ NOT CERTIFIED (no claim exists).
+4. If a question is about something NOT in the claims (e.g. kosher, vegan, organic), say clearly "This product has no certified claim for that on-chain" and explain what IS verified. Never refuse to answer.
+5. Write like you're talking to a shopper, not an engineer. Plain English. No blockchain jargon unless the user asks.
+6. When you reference a Sui object or Hedera topic, include the full explorer URL so it renders as a clickable link (e.g. https://suiscan.xyz/testnet/object/OBJECT_ID or https://hashscan.io/testnet/topic/TOPIC_ID).
+7. Keep answers concise — 3–6 sentences for simple questions, bullet points for multi-part answers.
 
-RULES — follow these strictly:
-1. Never answer from your training knowledge. Always call the appropriate tool first.
-2. Always call get_batch and get_claims before answering any question about a product.
-3. For any claim you cite, call verify_evidence_hash to confirm the evidence is authentic.
-4. Clearly distinguish: VERIFIED facts (hash matches + Sui status verified), WARNING claims (declaration only, no lab test), and MISSING evidence.
-5. Always cite your sources: Sui claim object, HCS sequence number, and evidence file.
-6. If a claim has status "warning", explain exactly why it is not fully verified.
-7. Keep answers consumer-readable — plain language, no blockchain jargon unless explaining it.
+Answer format (adapt as needed):
+[Direct yes/no or short answer in plain English]
 
-Answer format:
-Short direct answer.
+[1–3 bullet points of key verified facts, each with ✅ or ⚠️]
 
-Verified evidence:
-- ...
+[1 line: where to verify — include the explorer URL]
 
-Caveats:
-- ...
-
-Sources:
-- Sui claim: ...
-- HCS sequence: #...
-- Evidence: ...`;
+If the question is conversational or about a topic with no claim, just answer helpfully in 2–3 sentences.`;
 
 export function createProofOfPlateAgent() {
   const llm = new ChatAnthropic({
