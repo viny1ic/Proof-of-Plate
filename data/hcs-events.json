@@ -1,0 +1,75 @@
+{
+  "topicId": "0.0.9219010",
+  "events": [
+    {
+      "v": "1.0",
+      "type": "CLAIM_SUBMITTED",
+      "batchId": "TB-MILK-0612",
+      "claimType": "lactose_free",
+      "issuerRole": "lab",
+      "issuerName": "Proof of Plate Demo Lab",
+      "evidenceUri": "/evidence/lab-results.json",
+      "evidenceHash": "0x6a4cc2d18348f93aa727089a66fbeec8778039b73762401bdb747fb8629a16c7",
+      "createdAt": "2026-06-12T21:00:00.000Z",
+      "sequenceNumber": 1,
+      "transactionId": "0.0.9185855@1781309926.486473244",
+      "consensusTimestamp": "2026-06-13T00:18:50Z"
+    },
+    {
+      "v": "1.0",
+      "type": "CLAIM_SUBMITTED",
+      "batchId": "TB-MILK-0612",
+      "claimType": "ultra_filtered",
+      "issuerRole": "facility",
+      "issuerName": "Proof of Plate Demo Facility",
+      "evidenceUri": "/evidence/processing-log.json",
+      "evidenceHash": "0xcdf7cec86c2f24997edc55c2a8188d20c5a4f656d40551d9b7712878f1a54ba7",
+      "createdAt": "2026-06-12T21:01:00.000Z",
+      "sequenceNumber": 2,
+      "transactionId": "0.0.9185855@1781309930.522476202",
+      "consensusTimestamp": "2026-06-13T00:18:52Z"
+    },
+    {
+      "v": "1.0",
+      "type": "CLAIM_SUBMITTED",
+      "batchId": "TB-MILK-0612",
+      "claimType": "pasteurized",
+      "issuerRole": "facility",
+      "issuerName": "Proof of Plate Demo Facility",
+      "evidenceUri": "/evidence/processing-log.json",
+      "evidenceHash": "0xcdf7cec86c2f24997edc55c2a8188d20c5a4f656d40551d9b7712878f1a54ba7",
+      "createdAt": "2026-06-12T21:02:00.000Z",
+      "sequenceNumber": 3,
+      "transactionId": "0.0.9185855@1781309930.881751870",
+      "consensusTimestamp": "2026-06-13T00:18:54Z"
+    },
+    {
+      "v": "1.0",
+      "type": "CLAIM_SUBMITTED",
+      "batchId": "TB-MILK-0612",
+      "claimType": "equipment_cleaned",
+      "issuerRole": "facility",
+      "issuerName": "Proof of Plate Demo Facility",
+      "evidenceUri": "/evidence/maintenance-log.json",
+      "evidenceHash": "0xc2c59a2b05101014a0b355c321cdf36340fa223eb36232338eae8e1d06bc4341",
+      "createdAt": "2026-06-12T21:03:00.000Z",
+      "sequenceNumber": 4,
+      "transactionId": "0.0.9185855@1781309930.057087137",
+      "consensusTimestamp": "2026-06-13T00:18:55Z"
+    },
+    {
+      "v": "1.0",
+      "type": "CLAIM_SUBMITTED",
+      "batchId": "TB-MILK-0612",
+      "claimType": "feed_pesticide_declaration",
+      "issuerRole": "supplier",
+      "issuerName": "Proof of Plate Demo Feed Supplier",
+      "evidenceUri": "/evidence/feed-declaration.json",
+      "evidenceHash": "0x27c7b08d0e3cabfefa2ed623778f83c45c5c8125264c3674630608e546bab5f9",
+      "createdAt": "2026-06-12T21:04:00.000Z",
+      "sequenceNumber": 5,
+      "transactionId": "0.0.9185855@1781309934.483720972",
+      "consensusTimestamp": "2026-06-13T00:18:57Z"
+    }
+  ]
+}

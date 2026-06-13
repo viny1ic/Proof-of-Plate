@@ -1,0 +1,150 @@
+{
+  "mode": "testnet",
+  "batch": {
+    "batchId": "TB-MILK-0612",
+    "productName": "Proof of Plate Ultra-Filtered Milk",
+    "category": "Dairy",
+    "description": "Ultra-filtered lowfat milk with lactase enzyme and vitamin fortification. Built as a Proof of Plate product passport for label-claim verification.",
+    "netContents": "52 fl oz (1.54 L)",
+    "servingSize": "1 cup (240 mL)",
+    "servingsPerContainer": "About 6",
+    "nutritionHighlights": [
+      "13g protein per serving",
+      "Lactose-free",
+      "Ultra-filtered",
+      "Pasteurized"
+    ],
+    "allergens": [
+      "Milk"
+    ],
+    "storageInstructions": "Keep refrigerated at or below 40 F. Use within 7 days after opening.",
+    "ingredients": [
+      {
+        "slug": "ultra-filtered-lowfat-milk",
+        "name": "Ultra-filtered lowfat milk",
+        "role": "Primary dairy base",
+        "source": "Proof of Plate Demo Dairy Cooperative",
+        "description": "Lowfat milk concentrated through ultra-filtration to increase protein density while reducing lactose and some sugars.",
+        "verificationNote": "Linked to the ultra-filtration, pasteurization, and lactose-free claims for this batch.",
+        "relatedClaimTypes": [
+          "ultra_filtered",
+          "pasteurized",
+          "lactose_free"
+        ]
+      },
+      {
+        "slug": "lactase-enzyme",
+        "name": "Lactase enzyme",
+        "role": "Lactose breakdown aid",
+        "source": "Proof of Plate Demo Ingredient Supplier",
+        "description": "Food-grade lactase enzyme used to break lactose into simpler sugars as part of the lactose-free process.",
+        "verificationNote": "Supported by the lactose-free lab result evidence for the finished batch.",
+        "relatedClaimTypes": [
+          "lactose_free"
+        ]
+      },
+      {
+        "slug": "vitamin-a-palmitate",
+        "name": "Vitamin A palmitate",
+        "role": "Vitamin fortification",
+        "source": "Proof of Plate Demo Nutrient Supplier",
+        "description": "Vitamin A fortificant commonly added to lowfat dairy products to restore vitamin A levels after fat reduction.",
+        "verificationNote": "Included as product formulation information; not represented as a separate verified label claim.",
+        "relatedClaimTypes": []
+      },
+      {
+        "slug": "vitamin-d3",
+        "name": "Vitamin D3",
+        "role": "Vitamin fortification",
+        "source": "Proof of Plate Demo Nutrient Supplier",
+        "description": "Vitamin D3 fortificant added to support the product nutrition profile for the demo milk batch.",
+        "verificationNote": "Included as product formulation information; not represented as a separate verified label claim.",
+        "relatedClaimTypes": []
+      }
+    ],
+    "hcsTopicId": "0.0.9219010",
+    "scoreVerified": 4,
+    "scoreTotal": 5,
+    "recalled": false,
+    "createdAt": "2026-06-13T00:21:10Z",
+    "suiPackageId": "0x4d456546f2254ef39edbacda57b87d0cbb9a808e41d225362c0fa9dca46e100c",
+    "suiBatchObjectId": "0xd73ce78b97ebe620044ac0e107c536458d228437f2d305305ee77f2093250193"
+  },
+  "claims": [
+    {
+      "batchId": "TB-MILK-0612",
+      "claimType": "lactose_free",
+      "label": "Lactose-free lab test passed",
+      "status": "verified",
+      "issuerRole": "lab",
+      "issuerName": "Proof of Plate Demo Lab",
+      "evidenceUri": "/evidence/lab-results.json",
+      "evidenceHash": "0x6a4cc2d18348f93aa727089a66fbeec8778039b73762401bdb747fb8629a16c7",
+      "hcsTopicId": "0.0.9219010",
+      "hcsSequence": 1,
+      "suiObjectId": "0x7a5242b543e7c20e584e8d4045bb277226a826c2cecd95f4f9b8f8083dddf345",
+      "createdAt": "2026-06-13T00:18:50Z"
+    },
+    {
+      "batchId": "TB-MILK-0612",
+      "claimType": "ultra_filtered",
+      "label": "Ultra-filtration completed",
+      "status": "verified",
+      "issuerRole": "facility",
+      "issuerName": "Proof of Plate Demo Facility",
+      "evidenceUri": "/evidence/processing-log.json",
+      "evidenceHash": "0xcdf7cec86c2f24997edc55c2a8188d20c5a4f656d40551d9b7712878f1a54ba7",
+      "hcsTopicId": "0.0.9219010",
+      "hcsSequence": 2,
+      "suiObjectId": "0x0a34481f337ecd4e08c001cb8181cd9ddf5bdcd392388c2985d9bfaef42656bb",
+      "createdAt": "2026-06-13T00:18:52Z"
+    },
+    {
+      "batchId": "TB-MILK-0612",
+      "claimType": "pasteurized",
+      "label": "Pasteurization completed",
+      "status": "verified",
+      "issuerRole": "facility",
+      "issuerName": "Proof of Plate Demo Facility",
+      "evidenceUri": "/evidence/processing-log.json",
+      "evidenceHash": "0xcdf7cec86c2f24997edc55c2a8188d20c5a4f656d40551d9b7712878f1a54ba7",
+      "hcsTopicId": "0.0.9219010",
+      "hcsSequence": 3,
+      "suiObjectId": "0x9512a099b57d0f1990d3716771104975e4e139a58ad41770de0424c5956f0bc4",
+      "createdAt": "2026-06-13T00:18:54Z"
+    },
+    {
+      "batchId": "TB-MILK-0612",
+      "claimType": "equipment_cleaned",
+      "label": "CIP cleaning completed",
+      "status": "verified",
+      "issuerRole": "facility",
+      "issuerName": "Proof of Plate Demo Facility",
+      "evidenceUri": "/evidence/maintenance-log.json",
+      "evidenceHash": "0xc2c59a2b05101014a0b355c321cdf36340fa223eb36232338eae8e1d06bc4341",
+      "hcsTopicId": "0.0.9219010",
+      "hcsSequence": 4,
+      "suiObjectId": "0xa29f6bee487ed365782fb49ea8bbf038cdfe76f54ca59f38dc343b85cfe43c40",
+      "createdAt": "2026-06-13T00:18:55Z"
+    },
+    {
+      "batchId": "TB-MILK-0612",
+      "claimType": "feed_pesticide_declaration",
+      "label": "Feed pesticide declaration available",
+      "status": "warning",
+      "issuerRole": "supplier",
+      "issuerName": "Proof of Plate Demo Feed Supplier",
+      "evidenceUri": "/evidence/feed-declaration.json",
+      "evidenceHash": "0x27c7b08d0e3cabfefa2ed623778f83c45c5c8125264c3674630608e546bab5f9",
+      "hcsTopicId": "0.0.9219010",
+      "hcsSequence": 5,
+      "suiObjectId": "0x5866a7de2068d49b625caa2d86e9218d9c998bab5b1bb1d878ccb5030a90bc61",
+      "createdAt": "2026-06-13T00:18:57Z",
+      "reason": "Supplier declaration exists, but no final pesticide residue lab test exists."
+    }
+  ],
+  "hcs": {
+    "topicId": "0.0.9219010",
+    "network": "testnet"
+  }
+}

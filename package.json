@@ -1,0 +1,27 @@
+{
+  "name": "proof-of-plate",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "npm --workspace apps/web run dev",
+    "build": "npm --workspace apps/web run build",
+    "typecheck": "npm --workspace apps/web run typecheck",
+    "hash:evidence": "tsx scripts/hash-evidence.ts",
+    "hedera:create-topic": "tsx scripts/create-hcs-topic.ts",
+    "hedera:submit": "tsx scripts/submit-hcs-events.ts",
+    "sui:deploy": "tsx scripts/deploy-sui.ts",
+    "sui:seed": "tsx scripts/seed-sui-batch.ts",
+    "demo:add-claim": "tsx scripts/demo-add-claim.ts",
+    "demo:seed": "npm run hash:evidence && npm run hedera:create-topic && npm run hedera:submit && npm run sui:deploy && npm run sui:seed"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  },
+  "optionalDependencies": {
+    "@hashgraph/sdk": "^2.67.0"
+  }
+}

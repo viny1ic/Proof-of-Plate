@@ -1,0 +1,25 @@
+{
+  "documentId": "LAB-002",
+  "title": "Final Pesticide Residue Test",
+  "issuerRole": "lab",
+  "issuerName": "Proof of Plate Demo Lab",
+  "batchId": "TB-MILK-0612",
+  "issuedAt": "2026-06-13T00:02:49.377Z",
+  "facts": [
+    {
+      "key": "finished_product_residue_test",
+      "value": "Completed for final packaged milk batch",
+      "result": "pass"
+    },
+    {
+      "key": "screened_pesticide_panel",
+      "value": "No demo panel residues detected above Proof of Plate reporting threshold",
+      "result": "pass"
+    },
+    {
+      "key": "pesticide_residue_detected",
+      "value": false,
+      "result": "pass"
+    }
+  ]
+}

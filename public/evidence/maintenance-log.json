@@ -1,0 +1,25 @@
+{
+  "documentId": "MAINT-001",
+  "title": "CIP Cleaning and Equipment Maintenance Log",
+  "issuerRole": "facility",
+  "issuerName": "Proof of Plate Demo Facility",
+  "batchId": "TB-MILK-0612",
+  "issuedAt": "2026-06-12T19:50:00Z",
+  "facts": [
+    {
+      "key": "cip_cycle",
+      "value": "Completed before batch processing",
+      "result": "pass"
+    },
+    {
+      "key": "cleaning_solution_concentration",
+      "value": "Within demo facility operating range",
+      "result": "pass"
+    },
+    {
+      "key": "filter_membrane_inspection",
+      "value": "No tear or pressure anomaly observed",
+      "result": "pass"
+    }
+  ]
+}

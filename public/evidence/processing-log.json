@@ -1,0 +1,27 @@
+{
+  "documentId": "PROC-001",
+  "title": "Ultra-Filtration and Pasteurization Processing Log",
+  "issuerRole": "facility",
+  "issuerName": "Proof of Plate Demo Facility",
+  "batchId": "TB-MILK-0612",
+  "issuedAt": "2026-06-12T20:35:00Z",
+  "facts": [
+    {
+      "key": "ultra_filtration",
+      "value": "Completed through membrane skid UF-7",
+      "result": "pass"
+    },
+    {
+      "key": "pasteurization_temperature_c",
+      "value": 72,
+      "unit": "C",
+      "result": "pass"
+    },
+    {
+      "key": "pasteurization_hold_seconds",
+      "value": 15,
+      "unit": "seconds",
+      "result": "pass"
+    }
+  ]
+}

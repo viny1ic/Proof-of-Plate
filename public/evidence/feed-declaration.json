@@ -1,0 +1,25 @@
+{
+  "documentId": "FEED-001",
+  "title": "Feed Supplier Pesticide Declaration",
+  "issuerRole": "supplier",
+  "issuerName": "Proof of Plate Demo Feed Supplier",
+  "batchId": "TB-MILK-0612",
+  "issuedAt": "2026-06-12T18:15:00Z",
+  "facts": [
+    {
+      "key": "supplier_declaration",
+      "value": "Supplier declares no listed synthetic pesticide application for feed inputs tied to this demo batch.",
+      "result": "pass"
+    },
+    {
+      "key": "finished_product_residue_test",
+      "value": false,
+      "result": "warning"
+    },
+    {
+      "key": "verification_note",
+      "value": "Declaration exists, but no final pesticide residue lab test exists for the finished milk batch.",
+      "result": "warning"
+    }
+  ]
+}

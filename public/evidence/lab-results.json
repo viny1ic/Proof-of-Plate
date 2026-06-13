@@ -1,0 +1,26 @@
+{
+  "documentId": "LAB-001",
+  "title": "Lactose and Microbial Lab Results",
+  "issuerRole": "lab",
+  "issuerName": "Proof of Plate Demo Lab",
+  "batchId": "TB-MILK-0612",
+  "issuedAt": "2026-06-12T21:00:00Z",
+  "facts": [
+    {
+      "key": "lactose_ppm",
+      "value": 80,
+      "unit": "ppm",
+      "result": "pass"
+    },
+    {
+      "key": "microbial_screen",
+      "value": "No detectable unsafe microbial growth",
+      "result": "pass"
+    },
+    {
+      "key": "lab_summary",
+      "value": "Finished batch meets the demo lactose-free threshold used by Proof of Plate.",
+      "result": "pass"
+    }
+  ]
+}

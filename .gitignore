@@ -1,0 +1,25 @@
+node_modules/
+.next/
+.venv/
+*.tsbuildinfo
+.env.local
+.env
+contracts/sui/build/
+tracebite-mvp-implementation-plan.pdf
+
+# Home directory noise — not part of the project
+.bash_history
+.bash_logout
+.bashrc
+.profile
+.cache/
+.npm/
+.ssh/
+.sudo_as_admin_successful
+.hermes/
+.git-credentials
+.gitconfig
+.venv/
+.openclaw/
+MANIFEST.txt
+EXPORT-NOTES.md
