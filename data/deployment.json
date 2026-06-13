@@ -835,5 +835,107 @@
       "hcsSequence": 16,
       "createdAt": "2026-06-13T23:29:03.134Z"
     }
-  ]
+  ],
+  "juiceHts": {
+    "network": "testnet",
+    "tokenId": "0.0.9227218",
+    "serialNumber": 1,
+    "nftId": "0.0.9227218/1",
+    "tokenType": "NON_FUNGIBLE_UNIQUE",
+    "supplyType": "FINITE",
+    "maxSupply": 1,
+    "treasuryAccountId": "0.0.9185855",
+    "tokenName": "Proof of Plate POP-JUICE-ORG-APPLE-0613",
+    "tokenSymbol": "PJUICE0613",
+    "metadataPayload": "pop:POP-JUICE-ORG-APPLE-0613:0x8b8761ef7b05439a7238a2ea5070d2c1b48a1fe3f0bf306d0bc060b33e53bf7e",
+    "metadataHash": "0x8b8761ef7b05439a7238a2ea5070d2c1b48a1fe3f0bf306d0bc060b33e53bf7e",
+    "productMetadata": {
+      "schema": "proof-of-plate.product-token-metadata.v1",
+      "batchId": "POP-JUICE-ORG-APPLE-0613",
+      "productName": "Proof of Plate Organic Apple Juice",
+      "category": "Juice",
+      "description": "100% Organic Pasteurized Apple Juice",
+      "netContents": "12 fl oz (355 mL)",
+      "servingSize": "8 fl oz (240 mL)",
+      "servingsPerContainer": "About 1.5",
+      "nutritionHighlights": [
+        "Organic",
+        "100% apple juice",
+        "16 lifecycle claims verified"
+      ],
+      "allergens": [
+        "None declared"
+      ],
+      "storageInstructions": "Refrigerate after opening. Store unopened bottles in a cool, dry place unless product is sold refrigerated.",
+      "ingredients": [
+        {
+          "slug": "organic-apple-juice",
+          "name": "Organic apple juice",
+          "role": "Primary ingredient"
+        }
+      ],
+      "nutrition": [
+        {
+          "label": "Serving size",
+          "amount": "8 fl oz (240 mL)"
+        },
+        {
+          "label": "Calories",
+          "amount": "110"
+        },
+        {
+          "label": "Total Fat",
+          "amount": "0g",
+          "dailyValue": "0%"
+        },
+        {
+          "label": "Sodium",
+          "amount": "10mg",
+          "dailyValue": "0%"
+        },
+        {
+          "label": "Total Carbohydrate",
+          "amount": "28g",
+          "dailyValue": "10%"
+        },
+        {
+          "label": "Dietary Fiber",
+          "amount": "0g",
+          "dailyValue": "0%"
+        },
+        {
+          "label": "Total Sugars",
+          "amount": "24g"
+        },
+        {
+          "label": "Added Sugars",
+          "amount": "0g"
+        },
+        {
+          "label": "Protein",
+          "amount": "0g"
+        },
+        {
+          "label": "Potassium",
+          "amount": "250mg",
+          "dailyValue": "6%"
+        },
+        {
+          "label": "Vitamin C",
+          "amount": "4mg",
+          "dailyValue": "4%"
+        }
+      ],
+      "productPageUrl": "http://localhost:3000/p/POP-JUICE-ORG-APPLE-0613",
+      "hcsTopicId": "0.0.9226673",
+      "suiBatchObjectId": "0x09b5439433b64d79eec8792697eda8844807aeccfb017f8c1f3f5970bda4ea8f",
+      "walrusEvidenceUri": "walrus://blob/pop-juice-org-apple-0613-raw-data-pack-v1",
+      "walrusEvidenceHash": "0xb9ce6e52da070241aad977ec212e48c9031489f33bef1c8f030d9c16c153b828"
+    },
+    "createTransactionId": "0.0.9185855@1781394650.537921487",
+    "mintTransactionId": "0.0.9185855@1781394653.312735800",
+    "createdAt": "2026-06-13T23:51:00.655Z",
+    "updatedAt": "2026-06-13T23:51:00.655Z",
+    "source": "hedera"
+  }
 }

@@ -12,6 +12,7 @@
     "hash:evidence": "tsx scripts/hash-evidence.ts",
     "hedera:create-topic": "tsx scripts/create-hcs-topic.ts",
     "hedera:create-token": "tsx scripts/create-hts-token.ts",
+    "hedera:create-token-juice": "tsx scripts/create-hts-token-juice.ts",
     "hedera:create-cert-sbt": "tsx scripts/create-cert-sbt.ts",
     "hedera:submit": "tsx scripts/submit-hcs-events.ts",
     "sui:deploy": "tsx scripts/deploy-sui.ts",

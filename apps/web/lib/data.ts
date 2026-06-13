@@ -219,6 +219,7 @@ function getWalrusOrganicJuiceClaims(): Claim[] {
       blobId: record.blobId,
       objectId: record.objectId,
       url: record.url,
+      localDemoPath: record.localDemoPath,
     },
     hcsTopicId: record.hcsTopicId ?? record.evidenceUri,
     hcsSequence: claim.sequence,
@@ -274,7 +275,17 @@ export function getHtsMetadata(batchId: string): {
   errors: string[];
 } {
   if (batchId === "POP-JUICE-ORG-APPLE-0613") {
-    return { ok: false, errors: ["This product is backed by Walrus evidence; no HTS product token has been minted for this batch yet."] };
+    // Juice uses deployment.juiceHts
+    const dep = (() => { try { return getDeployment(); } catch { return null; } })();
+    const juiceHts = (dep as any)?.juiceHts as HtsDeployment | undefined;
+    if (!juiceHts) {
+      return { ok: false, errors: ["No HTS product token found for juice — run npm run hedera:create-token-juice."] };
+    }
+    // Basic validation: real tokenId
+    if (!/^0\.0\.\d+$/.test(juiceHts.tokenId)) {
+      return { hts: juiceHts, ok: false, errors: ["Juice HTS token ID is not a real Hedera token ID."] };
+    }
+    return { hts: juiceHts, ok: true, errors: [] };
   }
 
   const deployment = getDeployment();

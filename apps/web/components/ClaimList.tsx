@@ -1,8 +1,23 @@
 "use client";
 import { useState } from "react";
-import { hederaTopicLink, suiExplorerLink } from "../lib/explorer-links";
+import { hederaTopicLink, suiExplorerLink, walrusEvidenceLink } from "../lib/explorer-links";
 import type { Claim, EvidenceDocument } from "../lib/types";
 import { EvidenceDrawer } from "./EvidenceDrawer";
+
+/** Build the best clickable URL for a Walrus evidence pointer inline. */
+function getWalrusUrl(claim: Claim): string | null {
+  if (claim.evidenceStorage !== "walrus") return null;
+  // Only use the aggregator URL if blobId is a real 64-char hex Walrus hash
+  const blobId = claim.walrus?.blobId ?? "";
+  if (/^[0-9a-fA-F]{64}$/.test(blobId)) {
+    return `https://aggregator.walrus-testnet.walrus.space/v1/blobs/${blobId}`;
+  }
+  // Demo blob — use our own evidence API which verifies the hash and returns the data
+  if (claim.evidenceUri) {
+    return `/api/evidence?uri=${encodeURIComponent(claim.evidenceUri)}&expectedHash=${encodeURIComponent(claim.evidenceHash)}`;
+  }
+  return null;
+}
 
 const ICONS: Record<string, string> = {
   lactose_free: "🧪",
@@ -88,6 +103,7 @@ export function ClaimList({ claims }: { claims: Claim[] }) {
           const plainText = PLAIN_ENGLISH[claim.claimType];
           const suiUrl = suiExplorerLink(claim.suiObjectId);
           const hcsUrl = hederaTopicLink(claim.hcsTopicId);
+          const walrusUrl = getWalrusUrl(claim);
           return (
             <div className={"pp-claim-row" + (isOpen ? " open" : "")} key={claim.claimType}>
               <div className="pp-claim-main" onClick={() => toggle(claim.claimType)}>
@@ -167,8 +183,13 @@ export function ClaimList({ claims }: { claims: Claim[] }) {
                         HashScan ↗
                       </a>
                     )}
-                    {claim.evidenceStorage === "walrus" && (
-                      <span className="pp-chain-link hedera">Walrus evidence</span>
+                    {claim.evidenceStorage === "walrus" && walrusUrl && (
+                      <a className="pp-chain-link hedera" href={walrusUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
+                        Walrus evidence ↗
+                      </a>
+                    )}
+                    {claim.evidenceStorage === "walrus" && !walrusUrl && (
+                      <span className="pp-chain-link hedera" title="Walrus evidence (demo blob — not yet uploaded to Walrus network)">Walrus evidence</span>
                     )}
                     <button className="pp-verify-btn inspector-only" onClick={e => openEvidence(claim, e)}>
                       Verify Hash
