@@ -5,13 +5,18 @@ import type { Claim, EvidenceDocument } from "../lib/types";
 import { EvidenceDrawer } from "./EvidenceDrawer";
 
 const ICONS: Record<string, string> = {
-  lactose_free: "Lab",
-  ultra_filtered: "Fac",
-  pasteurized: "Tmp",
-  equipment_cleaned: "Cln",
-  feed_pesticide_declaration: "Agr",
-  final_pesticide_residue_test: "Tst",
+  lactose_free: "🧪",
+  ultra_filtered: "🔬",
+  pasteurized: "🌡",
+  equipment_cleaned: "🧹",
+  feed_pesticide_declaration: "🌾",
+  final_pesticide_residue_test: "⚗️",
 };
+
+function shortHash(h: string) {
+  if (!h || h.length < 14) return h;
+  return h.slice(0, 6) + "…" + h.slice(-6);
+}
 
 type Verification = { ok: boolean; actualHash: string; expectedHash: string };
 
@@ -59,7 +64,7 @@ export function ClaimList({ claims }: { claims: Claim[] }) {
 
   return (
     <>
-      <div className="pp-section">
+      <div className="pp-section pp-section-claims">
         <div className="pp-section-head">
           <span className="pp-section-title">Verified Claims</span>
           <span className="pp-section-meta">
@@ -70,16 +75,17 @@ export function ClaimList({ claims }: { claims: Claim[] }) {
         {claims.map(claim => {
           const isOpen = openClaim === claim.claimType;
           const hv = claimVers[claim.claimType];
-          const icon = ICONS[claim.claimType] ?? "?";
+          const icon = ICONS[claim.claimType] ?? "📋";
           return (
             <div className={"pp-claim-row" + (isOpen ? " open" : "")} key={claim.claimType}>
               <div className="pp-claim-main" onClick={() => toggle(claim.claimType)}>
-                <div className={"pp-claim-icon " + claim.status}>
+                <div className={"pp-claim-icon " + claim.status} style={{ fontSize: 18 }}>
                   {icon}
                 </div>
                 <div className="pp-claim-text">
                   <div className="pp-claim-name">{claim.label}</div>
                   <div className="pp-claim-issuer">{claim.issuerName}</div>
+                  <div className="pp-claim-hash">{shortHash(claim.evidenceHash)}</div>
                 </div>
                 <div className="pp-claim-right">
                   <span className={"pp-status-dot " + claim.status} />
@@ -128,10 +134,10 @@ export function ClaimList({ claims }: { claims: Claim[] }) {
 
                   <div className="pp-chain-links">
                     <a className="pp-chain-link sui" href={suiExplorerLink(claim.suiObjectId) ?? undefined} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
-                      Sui Explorer
+                      Sui Explorer ↗
                     </a>
                     <a className="pp-chain-link hedera" href={hederaTopicLink(claim.hcsTopicId) ?? undefined} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
-                      HashScan
+                      HashScan ↗
                     </a>
                     <button className="pp-verify-btn inspector-only" onClick={e => openEvidence(claim, e)}>
                       Verify Hash

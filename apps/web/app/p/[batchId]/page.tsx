@@ -50,6 +50,24 @@ function HashVerificationBanner({ results }: { results: VerifRow[] }) {
   );
 }
 
+function RecallBanner({ recalled, batchId }: { recalled: boolean; batchId: string }) {
+  return (
+    <div className={"pp-recall-banner " + (recalled ? "danger" : "safe")}>
+      <span className="pp-recall-banner-icon">{recalled ? "🚨" : "🛡️"}</span>
+      <div className="pp-recall-banner-body">
+        <div className="pp-recall-banner-title">
+          {recalled ? "Active FDA Recall — Do Not Consume" : "No Active FDA Recall"}
+        </div>
+        <div className="pp-recall-banner-sub">
+          {recalled
+            ? "This batch has been recalled. Check FDA.gov for details."
+            : "Batch " + batchId + " · verified against openFDA database"}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default async function ProductPassport({ params }: { params: Promise<{ batchId: string }> }) {
   const { batchId } = await params;
 
@@ -97,6 +115,7 @@ export default async function ProductPassport({ params }: { params: Promise<{ ba
         <div className="pp-left">
           <ProductHeader batch={batch} />
           <StatStrip batch={batch} claimCount={claims.length} eventCount={events.length} />
+          <RecallBanner recalled={batch.recalled} batchId={batch.batchId} />
           <HashVerificationBanner results={verifResults} />
           <SupplyChainJourney claims={claims} />
           <ProductInfo batch={batch} />

@@ -26,6 +26,13 @@ export function PassportSummary({ batch, claims, verifResults }: Props) {
     ? Math.round((batch.scoreVerified / batch.scoreTotal) * 100)
     : 0;
 
+  // SVG ring params
+  const r = 26;
+  const circ = 2 * Math.PI * r;
+  const dash = (pct / 100) * circ;
+
+  const ringColor = pct >= 80 ? "var(--green)" : pct >= 50 ? "var(--amber)" : "var(--red)";
+
   return (
     <div className="pp-summary">
       {/* Header */}
@@ -34,15 +41,37 @@ export function PassportSummary({ batch, claims, verifResults }: Props) {
         <div className="pp-summary-sub">{batch.productName}</div>
       </div>
 
-      {/* Score + hash row */}
-      <div className="pp-summary-scores">
-        <div className="pp-summary-score-card">
-          <div className="pp-summary-score-val" style={{ color: pct >= 80 ? "var(--green)" : pct >= 50 ? "var(--amber)" : "var(--red)" }}>
+      {/* Trust ring row */}
+      <div className="pp-trust-ring-row">
+        <svg width="64" height="64" viewBox="0 0 64 64" style={{ flexShrink: 0 }}>
+          <circle cx="32" cy="32" r={r} fill="none" stroke="var(--border2)" strokeWidth="6" />
+          <circle
+            cx="32" cy="32" r={r}
+            fill="none"
+            stroke={ringColor}
+            strokeWidth="6"
+            strokeDasharray={`${dash} ${circ}`}
+            strokeDashoffset={circ / 4}
+            strokeLinecap="round"
+            style={{ transition: "stroke-dasharray .6s ease" }}
+          />
+          <text x="32" y="37" textAnchor="middle" fontSize="13" fontWeight="700" fontFamily="Arial, sans-serif" fill="var(--navy)">
             {pct}%
+          </text>
+        </svg>
+        <div className="pp-trust-ring-info">
+          <div className="pp-trust-val">{batch.scoreVerified}/{batch.scoreTotal} verified</div>
+          <div className="pp-trust-lbl">Sui blockchain · Hedera HCS</div>
+          <div className="pp-trust-sub">
+            {warningCount > 0
+              ? warningCount + " claim" + (warningCount > 1 ? "s" : "") + " advisory — supplier declaration only"
+              : "All claims independently verified"}
           </div>
-          <div className="pp-summary-score-lbl">Trust Score</div>
-          <div className="pp-summary-score-sub">{batch.scoreVerified}/{batch.scoreTotal} claims</div>
         </div>
+      </div>
+
+      {/* Hash + recall row */}
+      <div className="pp-summary-scores">
         <div className="pp-summary-score-card">
           <div className="pp-summary-score-val" style={{ color: allHashOk ? "var(--green)" : "var(--amber)" }}>
             {hashPassed}/{hashTotal}
@@ -50,7 +79,7 @@ export function PassportSummary({ batch, claims, verifResults }: Props) {
           <div className="pp-summary-score-lbl">Hash Check</div>
           <div className="pp-summary-score-sub">{allHashOk ? "All match on-chain" : "Mismatch detected"}</div>
         </div>
-        <div className="pp-summary-score-card">
+        <div className="pp-summary-score-card" style={{ borderRight: "none" }}>
           <div className="pp-summary-score-val" style={{ color: batch.recalled ? "var(--red)" : "var(--green)" }}>
             {batch.recalled ? "Yes" : "No"}
           </div>

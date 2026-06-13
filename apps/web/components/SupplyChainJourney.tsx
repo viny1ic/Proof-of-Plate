@@ -1,12 +1,12 @@
 import type { Claim } from "../lib/types";
 
-type Step = { label: string; emoji: string; roles: string[] };
+type Step = { label: string; icon: string; roles: string[] };
 
 const STEPS: Step[] = [
-  { label: "Farm",      emoji: "F", roles: ["supplier", "farm", "grower"] },
-  { label: "Facility",  emoji: "P", roles: ["facility", "processor", "manufacturer"] },
-  { label: "Lab",       emoji: "L", roles: ["lab", "laboratory", "testing"] },
-  { label: "Certified", emoji: "C", roles: [] },
+  { label: "Farm",      icon: "🐄", roles: ["supplier", "farm", "grower"] },
+  { label: "Facility",  icon: "🏭", roles: ["facility", "processor", "manufacturer"] },
+  { label: "Lab",       icon: "🔬", roles: ["lab", "laboratory", "testing"] },
+  { label: "Certified", icon: "🏆", roles: [] },
 ];
 
 type Status = "done" | "warn" | "pending";
@@ -31,18 +31,10 @@ function seqRange(claims: Claim[], roles: string[]): string {
   return s.length === 1 ? `HCS #${s[0]}` : `HCS #${s[0]}-${s[s.length-1]}`;
 }
 
-const STEP_ICONS: Record<string, string> = {
-  F: "\u{1F33E}",  // farm emoji placeholder - use text
-  P: "\u{1F3ED}",
-  L: "\u{1F9EA}",
-  C: "\u2705",
-};
-
-const EMOJI: Record<string, string> = {
-  Farm: "Farm",
-  Facility: "Fac.",
-  Lab: "Lab",
-  Certified: "Done",
+const STATUS_BADGE: Record<Status, string> = {
+  done: "✓",
+  warn: "⚠",
+  pending: "",
 };
 
 export function SupplyChainJourney({ claims }: { claims: Claim[] }) {
@@ -62,8 +54,11 @@ export function SupplyChainJourney({ claims }: { claims: Claim[] }) {
           const seq = seqRange(claims, step.roles);
           return (
             <div className="pp-journey-step" key={step.label}>
-              <div className={"pp-journey-icon " + status}>
-                {status === "done" ? "✓" : status === "warn" ? "⚠" : "○"}
+              <div className={"pp-journey-icon-wrap " + status}>
+                <span className="pp-journey-icon-emoji">{step.icon}</span>
+                {STATUS_BADGE[status] && (
+                  <span className={"pp-journey-badge " + status}>{STATUS_BADGE[status]}</span>
+                )}
               </div>
               <div className="pp-journey-step-name">{step.label}</div>
               {seq && <div className="pp-journey-step-sub">{seq}</div>}

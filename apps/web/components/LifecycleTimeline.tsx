@@ -21,11 +21,10 @@ export function LifecycleTimeline({ events, claims = [] }: Props) {
   const warnTypes = new Set(
     claims.filter(c => c.status === "warning" || c.status === "failed").map(c => c.claimType)
   );
-  // Map claimType -> suiObjectId for linking evidence hash to Sui
   const claimSuiMap = new Map(claims.map(c => [c.claimType, c.suiObjectId]));
 
   return (
-    <div className="pp-section">
+    <div className="pp-section pp-section-trace">
       <div className="pp-section-head">
         <span className="pp-section-title">Hedera HCS Audit Log</span>
         <span className="pp-section-meta">{events.length} events</span>
@@ -48,10 +47,9 @@ export function LifecycleTimeline({ events, claims = [] }: Props) {
                 {"HCS #" + ev.sequenceNumber}
               </div>
               <div className="pp-hcs-claim">{ev.claimType.replace(/_/g, " ")}</div>
-              <div className="pp-hcs-meta">{ev.issuerName + " - " + ev.issuerRole}</div>
+              <div className="pp-hcs-meta">{ev.issuerName + " · " + ev.issuerRole}</div>
               <div className="pp-hcs-time">{fmt(ev.consensusTimestamp || ev.createdAt)}</div>
 
-              {/* Evidence hash — links to Sui object that anchors this claim */}
               <div className="pp-hcs-hash-row">
                 <span className="pp-hcs-hash-label">Evidence hash:</span>
                 {suiHref ? (
