@@ -1,7 +1,7 @@
 {
-  "/evidence/feed-declaration.json": "0x27c7b08d0e3cabfefa2ed623778f83c45c5c8125264c3674630608e546bab5f9",
-  "/evidence/final-pesticide-residue-test.json": "0x04bb6ec4c76e53ac9de07ee8923ff3cd9e529e84015ea1db02d48b9eff651059",
-  "/evidence/lab-results.json": "0x6a4cc2d18348f93aa727089a66fbeec8778039b73762401bdb747fb8629a16c7",
-  "/evidence/maintenance-log.json": "0xc2c59a2b05101014a0b355c321cdf36340fa223eb36232338eae8e1d06bc4341",
-  "/evidence/processing-log.json": "0xcdf7cec86c2f24997edc55c2a8188d20c5a4f656d40551d9b7712878f1a54ba7"
+  "/evidence/feed-declaration.json": "0x3e143f6b184ec579bdda900de28e29613f21f74be55a61b6c284b25acbd3125d",
+  "/evidence/final-pesticide-residue-test.json": "0xce715b5e18b02fa8dad8b4a12d2709dab96081487016ebcfc588a3a2b8bc746d",
+  "/evidence/lab-results.json": "0x6ed40ae8a118447f6dcf03f216ae2b610a9cd25dcfa4050ac20b658df3d6a3a4",
+  "/evidence/maintenance-log.json": "0x3ab220b2472f3e4594e250d6f580459dea7aa81705c1eb5e63a8ae0adaef4678",
+  "/evidence/processing-log.json": "0x1a97c896ed2984186b80d0865df68ea528c5474ce25102276a5aac6b408fee99"
 }
