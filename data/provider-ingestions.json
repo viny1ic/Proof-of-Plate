@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "demoOnly": true,
+  "warning": "Provider ingestions are an MVP demo queue only. They are not the final claim truth layer until explicitly seeded to HCS/Sui and verified there.",
+  "ingestions": [
+    {
+      "recordType": "provider_ingestion_demo_v1",
+      "schemaVersion": "1.0",
+      "truthLayer": "demo_ingestion_queue_only",
+      "ingestionId": "ing_tb-milk-0612_lactose_free_20255ef4893e_20260613T2151310",
+      "receivedAt": "2026-06-13T21:51:31.002Z",
+      "provider": {
+        "id": "demo-lab-1",
+        "name": "Demo Lab"
+      },
+      "product": {
+        "productName": "Ultra-filtered Milk",
+        "category": "Dairy"
+      },
+      "batch": {
+        "batchId": "TB-MILK-0612"
+      },
+      "batchId": "TB-MILK-0612",
+      "claimType": "lactose_free",
+      "claim": {
+        "claimType": "lactose_free",
+        "label": "Lactose-free",
+        "status": "pending",
+        "issuerRole": "Laboratory",
+        "issuerName": "Demo Lab"
+      },
+      "evidenceId": "LAB-LACTOSE-0612",
+      "evidenceHash": "0x20255ef4893e3a63476d774b77b3e5ed1042a1f23a384e56d835604d4733497d",
+      "evidenceUri": "provider-ingestion://ing_tb-milk-0612_lactose_free_20255ef4893e_20260613T2151310/LAB-LACTOSE-0612",
+      "canonicalEvidenceJson": "{\"batchId\":\"TB-MILK-0612\",\"documentId\":\"LAB-LACTOSE-0612\",\"facts\":[{\"key\":\"lactose\",\"result\":\"pass\",\"unit\":\"g/serving\",\"value\":0.01}],\"issuedAt\":\"2026-06-12T17:30:00Z\",\"issuerName\":\"Demo Lab\",\"issuerRole\":\"Laboratory\",\"title\":\"Finished product lactose screen\"}",
+      "evidence": {
+        "documentId": "LAB-LACTOSE-0612",
+        "title": "Finished product lactose screen",
+        "issuerRole": "Laboratory",
+        "issuerName": "Demo Lab",
+        "batchId": "TB-MILK-0612",
+        "issuedAt": "2026-06-12T17:30:00Z",
+        "facts": [
+          {
+            "key": "lactose",
+            "value": 0.01,
+            "unit": "g/serving",
+            "result": "pass"
+          }
+        ]
+      },
+      "seed": {
+        "hcsEvent": {
+          "v": "1.0",
+          "type": "PROVIDER_CLAIM_INGESTED",
+          "batchId": "TB-MILK-0612",
+          "claimType": "lactose_free",
+          "issuerRole": "Laboratory",
+          "issuerName": "Demo Lab",
+          "evidenceUri": "provider-ingestion://ing_tb-milk-0612_lactose_free_20255ef4893e_20260613T2151310/LAB-LACTOSE-0612",
+          "evidenceHash": "0x20255ef4893e3a63476d774b77b3e5ed1042a1f23a384e56d835604d4733497d",
+          "createdAt": "2026-06-13T21:51:31.002Z",
+          "sequenceNumber": 0,
+          "transactionId": "local-ingestion:ing_tb-milk-0612_lactose_free_20255ef4893e_20260613T2151310",
+          "consensusTimestamp": "2026-06-13T21:51:31.002Z"
+        },
+        "suiClaim": {
+          "placeholderId": "local-ingested-claim:tb-milk-0612:lactose_free:20255ef4893e",
+          "batchId": "TB-MILK-0612",
+          "claimType": "lactose_free",
+          "label": "Lactose-free",
+          "status": "pending",
+          "issuerRole": "Laboratory",
+          "issuerName": "Demo Lab",
+          "evidenceHash": "0x20255ef4893e3a63476d774b77b3e5ed1042a1f23a384e56d835604d4733497d",
+          "evidenceUri": "provider-ingestion://ing_tb-milk-0612_lactose_free_20255ef4893e_20260613T2151310/LAB-LACTOSE-0612",
+          "createdAt": "2026-06-13T21:51:31.002Z"
+        }
+      }
+    }
+  ]
+}

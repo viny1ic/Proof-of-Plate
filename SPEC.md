@@ -42,6 +42,8 @@ The project was renamed from TraceBite to Proof of Plate. Branding, package name
 | Sui testnet IDs and claim objects | `main` | Implemented via `data/deployment.json` |
 | Hedera HCS testnet topic and events | `main` | Implemented via `data/hcs-events.json` |
 | Hedera HTS product-batch metadata token | `main` | Implemented via `scripts/create-hts-token.ts`, `Deployment.hts`, and HTS metadata-backed UI fields |
+| Authority-issued certificate SBT badges | `main` | Implemented via `Deployment.certifications`, `lib/certifications.ts`, and `CertificationBadges.tsx` |
+| Walrus-backed large evidence packs | `main` | Implemented via `lib/walrus.ts`, `data/walrus-evidence.json`, and organic juice demo payload |
 | AI verifier with Claude + Hedera Agent Kit tools | `main` | Implemented |
 | Server-side evidence hash verification on page load | `main` | Implemented |
 | Hash verification banner in left panel | `main` | Implemented |
@@ -99,12 +101,23 @@ HTS provides:
 - Ingredients, allergens, nutrition highlights, storage, and nutrition facts
 - Hash of the canonical product metadata payload
 - HashScan token page link for inspectors and judges
+- Optional third-party certificate/audit badges represented as authority-issued HTS NFT SBT records
 
 HTS does not replace Sui as the finalized claim truth layer. It describes the product batch; Sui claims, HCS audit events, and matching evidence hashes determine whether label claims are verified.
 
-### Static Evidence JSON
+Certificate SBT records are scoped to `deployment.certifications`. They are small UI badges for third-party certificates/audits (for example a lactose-free certificate or facility audit) and link to HashScan token serial pages. The MVP models them as non-transferable / soulbound by recording `nonTransferable: true`, authority-treasury issuance, and no public transfer path. Full HTS hard soulbound enforcement may require custom controls such as custody, pause/freeze/KYC/admin keys, or contract-mediated transfer restrictions; the demo documents that limitation explicitly.
 
-Static JSON files represent lab results, processing logs, maintenance records, feed pesticide declarations, and the final pesticide residue test. Each evidence file is hashed with SHA-256. The hash is included in both the HCS message and the Sui claim.
+### Evidence Storage: Inline JSON and Walrus
+
+Small evidence records can remain `inline` static JSON under `public/evidence/*.json`. Larger evidence packs can be represented as `walrus` records with a Walrus blob/object reference, aggregator URL, and the SHA-256 hash of the original payload bytes. In both modes the hash is what gets anchored in HCS/Sui claim records and what the UI/API verifies at runtime.
+
+The second product example is `POP-JUICE-ORG-APPLE-0613` (`Proof of Plate Organic Apple Juice`). Its supplied DOCX extraction is structured into `public/evidence/walrus/organic-juice/raw-data-pack.json` and indexed by `data/walrus-evidence.json` with synthetic demo values:
+
+- Blob URI: `walrus://blob/pop-juice-org-apple-0613-raw-data-pack-v1`
+- Object ID: `0xwalrus_demo_organic_juice_raw_pack_0613`
+- URL: `https://aggregator.walrus-testnet.walrus.space/v1/blobs/pop-juice-org-apple-0613-raw-data-pack-v1`
+
+Real Walrus integration point: run `walrus store public/evidence/walrus/organic-juice/raw-data-pack.json`, replace the synthetic blob/object ID and URL in `data/walrus-evidence.json`, and keep the same computed `evidenceHash` anchored in HCS/Sui claim records unless the payload bytes change.
 
 ### AI Agent
 
@@ -129,6 +142,7 @@ The current workspace is configured with real testnet artifacts.
 | Hedera account used in event transaction IDs | `0.0.9185855` |
 | HCS topic ID | `0.0.9219010` |
 | HTS batch metadata token | local fallback `0.0.tracebite_local_token` until a real token is created or supplied via `HEDERA_TOKEN_ID` |
+| Certificate SBT demo tokens | `0.0.9226185/1` lactose-free certificate; `0.0.9226186/1` facility audit badge |
 | Sui network | `testnet` |
 | Sui package ID | `0x4d456546f2254ef39edbacda57b87d0cbb9a808e41d225362c0fa9dca46e100c` |
 | Sui batch object | `0xd73ce78b97ebe620044ac0e107c536458d228437f2d305305ee77f2093250193` |
@@ -239,6 +253,26 @@ Canonical metadata shape:
 
 HTS metadata is descriptive product metadata. It is not sufficient proof that a claim is verified.
 
+### Authority-Issued Certificate SBTs
+
+Third-party certifications/audits are represented as separate `AuthorityCertification` records under `deployment.certifications`, not as provider ingestion inputs and not as Walrus evidence. Each record points at a Hedera HTS NFT serial and renders as a compact sticker/logo badge in the left passport panel.
+
+Current demo badges:
+
+| Badge | Issuer | HTS NFT | Meaning |
+|---|---|---|---|
+| `LF` / Lactose-Free | Proof of Plate Demo Lab Authority | `0.0.9226185/1` | Certificate of analysis tied to the lactose-free lab evidence hash |
+| `QA` / Audit Pass | Proof of Plate Demo Audit Authority | `0.0.9226186/1` | Facility food-safety audit badge tied to maintenance/CIP evidence |
+
+Soulbound/non-transferable semantics:
+
+- The certificate is authority/treasury-issued for the batch.
+- The demo exposes no public transfer path for certificate badges.
+- The record carries `sbt.nonTransferable: true`, `issuanceMode: "authority_treasury_issued"`, and an enforcement note.
+- Production HTS implementations that need hard non-transferability should add custom controls such as custody, pause/freeze/KYC/admin-key policy, or contract-mediated restrictions. Plain HTS NFT identity alone is not claimed to make transfer impossible under every key/control configuration.
+
+`scripts/create-cert-sbt.ts` refreshes these demo records and supports comma-separated `HEDERA_CERT_SBT_TOKEN_IDS` / `CERT_SBT_TOKEN_IDS` overrides for real HashScan token IDs.
+
 ---
 
 ## Claims
@@ -284,10 +318,11 @@ Next.js Frontend (apps/web)
       +--> Hedera HTS testnet
       |      One token per product batch
       |      Token metadata: product name, ingredients, nutrition, product page URL
+      |      Certificate SBT badges: authority-issued audit/cert NFT serials
       |      Explorer: hashscan.io/testnet/token/{tokenId}
       |
-      +--> Static Evidence JSON
-      |      Source records used for hash verification
+      +--> Inline / Walrus Evidence
+      |      Source records and large packs used for hash verification
       |
       +--> AI Agent
              Hedera Agent Kit + Claude + LangGraph ReAct tools
@@ -304,6 +339,7 @@ The passport UI is a two-column layout: sticky left panel + scrollable right pan
 - **Dark navy hero** — product name, batch ID, verification score ring, Consumer / Inspector mode toggle, recall badge
 - **Stat strip** — claims count, HCS events count, verification speed vs FDA recall window
 - **Hash verification banner** — auto-runs server-side SHA-256 check on every page load; shows `N/N hashes verified` in green or a warning listing which claim mismatched
+- **Certification SBT badges** — small third-party certificate/audit stickers that link to HashScan HTS NFT serial pages; inspector mode shows the SBT non-transferability limitation note
 - **Supply chain journey** — visual step tracker (Farm → Facility → Lab → Certified) with HCS sequence ranges, progress bar, larger icons (38px), thicker connector line (3px)
 - **Product details** — product name, net contents, serving size, allergens, storage; FDA-style nutrition facts table; ingredient cards with claim tag chips; core product metadata is parsed from the HTS batch token cache/reference when available
 - **HTS metadata card** — token ID, serial, metadata parse status, metadata hash, product page URL, and HashScan token link
@@ -347,24 +383,45 @@ Tab show/hide uses inline `style={{ display: tab === X ? "block" : "none" }}` in
 
 ## Data Flow
 
-1. Evidence JSON files are created and committed to the repository.
-2. `hash-evidence.ts` computes SHA-256 hashes and writes `data/evidence-manifest.json`.
+1. Evidence JSON files or Walrus evidence packs are created and committed to the repository for the demo.
+2. Inline seed evidence uses `hash-evidence.ts` to compute SHA-256 hashes and write `data/evidence-manifest.json`; Walrus demo packs use `data/walrus-evidence.json` to bind a Walrus pointer to the original payload hash.
 3. `create-hcs-topic.ts` creates or records one HCS topic for the product batch.
 4. `submit-hcs-events.ts` submits one HCS message per claim and writes `data/hcs-events.json`.
 5. `deploy-sui.ts` records the Sui package ID in `data/deployment.json`.
 6. `seed-sui-batch.ts` creates the Sui batch and finalizes claims using evidence hashes and HCS sequence numbers.
 7. `create-hts-token.ts` creates or records one HTS batch metadata token, computes the canonical product metadata hash, stores a compact `pop:<batchId>:<hash>` metadata payload, and writes parsed product metadata to `deployment.hts`.
-8. The product page (`app/p/[batchId]/page.tsx`) runs server-side:
+8. `create-cert-sbt.ts` records authority-issued certificate/audit SBT badge entries under `deployment.certifications` with HashScan token links and explicit non-transferability semantics.
+9. The product page (`app/p/[batchId]/page.tsx`) runs server-side:
    - reads `deployment.json`, `hcs-events.json`, and `deployment.hts`
    - hydrates product display fields from HTS metadata through `getBatch()`
+   - reads certificate SBT badge records with `getCertificationsForBatch()`
    - runs `verifyEvidenceHash()` for every claim (SHA-256 against the on-chain hash)
    - builds a `verifContext` string with pass/fail per claim and HTS token status
    - passes the context to `AgentChat` so every AI response is hash-aware and token-aware
 9. The UI displays product metadata from the HTS token cache/reference with a HashScan token link when available.
-10. The AI agent answers questions through tool calls against the batch, HTS metadata, claims, HCS events, and evidence hashes.
-11. The admin demo action runs `demo-add-claim.ts`, which adds the final pesticide residue claim and updates the score to `5/6`.
+10. The UI displays certificate/audit SBT badges with HashScan NFT serial links when `deployment.certifications` is configured.
+11. The AI agent answers questions through tool calls against the batch, HTS metadata, claims, HCS events, and evidence hashes.
+12. The admin demo action runs `demo-add-claim.ts`, which adds the final pesticide residue claim and updates the score to `5/6`.
 
 Implementation note: the primary configured path is real testnet. Some scripts still retain a credentialless/local fallback so the app remains demoable when Hedera credentials or the Sui CLI are absent.
+
+---
+
+## Provider Ingestion API MVP
+
+`POST /api/ingest/provider` accepts a narrow provider-supplied JSON payload for MVP demos so new claim/evidence inputs do not have to start as manually-authored static files.
+
+Required top-level objects:
+
+- `provider`: `id`, `name`, optional `role`
+- `product`: `productName`, optional `category`
+- `batch`: `batchId`, optional `lotCode`
+- `claim`: `claimType`, `label`, optional `status`, `issuerRole`, `issuerName`
+- `evidence`: evidence JSON with `documentId`, `title`, `issuerRole`, `issuerName`, `batchId`, `issuedAt`, and non-empty `facts[]`
+
+The endpoint validates required fields, requires `evidence.batchId` to match `batch.batchId`, canonicalizes the evidence JSON, computes a SHA-256 evidence hash, appends a demo queue record to `data/provider-ingestions.json` (or `PROVIDER_INGESTIONS_FILE` when set), and returns ingestion IDs, evidence hash/URI, plus HCS/Sui-shaped seed objects.
+
+Boundary: provider ingestion records are explicitly marked `demo_ingestion_queue_only`. They are not final claim truth and should not be rendered as verified claims until a later flow explicitly anchors/finalizes them through HCS/Sui and verifies hashes there.
 
 ---
 
@@ -596,7 +653,10 @@ Links open in a new tab and carry `rel="noopener noreferrer"`.
 
 ## Evidence and Hash Verification
 
-Evidence files live in `public/evidence/`.
+Evidence records support two storage modes:
+
+- `inline`: small JSON evidence files live in `public/evidence/*.json` and are addressed by local `/evidence/...` URIs.
+- `walrus`: large payloads are addressed by Walrus blob/object references in `data/walrus-evidence.json`. The demo keeps a local deterministic copy under `public/evidence/walrus/...` so tests and offline demos can verify the exact bytes without requiring Walrus CLI/network access.
 
 Current files on `main`:
 
@@ -605,6 +665,11 @@ Current files on `main`:
 - `maintenance-log.json`
 - `feed-declaration.json`
 - `final-pesticide-residue-test.json`
+
+Current Walrus demo pack on `main`:
+
+- `data/walrus-evidence.json` indexes `POP-JUICE-ORG-APPLE-0613` with `storage: "walrus"`, synthetic blob/object IDs, and the trusted SHA-256 hash.
+- `public/evidence/walrus/organic-juice/raw-data-pack.json` contains the structured organic apple juice DOCX extraction: master product fields (`12 fl oz (355 mL)`, storage instructions, actors), 16 lifecycle stages, 16 claim rows, and the full raw extracted text.
 
 Additional file on `feat/tamper-detection`:
 
@@ -618,7 +683,7 @@ SHA-256 is computed over raw file bytes. Hashes are formatted as:
 0x<lowercase hex digest>
 ```
 
-Each claim stores the expected evidence hash. The page server component recomputes all hashes on every page load via `verifyEvidenceHash()` in `lib/evidence.ts` and displays the result in the hash verification banner.
+Each claim or Walrus evidence record stores the expected evidence hash. The page server component recomputes claim hashes on every page load via `verifyEvidenceHash()` in `lib/evidence.ts` and displays the result in the hash verification banner. For Walrus references, `lib/evidence.ts` dispatches to `lib/walrus.ts`, which parses the Walrus URI/URL, loads the deterministic demo payload, and verifies its bytes against the trusted hash.
 
 ### Server-Side Auto-Verification
 
@@ -637,9 +702,9 @@ const verifResults: VerifRow[] = claims.map(claim => {
 
 Results are shown in the `HashVerificationBanner` (left panel) and passed as `verifContext` to `AgentChat`.
 
-### Evidence Path Guard
+### Evidence Path / Reference Guard
 
-`apps/web/lib/evidence.ts` rejects:
+For inline evidence, `apps/web/lib/evidence.ts` rejects:
 
 - Absolute URLs or URI schemes
 - Null bytes
@@ -647,6 +712,8 @@ Results are shown in the `HashVerificationBanner` (left panel) and passed as `ve
 - `..` traversal segments
 - Non-JSON files
 - Paths that resolve outside `public/evidence/`
+
+For Walrus evidence, `apps/web/lib/walrus.ts` accepts only scoped `walrus://blob/<blobId>`, `walrus://object/<objectId>`, or Walrus aggregator `/v1/blobs/...` references with safe demo blob/object ID characters. The local demo payload path must remain under `/evidence/walrus/*.json`.
 
 ### Evidence Hash in HCS Timeline
 
@@ -734,6 +801,8 @@ A fraudulent version of `lab-results.json` changes the lactose result from a pas
 |---|---|---|
 | `hash-evidence.ts` | `npm run hash:evidence` | SHA-256 hash all evidence files and write `data/evidence-manifest.json` |
 | `create-hcs-topic.ts` | `npm run hedera:create-topic` | Create or record Hedera HCS topic |
+| `create-hts-token.ts` | `npm run hedera:create-token` | Create or record Hedera HTS product-batch metadata token |
+| `create-cert-sbt.ts` | `npm run hedera:create-cert-sbt` | Record authority-issued certificate/audit SBT badge entries |
 | `submit-hcs-events.ts` | `npm run hedera:submit` | Submit one HCS message per claim and write results |
 | `deploy-sui.ts` | `npm run sui:deploy` | Record Sui package ID / deployment metadata |
 | `seed-sui-batch.ts` | `npm run sui:seed` | Create batch and claims using evidence hashes and HCS sequence numbers |
@@ -750,6 +819,9 @@ A fraudulent version of `lab-results.json` changes the lactose result from a pas
 | `HEDERA_ACCOUNT_ID` | testnet path | Hedera account ID, e.g. `0.0.9185855` |
 | `HEDERA_PRIVATE_KEY` | testnet path | ECDSA key, `0x`-prefixed or raw hex |
 | `HEDERA_TOPIC_ID` | optional | Existing topic ID override |
+| `HEDERA_TOKEN_ID` / `HEDERA_HTS_TOKEN_ID` | optional | Existing HTS product metadata token override |
+| `HEDERA_CERT_SBT_TOKEN_IDS` / `CERT_SBT_TOKEN_IDS` | optional | Comma-separated HTS NFT token IDs for certificate badge records |
+| `CERT_SBT_AUTHORITY_ACCOUNT_ID` | optional | Authority/treasury account shown on certificate SBT records |
 | `SUI_NETWORK` | testnet path | `testnet` |
 | `SUI_PACKAGE_ID` | seed/deploy | Sui package ID used by seed scripts |
 | `SUI_ADMIN_PRIVATE_KEY` | optional/currently not primary | Admin key placeholder for Sui workflows |
@@ -803,6 +875,7 @@ proof-of-plate/
           demo/add-claim/route.ts
       components/
         AgentChat.tsx                    AI chat with link rendering + verification context
+        CertificationBadges.tsx          Third-party certificate/audit SBT stickers with HashScan links
         ClaimList.tsx                    Expandable claims with hash verification
         DemoControls.tsx                 Admin demo button
         EvidenceDrawer.tsx               Evidence document viewer
@@ -819,6 +892,7 @@ proof-of-plate/
       lib/
         agent.ts                         Claude ReAct agent with Sui + Hedera + evidence tools
         claims.ts                        Claim helpers
+        certifications.ts                Certificate SBT loading, HashScan links, SBT semantics copy
         data.ts                          deployment.json + hcs-events.json readers; nutrition data
         evidence.ts                      SHA-256 hash verification + path guard
         explorer-links.ts                Sui Explorer + HashScan URL builders
@@ -840,6 +914,8 @@ proof-of-plate/
   scripts/
     hash-evidence.ts
     create-hcs-topic.ts
+    create-hts-token.ts
+    create-cert-sbt.ts
     submit-hcs-events.ts
     deploy-sui.ts
     seed-sui-batch.ts

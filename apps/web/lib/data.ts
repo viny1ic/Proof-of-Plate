@@ -1,12 +1,14 @@
 import { existsSync } from "node:fs";
-import type { Claim, Deployment, HcsEvent, HtsDeployment, Ingredient, ProductBatch } from "./types";
+import type { Claim, ClaimStatus, Deployment, HcsEvent, HtsDeployment, Ingredient, ProductBatch } from "./types";
 import { readJsonFile, resolveProofOfPlatePath } from "./files";
+import { suiExplorerLink } from "./explorer-links";
 import {
   hashProductTokenMetadata,
   mergeBatchWithHtsMetadata,
   parseHtsMetadataPayload,
   parseProductTokenMetadata,
 } from "./hts";
+import { getWalrusEvidence, getWalrusEvidenceRecord } from "./walrus";
 
 function deploymentFile() {
   return resolveProofOfPlatePath("data", "deployment.json");
@@ -14,6 +16,11 @@ function deploymentFile() {
 
 function hcsFile() {
   return resolveProofOfPlatePath("data", "hcs-events.json");
+}
+
+function hideInvalidSuiClaimLink(claim: Claim): Claim {
+  if (suiExplorerLink(claim.suiObjectId)) return claim;
+  return { ...claim, suiObjectId: "" };
 }
 
 export const PRODUCT_INGREDIENTS: Ingredient[] = [
@@ -106,7 +113,154 @@ export function invalidateDeploymentCache() {
   _deployment = null;
 }
 
+type OrganicJuicePayload = {
+  product: {
+    productName: string;
+    batchId: string;
+    category: string;
+    productType?: string;
+    netContents: string;
+    servingSize: string;
+    servingsPerContainer: string;
+    ingredientStatement: string;
+    allergens: string;
+    storage: string;
+    recallState?: string;
+    claimCount: number;
+  };
+  nutrition?: Array<{ label: string; amount: string; dailyValue?: string; note?: string }>;
+  claims?: Array<{
+    sequence: number;
+    claimId: string;
+    label: string;
+    issuerRole: string;
+    status: ClaimStatus;
+    evidenceUri: string;
+  }>;
+};
+
+function getWalrusOrganicJuicePayload() {
+  const record = getWalrusEvidenceRecord("POP-JUICE-ORG-APPLE-0613");
+  return {
+    record,
+    payload: getWalrusEvidence(record) as OrganicJuicePayload,
+  };
+}
+
+function getWalrusOrganicJuiceBatch(): ProductBatch {
+  const { record, payload } = getWalrusOrganicJuicePayload();
+  const product = payload.product;
+  const claims = payload.claims ?? [];
+  const verified = claims.filter((claim) => claim.status === "verified").length;
+  // Pull Sui identity passport IDs from deployment.juiceBatch when available
+  const dep = (() => { try { return getDeployment(); } catch { return null; } })();
+  const juiceBatch = (dep as any)?.juiceBatch;
+  return {
+    batchId: product.batchId,
+    productName: product.productName,
+    category: product.category,
+    description: product.productType ?? "Walrus-backed organic juice lifecycle evidence pack.",
+    netContents: product.netContents,
+    servingSize: product.servingSize,
+    servingsPerContainer: product.servingsPerContainer,
+    nutritionHighlights: ["Organic", "100% apple juice", "Walrus evidence pack", `${record.claimCount} lifecycle claims`],
+    allergens: product.allergens === "None declared" ? ["None declared"] : [product.allergens],
+    storageInstructions: product.storage,
+    ingredients: [
+      {
+        slug: "organic-apple-juice",
+        name: product.ingredientStatement,
+        role: "Primary ingredient",
+        source: "Green Valley Organic Orchards",
+        description: "Ingredient statement from the Walrus-backed organic juice raw data pack.",
+        verificationNote: "Organic, harvest, chain-of-custody, processing, lab, and distribution records are included in the Walrus evidence pack.",
+        relatedClaimTypes: ["organic_farm_certified", "one_hundred_percent_juice_verified", "chain_of_custody_verified"],
+      },
+    ],
+    nutrition: payload.nutrition?.map((fact) => ({
+      label: fact.label,
+      amount: fact.amount,
+      dailyValue: fact.dailyValue,
+    })),
+    hcsTopicId: record.hcsTopicId ?? record.evidenceUri,
+    scoreVerified: verified,
+    scoreTotal: claims.length || record.claimCount,
+    recalled: product.recallState === "recalled",
+    createdAt: "2026-06-13T00:00:00.000Z",
+    suiPackageId: juiceBatch?.suiPackageId ?? "",
+    suiBatchObjectId: juiceBatch?.suiBatchObjectId ?? "",
+    productPageUrl: `/p/${product.batchId}`,
+  };
+}
+
+function getWalrusOrganicJuiceClaims(): Claim[] {
+  const { record, payload } = getWalrusOrganicJuicePayload();
+  // Pull per-claim Sui object IDs from deployment.juiceClaims when available
+  const dep = (() => { try { return getDeployment(); } catch { return null; } })();
+  const juiceClaims: Record<string, string> = {};
+  if (Array.isArray((dep as any)?.juiceClaims)) {
+    for (const c of (dep as any).juiceClaims) {
+      if (c.claimType && c.suiObjectId) juiceClaims[c.claimType] = c.suiObjectId;
+    }
+  }
+  return (payload.claims ?? []).map((claim) => ({
+    batchId: payload.product.batchId,
+    claimType: claim.claimId,
+    label: claim.label,
+    status: claim.status,
+    issuerRole: claim.issuerRole,
+    issuerName: "Walrus evidence pack",
+    evidenceStorage: "walrus",
+    evidenceUri: record.evidenceUri,
+    evidenceHash: record.evidenceHash,
+    walrus: {
+      storage: "walrus",
+      evidenceUri: record.evidenceUri,
+      blobId: record.blobId,
+      objectId: record.objectId,
+      url: record.url,
+    },
+    hcsTopicId: record.hcsTopicId ?? record.evidenceUri,
+    hcsSequence: claim.sequence,
+    suiObjectId: juiceClaims[claim.claimId] ?? "",
+    createdAt: "2026-06-13T00:00:00.000Z",
+  }));
+}
+
+function getWalrusOrganicJuiceEvents(topicId: string): HcsEvent[] {
+  const { record, payload } = getWalrusOrganicJuicePayload();
+  const expectedTopic = record.hcsTopicId ?? record.evidenceUri;
+  if (topicId !== expectedTopic && topicId !== record.evidenceUri && topicId !== payload.product.batchId) return [];
+  if (record.hcsEvents?.length) return record.hcsEvents;
+  return (payload.claims ?? []).map((claim) => ({
+    v: "1.0",
+    type: "WALRUS_EVIDENCE_CLAIM",
+    batchId: payload.product.batchId,
+    claimType: claim.claimId,
+    issuerRole: claim.issuerRole,
+    issuerName: "Walrus evidence pack",
+    evidenceStorage: "walrus",
+    evidenceUri: record.evidenceUri,
+    evidenceHash: record.evidenceHash,
+    walrus: {
+      storage: "walrus",
+      evidenceUri: record.evidenceUri,
+      blobId: record.blobId,
+      objectId: record.objectId,
+      url: record.url,
+    },
+    createdAt: "2026-06-13T00:00:00.000Z",
+    sequenceNumber: claim.sequence,
+    transactionId: record.evidenceUri,
+    consensusTimestamp: "2026-06-13T00:00:00.000Z",
+  }));
+}
+
 export function getBatch(batchId: string): ProductBatch {
+  if (batchId === "POP-JUICE-ORG-APPLE-0613") {
+    return getWalrusOrganicJuiceBatch();
+  }
+
   const deployment = getDeployment();
   if (deployment.batch.batchId !== batchId) {
     throw new Error(`Unknown batch ${batchId}`);
@@ -119,6 +273,10 @@ export function getHtsMetadata(batchId: string): {
   ok: boolean;
   errors: string[];
 } {
+  if (batchId === "POP-JUICE-ORG-APPLE-0613") {
+    return { ok: false, errors: ["This product is backed by Walrus evidence; no HTS product token has been minted for this batch yet."] };
+  }
+
   const deployment = getDeployment();
   if (deployment.batch.batchId !== batchId) {
     throw new Error(`Unknown batch ${batchId}`);
@@ -163,7 +321,10 @@ export function getHtsMetadataByToken(tokenId: string): {
 }
 
 export function getClaims(batchId: string): Claim[] {
-  return getDeployment().claims.filter((claim) => claim.batchId === batchId);
+  if (batchId === "POP-JUICE-ORG-APPLE-0613") {
+    return getWalrusOrganicJuiceClaims();
+  }
+  return getDeployment().claims.filter((claim) => claim.batchId === batchId).map(hideInvalidSuiClaimLink);
 }
 
 export function getIngredients(batchId: string): Ingredient[] {
@@ -179,6 +340,10 @@ export function getIngredient(batchId: string, slug: string): Ingredient {
 }
 
 export function getHcsMessages(topicId: string): HcsEvent[] {
+  if (topicId === "POP-JUICE-ORG-APPLE-0613" || topicId === "walrus://blob/pop-juice-org-apple-0613-raw-data-pack-v1" || topicId === "0.0.9226673") {
+    return getWalrusOrganicJuiceEvents(topicId);
+  }
+
   const file = hcsFile();
   if (existsSync(file)) {
     const hcs = readJsonFile<{ topicId: string; events: HcsEvent[] }>(file);

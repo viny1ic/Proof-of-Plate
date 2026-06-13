@@ -7,11 +7,10 @@ type Props = {
   summarySection: React.ReactNode;
   chatSection: React.ReactNode;
   claimsSection: React.ReactNode;
-  tamperSection: React.ReactNode;
   traceSection: React.ReactNode;
 };
 
-export function PassportRight({ summarySection, chatSection, claimsSection, tamperSection, traceSection }: Props) {
+export function PassportRight({ summarySection, chatSection, claimsSection, traceSection }: Props) {
   const [tab, setTab] = useState<Tab>("claims");
 
   return (
@@ -70,7 +69,6 @@ export function PassportRight({ summarySection, chatSection, claimsSection, tamp
 
       <div style={{ display: tab === "claims" ? "block" : "none" }}>
         <div>{claimsSection}</div>
-        <div>{tamperSection}</div>
       </div>
       <div style={{ display: tab === "trace" ? "block" : "none" }}>
         <div>{traceSection}</div>

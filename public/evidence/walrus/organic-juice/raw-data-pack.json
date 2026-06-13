@@ -1,0 +1,479 @@
+{
+  "documentId": "WALRUS-ORGANIC-JUICE-RAW-DATA-0613",
+  "title": "Proof of Plate Organic Juice Lifecycle Raw Data Pack",
+  "issuerRole": "demo_data_pack",
+  "issuerName": "Proof of Plate Demo Data Generator",
+  "batchId": "POP-JUICE-ORG-APPLE-0613",
+  "issuedAt": "2026-06-13T00:00:00.000Z",
+  "storage": "walrus",
+  "source": {
+    "docxPath": "/mnt/c/Users/vinay/Downloads/Proof_of_Plate_Organic_Juice_Raw_Data.docx",
+    "extractedTextPath": "/tmp/organic_juice_raw_data.txt",
+    "note": "Structured from the extracted DOCX text. The full extracted text is embedded below so the demo Walrus payload remains self-contained."
+  },
+  "product": {
+    "productName": "Proof of Plate Organic Apple Juice",
+    "batchId": "POP-JUICE-ORG-APPLE-0613",
+    "category": "Juice",
+    "productType": "100% Organic Pasteurized Apple Juice",
+    "demoUrlPath": "/p/POP-JUICE-ORG-APPLE-0613",
+    "qrCodePayload": "https://proof-of-plate.example/p/POP-JUICE-ORG-APPLE-0613",
+    "facilityId": "FAC-JUICE-NJ-01",
+    "lineId": "LINE-JUICE-01",
+    "productionDate": "2026-06-13",
+    "packDate": "2026-06-13",
+    "bestByDate": "2026-10-13",
+    "netContents": "12 fl oz (355 mL)",
+    "servingSize": "8 fl oz (240 mL)",
+    "servingsPerContainer": "About 1.5",
+    "ingredientStatement": "Organic apple juice",
+    "allergens": "None declared",
+    "storage": "Refrigerate after opening. Store unopened bottles in a cool, dry place unless product is sold refrigerated.",
+    "recallState": "not_recalled",
+    "verificationScore": "96/100",
+    "claimCount": 16
+  },
+  "actors": [
+    {
+      "entityId": "ORG-FARM-211",
+      "name": "Green Valley Organic Orchards",
+      "type": "Farm / supplier",
+      "responsibility": "Owns orchard, harvest, farm organic records",
+      "signatureKey": "farm_manager_signature"
+    },
+    {
+      "entityId": "ORG-CERT-044",
+      "name": "Northwest Organic Certifiers Demo",
+      "type": "Organic certifier",
+      "responsibility": "Signs organic farm and handler evidence",
+      "signatureKey": "certifier_signature"
+    },
+    {
+      "entityId": "FAC-JUICE-NJ-01",
+      "name": "Hudson Valley Juice Works Demo",
+      "type": "Processing facility",
+      "responsibility": "Receives, processes, pasteurizes, bottles juice",
+      "signatureKey": "facility_qa_signature"
+    },
+    {
+      "entityId": "LAB-ISO-118",
+      "name": "ClearTrace Food Labs Demo",
+      "type": "Third-party laboratory",
+      "responsibility": "Signs pesticide, microbiology, Brix, pH, heavy-metal reports",
+      "signatureKey": "lab_analyst_signature"
+    },
+    {
+      "entityId": "EQUIP-MFG-077",
+      "name": "Sanitary Flow Systems Demo",
+      "type": "Equipment manufacturer",
+      "responsibility": "Signs material, fabrication, surface finish, and passivation records",
+      "signatureKey": "manufacturer_qa_signature"
+    },
+    {
+      "entityId": "DIST-NE-501",
+      "name": "Northeast Fresh Distribution Demo",
+      "type": "Distributor",
+      "responsibility": "Signs temperature-controlled distribution records",
+      "signatureKey": "logistics_signature"
+    },
+    {
+      "entityId": "RET-1021",
+      "name": "Demo Retail Store 1021",
+      "type": "Retailer",
+      "responsibility": "Signs receipt and shelf lot record",
+      "signatureKey": "receiver_signature"
+    }
+  ],
+  "nutrition": [
+    {
+      "label": "Serving size",
+      "amount": "8 fl oz (240 mL)"
+    },
+    {
+      "label": "Calories",
+      "amount": "110"
+    },
+    {
+      "label": "Total Fat",
+      "amount": "0g",
+      "dailyValue": "0%"
+    },
+    {
+      "label": "Sodium",
+      "amount": "10mg",
+      "dailyValue": "0%"
+    },
+    {
+      "label": "Total Carbohydrate",
+      "amount": "28g",
+      "dailyValue": "10%"
+    },
+    {
+      "label": "Dietary Fiber",
+      "amount": "0g",
+      "dailyValue": "0%"
+    },
+    {
+      "label": "Total Sugars",
+      "amount": "24g",
+      "note": "Naturally occurring from apples"
+    },
+    {
+      "label": "Added Sugars",
+      "amount": "0g",
+      "note": "No added sugar claim"
+    },
+    {
+      "label": "Protein",
+      "amount": "0g"
+    },
+    {
+      "label": "Potassium",
+      "amount": "250mg",
+      "dailyValue": "6%"
+    },
+    {
+      "label": "Vitamin C",
+      "amount": "4mg",
+      "dailyValue": "4%"
+    }
+  ],
+  "equipment": {
+    "equipmentIds": [
+      "EQ-PAST-APPLE-001",
+      "EQ-HOLD-APPLE-001",
+      "EQ-PUMP-APPLE-001",
+      "EQ-FILL-APPLE-001",
+      "EQ-FILT-APPLE-001"
+    ],
+    "material": "316L stainless steel",
+    "surfaceFinish": "Ra <= 32 microinch",
+    "gasketMaterial": "EPDM food-contact grade",
+    "passivationStatus": "Passed"
+  },
+  "lifecycle": [
+    {
+      "sequence": 1,
+      "stageId": "STG-01",
+      "stage": "Equipment raw material",
+      "recordId": "EQ-MAT-316L-0613",
+      "dateTime": "2026-05-10 09:00 EDT",
+      "evidenceFile": "/evidence/organic-juice/equipment-material-cert.json"
+    },
+    {
+      "sequence": 2,
+      "stageId": "STG-02",
+      "stage": "Equipment sanitary design and fabrication",
+      "recordId": "EQ-SAN-0613",
+      "dateTime": "2026-05-18 14:30 EDT",
+      "evidenceFile": "/evidence/organic-juice/equipment-sanitary-design.json"
+    },
+    {
+      "sequence": 3,
+      "stageId": "STG-03",
+      "stage": "Installation, calibration, and commissioning",
+      "recordId": "COMM-LINE-0613",
+      "dateTime": "2026-06-01 16:00 EDT",
+      "evidenceFile": "/evidence/organic-juice/equipment-commissioning.json"
+    },
+    {
+      "sequence": 4,
+      "stageId": "STG-04",
+      "stage": "Organic orchard certification",
+      "recordId": "ORG-FARM-CERT-2026-211",
+      "dateTime": "2026-06-02 10:00 EDT",
+      "evidenceFile": "/evidence/organic-juice/organic-farm-certificate.json"
+    },
+    {
+      "sequence": 5,
+      "stageId": "STG-05",
+      "stage": "Harvest lot creation",
+      "recordId": "HARV-APPLE-0613-A",
+      "dateTime": "2026-06-10 06:30-11:15 EDT",
+      "evidenceFile": "/evidence/organic-juice/harvest-log.json"
+    },
+    {
+      "sequence": 6,
+      "stageId": "STG-06",
+      "stage": "Farm-to-facility shipping",
+      "recordId": "SHIP-FARM-FAC-0613",
+      "dateTime": "2026-06-10 13:00-18:40 EDT",
+      "evidenceFile": "/evidence/organic-juice/farm-to-facility-shipping.json"
+    },
+    {
+      "sequence": 7,
+      "stageId": "STG-07",
+      "stage": "Receiving and organic segregation",
+      "recordId": "REC-APPLE-0613-A",
+      "dateTime": "2026-06-10 18:45 EDT",
+      "evidenceFile": "/evidence/organic-juice/receiving-log.json"
+    },
+    {
+      "sequence": 8,
+      "stageId": "STG-08",
+      "stage": "Washing, sorting, and foreign material control",
+      "recordId": "WASH-APPLE-0613-A",
+      "dateTime": "2026-06-11 07:30-09:00 EDT",
+      "evidenceFile": "/evidence/organic-juice/wash-sort-log.json"
+    },
+    {
+      "sequence": 9,
+      "stageId": "STG-09",
+      "stage": "Crushing, milling, and pressing",
+      "recordId": "PRESS-JUICE-0613-A",
+      "dateTime": "2026-06-11 09:15-12:30 EDT",
+      "evidenceFile": "/evidence/organic-juice/pressing-log.json"
+    },
+    {
+      "sequence": 10,
+      "stageId": "STG-10",
+      "stage": "Filtration and clarification",
+      "recordId": "FILT-JUICE-0613-A",
+      "dateTime": "2026-06-11 12:45-13:20 EDT",
+      "evidenceFile": "/evidence/organic-juice/filtration-log.json"
+    },
+    {
+      "sequence": 11,
+      "stageId": "STG-11",
+      "stage": "Pasteurization / safety kill step",
+      "recordId": "PAST-JUICE-0613-A",
+      "dateTime": "2026-06-11 13:30-14:10 EDT",
+      "evidenceFile": "/evidence/organic-juice/pasteurization-log.json"
+    },
+    {
+      "sequence": 12,
+      "stageId": "STG-12",
+      "stage": "Third-party lab testing",
+      "recordId": "LAB-JUICE-0613-A",
+      "dateTime": "2026-06-12 09:00 EDT",
+      "evidenceFile": "/evidence/organic-juice/lab-results.json"
+    },
+    {
+      "sequence": 13,
+      "stageId": "STG-13",
+      "stage": "Organic handler and label verification",
+      "recordId": "ORG-HANDLER-LABEL-0613",
+      "dateTime": "2026-06-12 12:00 EDT",
+      "evidenceFile": "/evidence/organic-juice/organic-processing-label-review.json"
+    },
+    {
+      "sequence": 14,
+      "stageId": "STG-14",
+      "stage": "CIP cleaning and sanitation",
+      "recordId": "CIP-LINE-JUICE-0613",
+      "dateTime": "2026-06-13 05:00-06:10 EDT",
+      "evidenceFile": "/evidence/organic-juice/cip-cleaning-log.json"
+    },
+    {
+      "sequence": 15,
+      "stageId": "STG-15",
+      "stage": "Bottling and packaging",
+      "recordId": "PACK-JUICE-0613-A",
+      "dateTime": "2026-06-13 07:00-10:15 EDT",
+      "evidenceFile": "/evidence/organic-juice/packaging-log.json"
+    },
+    {
+      "sequence": 16,
+      "stageId": "STG-16",
+      "stage": "Storage, release, and distribution",
+      "recordId": "DIST-JUICE-0613-A",
+      "dateTime": "2026-06-13 12:00-18:30 EDT",
+      "evidenceFile": "/evidence/organic-juice/storage-distribution-log.json"
+    }
+  ],
+  "claims": [
+    {
+      "sequence": 1,
+      "claimId": "organic_farm_certified",
+      "label": "Apples came from a certified organic orchard",
+      "issuerRole": "certifier",
+      "status": "verified",
+      "evidenceUri": "/evidence/organic-juice/organic-farm-certificate.json",
+      "stageId": "STG-04",
+      "storage": "walrus-pack"
+    },
+    {
+      "sequence": 2,
+      "claimId": "organic_processing_verified",
+      "label": "Organic handling and processing controls verified",
+      "issuerRole": "certifier/facility",
+      "status": "verified",
+      "evidenceUri": "/evidence/organic-juice/organic-processing-label-review.json",
+      "stageId": "STG-13",
+      "storage": "walrus-pack"
+    },
+    {
+      "sequence": 3,
+      "claimId": "one_hundred_percent_juice_verified",
+      "label": "Product is 100% apple juice",
+      "issuerRole": "facility_regulatory",
+      "status": "verified",
+      "evidenceUri": "/evidence/organic-juice/organic-processing-label-review.json",
+      "stageId": "STG-13",
+      "storage": "walrus-pack"
+    },
+    {
+      "sequence": 4,
+      "claimId": "no_added_sugar_verified",
+      "label": "No added sugar used",
+      "issuerRole": "facility/lab",
+      "status": "verified",
+      "evidenceUri": "/evidence/organic-juice/lab-results.json",
+      "stageId": "STG-12",
+      "storage": "walrus-pack"
+    },
+    {
+      "sequence": 5,
+      "claimId": "pesticide_residue_test_passed",
+      "label": "Final pesticide residue test passed",
+      "issuerRole": "third_party_lab",
+      "status": "verified",
+      "evidenceUri": "/evidence/organic-juice/lab-results.json",
+      "stageId": "STG-12",
+      "storage": "walrus-pack"
+    },
+    {
+      "sequence": 6,
+      "claimId": "microbial_test_passed",
+      "label": "Microbial safety testing passed",
+      "issuerRole": "third_party_lab",
+      "status": "verified",
+      "evidenceUri": "/evidence/organic-juice/lab-results.json",
+      "stageId": "STG-12",
+      "storage": "walrus-pack"
+    },
+    {
+      "sequence": 7,
+      "claimId": "pasteurized_5log_validated",
+      "label": "Pasteurization safety step completed",
+      "issuerRole": "facility_qa",
+      "status": "verified",
+      "evidenceUri": "/evidence/organic-juice/pasteurization-log.json",
+      "stageId": "STG-11",
+      "storage": "walrus-pack"
+    },
+    {
+      "sequence": 8,
+      "claimId": "equipment_material_verified",
+      "label": "Product-contact equipment material verified",
+      "issuerRole": "equipment_manufacturer",
+      "status": "verified",
+      "evidenceUri": "/evidence/organic-juice/equipment-material-cert.json",
+      "stageId": "STG-01",
+      "storage": "walrus-pack"
+    },
+    {
+      "sequence": 9,
+      "claimId": "sanitary_design_verified",
+      "label": "Equipment cleanability and sanitary design reviewed",
+      "issuerRole": "equipment_manufacturer",
+      "status": "verified",
+      "evidenceUri": "/evidence/organic-juice/equipment-sanitary-design.json",
+      "stageId": "STG-02",
+      "storage": "walrus-pack"
+    },
+    {
+      "sequence": 10,
+      "claimId": "equipment_commissioned",
+      "label": "Processing line installed and calibrated",
+      "issuerRole": "facility_engineering",
+      "status": "verified",
+      "evidenceUri": "/evidence/organic-juice/equipment-commissioning.json",
+      "stageId": "STG-03",
+      "storage": "walrus-pack"
+    },
+    {
+      "sequence": 11,
+      "claimId": "harvest_lot_tracked",
+      "label": "Fruit traceable to harvest lot",
+      "issuerRole": "farm",
+      "status": "verified",
+      "evidenceUri": "/evidence/organic-juice/harvest-log.json",
+      "stageId": "STG-05",
+      "storage": "walrus-pack"
+    },
+    {
+      "sequence": 12,
+      "claimId": "chain_of_custody_verified",
+      "label": "Farm-to-facility shipment tracked",
+      "issuerRole": "logistics",
+      "status": "verified",
+      "evidenceUri": "/evidence/organic-juice/farm-to-facility-shipping.json",
+      "stageId": "STG-06",
+      "storage": "walrus-pack"
+    },
+    {
+      "sequence": 13,
+      "claimId": "organic_receiving_verified",
+      "label": "Facility verified organic lot and segregation",
+      "issuerRole": "facility_qc",
+      "status": "verified",
+      "evidenceUri": "/evidence/organic-juice/receiving-log.json",
+      "stageId": "STG-07",
+      "storage": "walrus-pack"
+    },
+    {
+      "sequence": 14,
+      "claimId": "fruit_washed_and_sorted",
+      "label": "Fruit washed, sorted, and checked",
+      "issuerRole": "facility_qc",
+      "status": "verified",
+      "evidenceUri": "/evidence/organic-juice/wash-sort-log.json",
+      "stageId": "STG-08",
+      "storage": "walrus-pack"
+    },
+    {
+      "sequence": 15,
+      "claimId": "equipment_cleaned_before_batch",
+      "label": "CIP cleaning completed before bottling",
+      "issuerRole": "facility_sanitation",
+      "status": "verified",
+      "evidenceUri": "/evidence/organic-juice/cip-cleaning-log.json",
+      "stageId": "STG-14",
+      "storage": "walrus-pack"
+    },
+    {
+      "sequence": 16,
+      "claimId": "distribution_chain_verified",
+      "label": "Storage and distribution chain verified",
+      "issuerRole": "facility/distributor/retailer",
+      "status": "verified",
+      "evidenceUri": "/evidence/organic-juice/storage-distribution-log.json",
+      "stageId": "STG-16",
+      "storage": "walrus-pack"
+    }
+  ],
+  "facts": [
+    {
+      "key": "product_name",
+      "value": "Proof of Plate Organic Apple Juice",
+      "result": "info"
+    },
+    {
+      "key": "batch_id",
+      "value": "POP-JUICE-ORG-APPLE-0613",
+      "result": "info"
+    },
+    {
+      "key": "net_contents",
+      "value": "12 fl oz (355 mL)",
+      "result": "info"
+    },
+    {
+      "key": "storage_instructions",
+      "value": "Refrigerate after opening. Store unopened bottles in a cool, dry place unless product is sold refrigerated.",
+      "result": "info"
+    },
+    {
+      "key": "claim_count",
+      "value": 16,
+      "result": "pass"
+    },
+    {
+      "key": "verification_score",
+      "value": "96/100",
+      "result": "pass"
+    }
+  ],
+  "rawExtractedText": "Proof of Plate\nOrganic Juice Lifecycle Raw Data Pack\nSynthetic demo data for adding a second practical product example\n\n[TABLE]\nField || Value\nDemo product || Proof of Plate Organic Apple Juice\nBatch ID || POP-JUICE-ORG-APPLE-0613\nPurpose || Raw implementation data, not pitch content\nGenerated || 2026-06-13\nUse case || Add organic juice as a second Proof of Plate product lifecycle example\nNote: All company names, IDs, hashes, object IDs, lab values, and signatures in this document are synthetic demo data. Replace them with real records before production use.\n1. How to Use This Document\nUse this as a raw data pack for adding an organic juice example to the Proof of Plate project.\nThis is not a pitch document. It is structured as records, fields, IDs, evidence file names, claim IDs, signatures, and sample JSON objects.\nThe product lifecycle covers equipment raw material, organic farm proof, harvest, shipping, receiving, washing, pressing, filtration, pasteurization, lab testing, organic handling, CIP cleaning, bottling, storage, and distribution.\nThe data is designed to map cleanly to a Sui final product truth layer, Hedera HCS ordered audit layer, static JSON evidence files, and a consumer/inspector product passport UI.\n2. Master Product Batch Record\n\n[TABLE]\nField || Demo value\nbatch_id || POP-JUICE-ORG-APPLE-0613\nproduct_name || Proof of Plate Organic Apple Juice\ncategory || Juice\nproduct_type || 100% Organic Pasteurized Apple Juice\ndemo_url_path || /p/POP-JUICE-ORG-APPLE-0613\nqr_code_payload || https://proof-of-plate.example/p/POP-JUICE-ORG-APPLE-0613\nfacility_id || FAC-JUICE-NJ-01\nline_id || LINE-JUICE-01\nproduction_date || 2026-06-13\npack_date || 2026-06-13\nbest_by_date || 2026-10-13\nnet_contents || 12 fl oz (355 mL)\nserving_size || 8 fl oz (240 mL)\nservings_per_container || About 1.5\ningredient_statement || Organic apple juice\nallergens || None declared\nstorage || Refrigerate after opening. Store unopened bottles in a cool, dry place unless product is sold refrigerated.\nrecall_state || not_recalled\nverification_score || 96/100\nclaim_count || 16\n3. Organization / Actor Master Data\n\n[TABLE]\nEntity ID || Name || Type || Responsibility || Signature key\nORG-FARM-211 || Green Valley Organic Orchards || Farm / supplier || Owns orchard, harvest, farm organic records || farm_manager_signature\nORG-CERT-044 || Northwest Organic Certifiers Demo || Organic certifier || Signs organic farm and handler evidence || certifier_signature\nFAC-JUICE-NJ-01 || Hudson Valley Juice Works Demo || Processing facility || Receives, processes, pasteurizes, bottles juice || facility_qa_signature\nLAB-ISO-118 || ClearTrace Food Labs Demo || Third-party laboratory || Signs pesticide, microbiology, Brix, pH, heavy-metal reports || lab_analyst_signature\nEQUIP-MFG-077 || Sanitary Flow Systems Demo || Equipment manufacturer || Signs material, fabrication, surface finish, and passivation records || manufacturer_qa_signature\nDIST-NE-501 || Northeast Fresh Distribution Demo || Distributor || Signs temperature-controlled distribution records || logistics_signature\nRET-1021 || Demo Retail Store 1021 || Retailer || Signs receipt and shelf lot record || receiver_signature\n4. Product Label and Nutrition Raw Data\n\n[TABLE]\nLabel field || Value || Notes\nServing size || 8 fl oz (240 mL) || Display value on passport\nCalories || 110 || Per serving\nTotal Fat || 0g || 0% DV\nSodium || 10mg || 0% DV\nTotal Carbohydrate || 28g || 10% DV\nDietary Fiber || 0g || 0% DV\nTotal Sugars || 24g || Naturally occurring from apples\nAdded Sugars || 0g || No added sugar claim\nProtein || 0g || -\nPotassium || 250mg || 6% DV\nVitamin C || 4mg || 4% DV\n5. Equipment Master Data\n\n[TABLE]\nField || Value || Scope || Note\nequipment_id || EQ-PAST-APPLE-001 || Plate heat exchanger pasteurizer || Product-contact\nequipment_id || EQ-HOLD-APPLE-001 || Balance/holding tank || Product-contact\nequipment_id || EQ-PUMP-APPLE-001 || Sanitary centrifugal pump || Product-contact\nequipment_id || EQ-FILL-APPLE-001 || Bottle filler manifold || Product-contact\nequipment_id || EQ-FILT-APPLE-001 || Coarse filter housing || Product-contact\nmaterial || 316L stainless steel || Product-contact surfaces || Heat numbers recorded\nsurface_finish || Ra <= 32 microinch || Internal product-contact surfaces || Demo acceptance limit\ngasket_material || EPDM food-contact grade || Gaskets and seals || Lot documented\npassivation_status || Passed || Passivation record PASS-2026-0610 || QA released\n6. Full Lifecycle Timeline\n\n[TABLE]\nSeq || Stage ID || Stage || Record ID || Date/Time || Evidence file\n1 || STG-01 || Equipment raw material || EQ-MAT-316L-0613 || 2026-05-10 09:00 EDT || equipment-material-cert.json\n2 || STG-02 || Equipment sanitary design and fabrication || EQ-SAN-0613 || 2026-05-18 14:30 EDT || equipment-sanitary-design.json\n3 || STG-03 || Installation, calibration, and commissioning || COMM-LINE-0613 || 2026-06-01 16:00 EDT || equipment-commissioning.json\n4 || STG-04 || Organic orchard certification || ORG-FARM-CERT-2026-211 || 2026-06-02 10:00 EDT || organic-farm-certificate.json\n5 || STG-05 || Harvest lot creation || HARV-APPLE-0613-A || 2026-06-10 06:30-11:15 EDT || harvest-log.json\n6 || STG-06 || Farm-to-facility shipping || SHIP-FARM-FAC-0613 || 2026-06-10 13:00-18:40 EDT || farm-to-facility-shipping.json\n7 || STG-07 || Receiving and organic segregation || REC-APPLE-0613-A || 2026-06-10 18:45 EDT || receiving-log.json\n8 || STG-08 || Washing, sorting, and foreign material control || WASH-APPLE-0613-A || 2026-06-11 07:30-09:00 EDT || wash-sort-log.json\n9 || STG-09 || Crushing, milling, and pressing || PRESS-JUICE-0613-A || 2026-06-11 09:15-12:30 EDT || pressing-log.json\n10 || STG-10 || Filtration and clarification || FILT-JUICE-0613-A || 2026-06-11 12:45-13:20 EDT || filtration-log.json\n11 || STG-11 || Pasteurization / safety kill step || PAST-JUICE-0613-A || 2026-06-11 13:30-14:10 EDT || pasteurization-log.json\n12 || STG-12 || Third-party lab testing || LAB-JUICE-0613-A || 2026-06-12 09:00 EDT || lab-results.json\n13 || STG-13 || Organic handler and label verification || ORG-HANDLER-LABEL-0613 || 2026-06-12 12:00 EDT || organic-processing-label-review.json\n14 || STG-14 || CIP cleaning and sanitation || CIP-LINE-JUICE-0613 || 2026-06-13 05:00-06:10 EDT || cip-cleaning-log.json\n15 || STG-15 || Bottling and packaging || PACK-JUICE-0613-A || 2026-06-13 07:00-10:15 EDT || packaging-log.json\n16 || STG-16 || Storage, release, and distribution || DIST-JUICE-0613-A || 2026-06-13 12:00-18:30 EDT || storage-distribution-log.json\n7. Detailed Lifecycle Records\n7.1 Equipment raw material\n\n[TABLE]\nField || Value\nstage_id || STG-01\nstage_sequence || 1\nrecord_id || EQ-MAT-316L-0613\nactor || EQUIP-MFG-077\ndate_time || 2026-05-10 09:00 EDT\nsummary || Product-contact parts for pasteurizer, holding tank, transfer piping, filler manifold, and filter housing verified as 316L stainless steel or food-contact-compatible materials.\nevidence_file || /evidence/organic-juice/equipment-material-cert.json\nevidence_hash || sha256:d89b1283b086af4c16a693c7c0a705bd7356f6fb7445267fc34da9496536520d\nrequired_signature || manufacturer_qa_signature\nconsumer_text || Juice-contact equipment material is verified.\n\n[TABLE]\nRaw field || Demo value\nequipment_ids || EQ-PAST-APPLE-001; EQ-HOLD-APPLE-001; EQ-PUMP-APPLE-001; EQ-FILL-APPLE-001; EQ-FILT-APPLE-001\ncontact_material || 316L stainless steel\nsteel_heat_numbers || HT-88921-A; HT-88922-B; HT-88923-C\nmill_test_report_ids || MTR-316L-2026-442; MTR-316L-2026-443\ngasket_material || EPDM food-contact grade\ngasket_lot || GSK-EPDM-0610\nmaterial_release_status || passed\nsigned_by || Maya Patel, Manufacturer QA Manager\n7.2 Equipment sanitary design and fabrication\n\n[TABLE]\nField || Value\nstage_id || STG-02\nstage_sequence || 2\nrecord_id || EQ-SAN-0613\nactor || EQUIP-MFG-077\ndate_time || 2026-05-18 14:30 EDT\nsummary || Cleanability, drainability, weld quality, dead-leg review, and surface finish records passed before shipment to the juice facility.\nevidence_file || /evidence/organic-juice/equipment-sanitary-design.json\nevidence_hash || sha256:30b4a50f28605932188e0cb551b293b04b4a832d093a8bb7170c023b509a35a0\nrequired_signature || manufacturer_qa_signature\nconsumer_text || Equipment was reviewed for cleanable sanitary design.\n\n[TABLE]\nRaw field || Demo value\nweld_map_id || WELD-MAP-JUICE-LINE-001\nweld_inspection || visual + boroscope review passed\ndead_leg_review || passed\ndrainability_check || passed\ncleanability_review || passed\nsurface_finish_result || Ra <= 32 microinch\nsanitary_design_status || accepted\nsigned_by || Maya Patel, Manufacturer QA Manager\n7.3 Installation, calibration, and commissioning\n\n[TABLE]\nField || Value\nstage_id || STG-03\nstage_sequence || 3\nrecord_id || COMM-LINE-0613\nactor || FAC-JUICE-NJ-01\ndate_time || 2026-06-01 16:00 EDT\nsummary || Line installation, temperature sensor calibration, flow meter calibration, divert valve check, and water trial completed.\nevidence_file || /evidence/organic-juice/equipment-commissioning.json\nevidence_hash || sha256:581c397667f5a193571457b25f7d6b7f73698659d73124f003cc6bb7262ef2fe\nrequired_signature || plant_engineer_signature\nconsumer_text || Processing line was installed and checked before production.\n\n[TABLE]\nRaw field || Demo value\nfacility_id || FAC-JUICE-NJ-01\nline_id || LINE-JUICE-01\ninstallation_date || 2026-06-01\ntemperature_sensor_calibration || CAL-TEMP-0613 passed\nflow_meter_calibration || CAL-FLOW-0613 passed\ndivert_valve_check || passed\nwater_trial || passed\ncommissioning_status || released for production\n7.4 Organic orchard certification\n\n[TABLE]\nField || Value\nstage_id || STG-04\nstage_sequence || 4\nrecord_id || ORG-FARM-CERT-2026-211\nactor || ORG-CERT-044\ndate_time || 2026-06-02 10:00 EDT\nsummary || Farm and apple orchard block A7 are covered under current organic certification and Organic System Plan.\nevidence_file || /evidence/organic-juice/organic-farm-certificate.json\nevidence_hash || sha256:9fba0da67fe832d696184c93324ae1dd5994bfc8238490b45758f58d98941f4f\nrequired_signature || certifier_signature\nconsumer_text || Apples came from a certified organic orchard.\n\n[TABLE]\nRaw field || Demo value\nfarm_id || FARM-ORG-APPLE-211\nfarm_name || Green Valley Organic Orchards\ncrop || Apple\norchard_block || BLOCK-A7\norganic_certificate_id || NOP-CERT-2026-9912\ncertifying_agent || Northwest Organic Certifiers Demo\norganic_system_plan_id || OSP-2026-FARM-211\ncertificate_status || active\n7.5 Harvest lot creation\n\n[TABLE]\nField || Value\nstage_id || STG-05\nstage_sequence || 5\nrecord_id || HARV-APPLE-0613-A\nactor || ORG-FARM-211\ndate_time || 2026-06-10 06:30-11:15 EDT\nsummary || Organic apples harvested from block A7. Bin IDs, crew ID, field conditions, and rejection counts recorded.\nevidence_file || /evidence/organic-juice/harvest-log.json\nevidence_hash || sha256:bdccc358c39b0cf5dc8824cf6e29229a2e5275e60a39e80ee54844899414d785\nrequired_signature || farm_manager_signature\nconsumer_text || Apples are traceable to a specific harvest lot.\n\n[TABLE]\nRaw field || Demo value\nharvest_lot_id || HARV-APPLE-0613-A\norchard_block || BLOCK-A7\napple_variety || Gala / Fuji blend\nharvest_window || 2026-06-10 06:30-11:15 EDT\nbins || BIN-A7-001 through BIN-A7-090\ngross_weight || 18,000 lb\nfield_reject_estimate || 380 lb\naccepted_for_transport || 17,620 lb\n7.6 Farm-to-facility shipping\n\n[TABLE]\nField || Value\nstage_id || STG-06\nstage_sequence || 6\nrecord_id || SHIP-FARM-FAC-0613\nactor || ORG-FARM-211 / DIST-NE-501\ndate_time || 2026-06-10 13:00-18:40 EDT\nsummary || Sealed refrigerated transport from orchard to processing facility with temperature record and chain-of-custody signoff.\nevidence_file || /evidence/organic-juice/farm-to-facility-shipping.json\nevidence_hash || sha256:1e956a12f96677abcbbcfe91c4a23728de94978808e438a3c8fd284700c8d9ab\nrequired_signature || logistics_signature\nconsumer_text || Fruit shipment was tracked from farm to facility.\n\n[TABLE]\nRaw field || Demo value\nshipment_id || SHIP-FARM-FAC-0613\ntruck_id || TRUCK-9082\ndriver_id || DRV-441\nseal_number || SEAL-77812\ndeparture_time || 2026-06-10 13:00 EDT\narrival_time || 2026-06-10 18:40 EDT\ntemperature_range || 38-45 F\nchain_of_custody_status || intact\n7.7 Receiving and organic segregation\n\n[TABLE]\nField || Value\nstage_id || STG-07\nstage_sequence || 7\nrecord_id || REC-APPLE-0613-A\nactor || FAC-JUICE-NJ-01\ndate_time || 2026-06-10 18:45 EDT\nsummary || Receiving team checked seal, lot IDs, organic certificate, rejection quantity, and segregation from conventional fruit.\nevidence_file || /evidence/organic-juice/receiving-log.json\nevidence_hash || sha256:88c508296c7f20695a21fec3aaec6f5b34df6e07f6332764d2750b30223dd840\nrequired_signature || receiving_qc_signature\nconsumer_text || Facility verified organic lot before processing.\n\n[TABLE]\nRaw field || Demo value\nreceiving_lot_id || REC-APPLE-0613-A\nsupplier_lot_id || HARV-APPLE-0613-A\nseal_check || passed\norganic_certificate_checked || yes\nquantity_received || 17,620 lb\nrejected_quantity || 420 lb\naccepted_quantity || 17,200 lb\norganic_segregation || segregated from conventional fruit\n7.8 Washing, sorting, and foreign material control\n\n[TABLE]\nField || Value\nstage_id || STG-08\nstage_sequence || 8\nrecord_id || WASH-APPLE-0613-A\nactor || FAC-JUICE-NJ-01\ndate_time || 2026-06-11 07:30-09:00 EDT\nsummary || Potable water wash, sorting, reject removal, sanitizer concentration check, and foreign-material inspection completed.\nevidence_file || /evidence/organic-juice/wash-sort-log.json\nevidence_hash || sha256:00965f66406f36b5b973b82da8302f5324c33a684a46daf8b2dac579120c8493\nrequired_signature || wash_line_operator_signature\nconsumer_text || Apples were washed, sorted, and checked before pressing.\n\n[TABLE]\nRaw field || Demo value\nwash_batch_id || WASH-APPLE-0613-A\nwater_source || potable water\nwater_test_id || WATER-TEST-0613\nsanitizer || organic-compliant sanitizer, demo\nsanitizer_concentration || 80 ppm target; 76-84 ppm actual\nsorting_method || manual + optical sorter\nforeign_material_check || passed\noperator || wash line operator\n7.9 Crushing, milling, and pressing\n\n[TABLE]\nField || Value\nstage_id || STG-09\nstage_sequence || 9\nrecord_id || PRESS-JUICE-0613-A\nactor || FAC-JUICE-NJ-01\ndate_time || 2026-06-11 09:15-12:30 EDT\nsummary || Organic apples crushed and pressed on line LINE-JUICE-01 after line clearance. Juice yield and pomace output recorded.\nevidence_file || /evidence/organic-juice/pressing-log.json\nevidence_hash || sha256:1e8e6eb10e15bcf26d617b26d49b4bab106194773b22cbfe16c2fd484294fdb0\nrequired_signature || processing_operator_signature\nconsumer_text || Juice was pressed from the verified organic apple lot.\n\n[TABLE]\nRaw field || Demo value\nprocessing_batch_id || PRESS-JUICE-0613-A\ninput_lot || REC-APPLE-0613-A\ninput_quantity || 17,200 lb apples\njuice_yield || 1,420 gal\npomace_quantity || 5,850 lb\nline_clearance || passed\norganic_only_run || yes\noperator || processing operator\n7.10 Filtration and clarification\n\n[TABLE]\nField || Value\nstage_id || STG-10\nstage_sequence || 10\nrecord_id || FILT-JUICE-0613-A\nactor || FAC-JUICE-NJ-01\ndate_time || 2026-06-11 12:45-13:20 EDT\nsummary || Coarse filtration completed. Filter lot, turbidity, and filter integrity record captured.\nevidence_file || /evidence/organic-juice/filtration-log.json\nevidence_hash || sha256:128b0257c77bc21026e1be3234c5d25a19c00668fa028d1347a51f369c256bca\nrequired_signature || processing_operator_signature\nconsumer_text || Filtration record is available for this batch.\n\n[TABLE]\nRaw field || Demo value\nfiltration_batch_id || FILT-JUICE-0613-A\nfilter_type || coarse filter\nfilter_lot || FILTER-LOT-8831\nturbidity_before || 45 NTU\nturbidity_after || 18 NTU\nprocessing_aid || none\nfilter_integrity || passed\noperator || processing operator\n7.11 Pasteurization / safety kill step\n\n[TABLE]\nField || Value\nstage_id || STG-11\nstage_sequence || 11\nrecord_id || PAST-JUICE-0613-A\nactor || FAC-JUICE-NJ-01\ndate_time || 2026-06-11 13:30-14:10 EDT\nsummary || Pasteurization CCP met validated time, temperature, and flow parameters; divert valve stayed in legal-flow state.\nevidence_file || /evidence/organic-juice/pasteurization-log.json\nevidence_hash || sha256:d2c1a7b9ab52b8ed88d4d1946d54a3d1e02fac421839dd1cfb50080dddd299ac\nrequired_signature || haccp_qa_signature\nconsumer_text || Juice was pasteurized using a validated food-safety process.\n\n[TABLE]\nRaw field || Demo value\npasteurization_batch_id || PAST-JUICE-0613-A\npasteurizer_id || EQ-PAST-APPLE-001\nvalidated_process_reference || VAL-5LOG-APPLE-2026\ntarget_process || demo time-temperature-flow process; exact commercial process requires validation\nminimum_actual_temperature || logged in PLC file PAST-0613-RAW.csv\nholding_time || met validated minimum\ndivert_valve_status || legal flow maintained\nccp_status || in control; no deviation\n7.12 Third-party lab testing\n\n[TABLE]\nField || Value\nstage_id || STG-12\nstage_sequence || 12\nrecord_id || LAB-JUICE-0613-A\nactor || LAB-ISO-118\ndate_time || 2026-06-12 09:00 EDT\nsummary || Pesticide residue, microbial, pH, Brix, heavy-metal screen, and added-sugar consistency review completed.\nevidence_file || /evidence/organic-juice/lab-results.json\nevidence_hash || sha256:62c2d858218bd39a39941f60f6363c9059c06bd89432cfbb651c32596b7ed34f\nrequired_signature || lab_analyst_signature\nconsumer_text || Batch passed final lab testing.\n\n[TABLE]\nRaw field || Demo value\nlab_report_id || LAB-JUICE-0613-A\nsample_id || SAMPLE-JUICE-0613-A\nsample_collection_time || 2026-06-11 14:30 EDT\npH || 3.72\nbrix || 11.8\nE_coli || not detected\nSalmonella || not detected\npesticide_residue_screen || not detected / below reporting limits\nheavy_metals_screen || within internal demo limits\nadded_sugar_consistency || no added sugar indicated by formula + Brix/nutrition review\n7.13 Organic handler and label verification\n\n[TABLE]\nField || Value\nstage_id || STG-13\nstage_sequence || 13\nrecord_id || ORG-HANDLER-LABEL-0613\nactor || ORG-CERT-044 / FAC-JUICE-NJ-01\ndate_time || 2026-06-12 12:00 EDT\nsummary || Organic handler certificate, organic line clearance, ingredient percentage, and label claim review completed.\nevidence_file || /evidence/organic-juice/organic-processing-label-review.json\nevidence_hash || sha256:7f7772f093b088f13c8438d9332c3be72d9dcf98856c3f751aa260bc25663570\nrequired_signature || certifier_signature\nconsumer_text || Organic processing and label review are verified.\n\n[TABLE]\nRaw field || Demo value\nhandler_certificate_id || ORG-HANDLER-2026-771\norganic_handling_plan || OSP-FAC-2026\norganic_ingredient_percentage || 100% apple juice\nnon_organic_ingredients || none\nprocessing_aids || none\nlabel_claims || USDA Organic; 100% Juice; No Added Sugar; Pasteurized\njuice_percentage_statement || 100% juice\nlabel_review_status || approved for demo\n7.14 CIP cleaning and sanitation\n\n[TABLE]\nField || Value\nstage_id || STG-14\nstage_sequence || 14\nrecord_id || CIP-LINE-JUICE-0613\nactor || FAC-JUICE-NJ-01\ndate_time || 2026-06-13 05:00-06:10 EDT\nsummary || Full CIP cycle, chemical concentration, final rinse, ATP swab, and pre-op QA release completed before bottling.\nevidence_file || /evidence/organic-juice/cip-cleaning-log.json\nevidence_hash || sha256:ed9cf25f504536e432e892b4389b56f7fc3e1ce75b3550c37095844555a84f9d\nrequired_signature || sanitation_lead_signature\nconsumer_text || Equipment was cleaned and checked before the batch.\n\n[TABLE]\nRaw field || Demo value\ncip_cycle_id || CIP-LINE-JUICE-0613\nline_id || LINE-JUICE-01\nprevious_product || organic apple juice water trial / no allergen\npre_rinse || 10 minutes\ncaustic_cycle || target met\nacid_cycle || target met\nsanitizer_cycle || target met\nfinal_rinse || passed\nATP_swab || passed\npre_op_release || released\n7.15 Bottling and packaging\n\n[TABLE]\nField || Value\nstage_id || STG-15\nstage_sequence || 15\nrecord_id || PACK-JUICE-0613-A\nactor || FAC-JUICE-NJ-01\ndate_time || 2026-06-13 07:00-10:15 EDT\nsummary || Bottle, cap, label, QR code, fill volume, cap torque, tamper seal, and pack count records completed.\nevidence_file || /evidence/organic-juice/packaging-log.json\nevidence_hash || sha256:f969447482f8cfb87db13f5180cd7d0d3e56221a9eddee178e7da9b704f0be29\nrequired_signature || packaging_qa_signature\nconsumer_text || Bottle and QR code are linked to this exact production batch.\n\n[TABLE]\nRaw field || Demo value\npackaging_batch_id || PACK-JUICE-0613-A\nbottle_lot || BOTTLE-LOT-6221\ncap_lot || CAP-LOT-1182\nlabel_lot || LABEL-ORG-APPLE-0613\nqr_code_payload || https://proof-of-plate.example/p/POP-JUICE-ORG-APPLE-0613\nfill_volume_checks || passed\ncap_torque_checks || passed\ntamper_seal_checks || passed\npack_count || 12,000 bottles\n7.16 Storage, release, and distribution\n\n[TABLE]\nField || Value\nstage_id || STG-16\nstage_sequence || 16\nrecord_id || DIST-JUICE-0613-A\nactor || FAC-JUICE-NJ-01 / DIST-NE-501 / RET-1021\ndate_time || 2026-06-13 12:00-18:30 EDT\nsummary || QA release, warehouse hold, pallet IDs, temperature record, distributor shipment, and retail receiving recorded.\nevidence_file || /evidence/organic-juice/storage-distribution-log.json\nevidence_hash || sha256:fca1caf1f94f016c167a03cc5012aa7ac0114b99005166b7b9892e3b43fe8efb\nrequired_signature || logistics_signature\nconsumer_text || Batch was tracked through storage and distribution.\n\n[TABLE]\nRaw field || Demo value\nstorage_lot_id || STORE-JUICE-0613-A\nwarehouse_id || WH-NJ-01\npallet_ids || PAL-JUICE-001 through PAL-JUICE-050\nqa_release_time || 2026-06-13 12:00 EDT\nshipment_id || SHIP-DIST-0613-A\ntruck_id || TRUCK-442\ntemperature_range || 35-42 F\nretail_receiving_status || received; seal intact\n8. Claim Master Data\n\n[TABLE]\nSeq || Claim ID || Claim label || Issuer role || Status || Evidence URI || Stage\n1 || organic_farm_certified || Apples came from a certified organic orchard || certifier || verified || /evidence/organic-juice/organic-farm-certificate.json || STG-04\n2 || organic_processing_verified || Organic handling and processing controls verified || certifier/facility || verified || /evidence/organic-juice/organic-processing-label-review.json || STG-13\n3 || one_hundred_percent_juice_verified || Product is 100% apple juice || facility_regulatory || verified || /evidence/organic-juice/organic-processing-label-review.json || STG-13\n4 || no_added_sugar_verified || No added sugar used || facility/lab || verified || /evidence/organic-juice/lab-results.json || STG-12\n5 || pesticide_residue_test_passed || Final pesticide residue test passed || third_party_lab || verified || /evidence/organic-juice/lab-results.json || STG-12\n6 || microbial_test_passed || Microbial safety testing passed || third_party_lab || verified || /evidence/organic-juice/lab-results.json || STG-12\n7 || pasteurized_5log_validated || Pasteurization safety step completed || facility_qa || verified || /evidence/organic-juice/pasteurization-log.json || STG-11\n8 || equipment_material_verified || Product-contact equipment material verified || equipment_manufacturer || verified || /evidence/organic-juice/equipment-material-cert.json || STG-01\n9 || sanitary_design_verified || Equipment cleanability and sanitary design reviewed || equipment_manufacturer || verified || /evidence/organic-juice/equipment-sanitary-design.json || STG-02\n10 || equipment_commissioned || Processing line installed and calibrated || facility_engineering || verified || /evidence/organic-juice/equipment-commissioning.json || STG-03\n11 || harvest_lot_tracked || Fruit traceable to harvest lot || farm || verified || /evidence/organic-juice/harvest-log.json || STG-05\n12 || chain_of_custody_verified || Farm-to-facility shipment tracked || logistics || verified || /evidence/organic-juice/farm-to-facility-shipping.json || STG-06\n13 || organic_receiving_verified || Facility verified organic lot and segregation || facility_qc || verified || /evidence/organic-juice/receiving-log.json || STG-07\n14 || fruit_washed_and_sorted || Fruit washed, sorted, and checked || facility_qc || verified || /evidence/organic-juice/wash-sort-log.json || STG-08\n15 || equipment_cleaned_before_batch || CIP cleaning completed before bottling || facility_sanitation || verified || /evidence/organic-juice/cip-cleaning-log.json || STG-14\n16 || distribution_chain_verified || Storage and distribution chain verified || facility/distributor/retailer || verified || /evidence/organic-juice/storage-distribution-log.json || STG-16\n9. Evidence Manifest\n\n[TABLE]\nEvidence URI || Record ID || SHA-256 hash || Signature key\n/evidence/organic-juice/equipment-material-cert.json || EQ-MAT-316L-0613 || sha256:d89b1283b086af4c16a693c7c0a705bd7356f6fb7445267fc34da9496536520d || manufacturer_qa_signature\n/evidence/organic-juice/equipment-sanitary-design.json || EQ-SAN-0613 || sha256:30b4a50f28605932188e0cb551b293b04b4a832d093a8bb7170c023b509a35a0 || manufacturer_qa_signature\n/evidence/organic-juice/equipment-commissioning.json || COMM-LINE-0613 || sha256:581c397667f5a193571457b25f7d6b7f73698659d73124f003cc6bb7262ef2fe || plant_engineer_signature\n/evidence/organic-juice/organic-farm-certificate.json || ORG-FARM-CERT-2026-211 || sha256:9fba0da67fe832d696184c93324ae1dd5994bfc8238490b45758f58d98941f4f || certifier_signature\n/evidence/organic-juice/harvest-log.json || HARV-APPLE-0613-A || sha256:bdccc358c39b0cf5dc8824cf6e29229a2e5275e60a39e80ee54844899414d785 || farm_manager_signature\n/evidence/organic-juice/farm-to-facility-shipping.json || SHIP-FARM-FAC-0613 || sha256:1e956a12f96677abcbbcfe91c4a23728de94978808e438a3c8fd284700c8d9ab || logistics_signature\n/evidence/organic-juice/receiving-log.json || REC-APPLE-0613-A || sha256:88c508296c7f20695a21fec3aaec6f5b34df6e07f6332764d2750b30223dd840 || receiving_qc_signature\n/evidence/organic-juice/wash-sort-log.json || WASH-APPLE-0613-A || sha256:00965f66406f36b5b973b82da8302f5324c33a684a46daf8b2dac579120c8493 || wash_line_operator_signature\n/evidence/organic-juice/pressing-log.json || PRESS-JUICE-0613-A || sha256:1e8e6eb10e15bcf26d617b26d49b4bab106194773b22cbfe16c2fd484294fdb0 || processing_operator_signature\n/evidence/organic-juice/filtration-log.json || FILT-JUICE-0613-A || sha256:128b0257c77bc21026e1be3234c5d25a19c00668fa028d1347a51f369c256bca || processing_operator_signature\n/evidence/organic-juice/pasteurization-log.json || PAST-JUICE-0613-A || sha256:d2c1a7b9ab52b8ed88d4d1946d54a3d1e02fac421839dd1cfb50080dddd299ac || haccp_qa_signature\n/evidence/organic-juice/lab-results.json || LAB-JUICE-0613-A || sha256:62c2d858218bd39a39941f60f6363c9059c06bd89432cfbb651c32596b7ed34f || lab_analyst_signature\n/evidence/organic-juice/organic-processing-label-review.json || ORG-HANDLER-LABEL-0613 || sha256:7f7772f093b088f13c8438d9332c3be72d9dcf98856c3f751aa260bc25663570 || certifier_signature\n/evidence/organic-juice/cip-cleaning-log.json || CIP-LINE-JUICE-0613 || sha256:ed9cf25f504536e432e892b4389b56f7fc3e1ce75b3550c37095844555a84f9d || sanitation_lead_signature\n/evidence/organic-juice/packaging-log.json || PACK-JUICE-0613-A || sha256:f969447482f8cfb87db13f5180cd7d0d3e56221a9eddee178e7da9b704f0be29 || packaging_qa_signature\n/evidence/organic-juice/storage-distribution-log.json || DIST-JUICE-0613-A || sha256:fca1caf1f94f016c167a03cc5012aa7ac0114b99005166b7b9892e3b43fe8efb || logistics_signature\n10. HCS Event Data\n\n[TABLE]\nSeq || Event type || Batch ID || Claim ID || Issuer || Consensus timestamp demo || Evidence hash\n1 || claim_submitted || POP-JUICE-ORG-APPLE-0613 || organic_farm_certified || certifier || 2026-06-13T08:07:00-04:00 || sha256:eb02394dcc2...5f2d1bba6e\n2 || claim_submitted || POP-JUICE-ORG-APPLE-0613 || organic_processing_verified || certifier/facility || 2026-06-13T09:14:00-04:00 || sha256:313a72c18e8...4a86885262\n3 || claim_submitted || POP-JUICE-ORG-APPLE-0613 || one_hundred_percent_juice_verified || facility_regulatory || 2026-06-13T09:21:00-04:00 || sha256:cf278a6d7f6...ce922a25a1\n4 || claim_submitted || POP-JUICE-ORG-APPLE-0613 || no_added_sugar_verified || facility/lab || 2026-06-13T10:28:00-04:00 || sha256:2e9d546ad65...f76d53e9d7\n5 || claim_submitted || POP-JUICE-ORG-APPLE-0613 || pesticide_residue_test_passed || third_party_lab || 2026-06-13T10:35:00-04:00 || sha256:be6e9663cf9...c339a79a14\n6 || claim_submitted || POP-JUICE-ORG-APPLE-0613 || microbial_test_passed || third_party_lab || 2026-06-13T11:42:00-04:00 || sha256:4b10411e4ae...ccf7842ce9\n7 || claim_submitted || POP-JUICE-ORG-APPLE-0613 || pasteurized_5log_validated || facility_qa || 2026-06-13T11:49:00-04:00 || sha256:93d90e1988a...fdba0c5d31\n8 || claim_submitted || POP-JUICE-ORG-APPLE-0613 || equipment_material_verified || equipment_manufacturer || 2026-06-13T12:56:00-04:00 || sha256:3b07be3f705...afa9b8eafd\n9 || claim_submitted || POP-JUICE-ORG-APPLE-0613 || sanitary_design_verified || equipment_manufacturer || 2026-06-13T12:03:00-04:00 || sha256:35ddd2e15a6...09cb7b4295\n10 || claim_submitted || POP-JUICE-ORG-APPLE-0613 || equipment_commissioned || facility_engineering || 2026-06-13T13:10:00-04:00 || sha256:b44772ae986...05a5dc492c\n11 || claim_submitted || POP-JUICE-ORG-APPLE-0613 || harvest_lot_tracked || farm || 2026-06-13T13:17:00-04:00 || sha256:abb4ef0aaec...62604e92d3\n12 || claim_submitted || POP-JUICE-ORG-APPLE-0613 || chain_of_custody_verified || logistics || 2026-06-13T14:24:00-04:00 || sha256:052fdba05bf...0b0ef48c11\n13 || claim_submitted || POP-JUICE-ORG-APPLE-0613 || organic_receiving_verified || facility_qc || 2026-06-13T14:31:00-04:00 || sha256:ef16b74307e...b2ca2500f3\n14 || claim_submitted || POP-JUICE-ORG-APPLE-0613 || fruit_washed_and_sorted || facility_qc || 2026-06-13T15:38:00-04:00 || sha256:759942a8447...cb6d80ddfd\n15 || claim_submitted || POP-JUICE-ORG-APPLE-0613 || equipment_cleaned_before_batch || facility_sanitation || 2026-06-13T15:45:00-04:00 || sha256:5af2f553f85...685c6454bd\n16 || claim_submitted || POP-JUICE-ORG-APPLE-0613 || distribution_chain_verified || facility/distributor/retailer || 2026-06-13T16:52:00-04:00 || sha256:19cef46aa60...30010e056b\n11. Sui Batch and Claim Object Data\n11.1 Sui batch object JSON\n{  \"batch_id\": \"POP-JUICE-ORG-APPLE-0613\",  \"product_name\": \"Proof of Plate Organic Apple Juice\",  \"category\": \"Juice\",  \"verification_score\": 96,  \"recall_state\": \"not_recalled\",  \"hcs_topic_id\": \"0.0.ORGJUICE0613\",  \"claim_count\": 16,  \"created_at\": \"2026-06-13T12:00:00-04:00\",  \"demo_url_path\": \"/p/POP-JUICE-ORG-APPLE-0613\"}\n11.2 Sui claim objects table\n\n[TABLE]\nHCS seq || Claim ID || Status || Evidence hash || Sui object demo\n1 || organic_farm_certified || verified || sha256:eb02394dcc278fa...b25f2d1bba6e || 0xe3e137968aede7b5...709a84b5d5\n2 || organic_processing_verified || verified || sha256:313a72c18e83900...3a4a86885262 || 0x30980666be6b3adf...b0c1f7c1f0\n3 || one_hundred_percent_juice_verified || verified || sha256:cf278a6d7f670bd...b0ce922a25a1 || 0x1648a814f5ec43ff...e1eef19b51\n4 || no_added_sugar_verified || verified || sha256:2e9d546ad650b90...1ef76d53e9d7 || 0x196d4cd89b95944a...39c0300375\n5 || pesticide_residue_test_passed || verified || sha256:be6e9663cf999d3...83c339a79a14 || 0xf065cdad9efc8cb0...eca895e450\n6 || microbial_test_passed || verified || sha256:4b10411e4ae7b50...84ccf7842ce9 || 0x3b77eb181bda7ea9...86d61260da\n7 || pasteurized_5log_validated || verified || sha256:93d90e1988a340f...7bfdba0c5d31 || 0x6afac5428469d18f...3216b75f6e\n8 || equipment_material_verified || verified || sha256:3b07be3f7056410...99afa9b8eafd || 0xc6fd9aac67be7166...2181de2bdc\n9 || sanitary_design_verified || verified || sha256:35ddd2e15a63626...e909cb7b4295 || 0x75d8ad800e3a4889...f6442dbd8f\n10 || equipment_commissioned || verified || sha256:b44772ae9862be9...d005a5dc492c || 0xf5c30e3252462d46...1bc80176b3\n11 || harvest_lot_tracked || verified || sha256:abb4ef0aaecdf82...1e62604e92d3 || 0xca1683088bcca97a...b9753767e3\n12 || chain_of_custody_verified || verified || sha256:052fdba05bf8078...070b0ef48c11 || 0x9cd4db8e4957a83b...7a56a776cb\n13 || organic_receiving_verified || verified || sha256:ef16b74307eccd5...58b2ca2500f3 || 0x87cf9c53b84a01fe...88b87881cb\n14 || fruit_washed_and_sorted || verified || sha256:759942a84470c2d...10cb6d80ddfd || 0xb3a0ef6d7032fc7d...bc2c72bc09\n15 || equipment_cleaned_before_batch || verified || sha256:5af2f553f85ee90...dc685c6454bd || 0x357777976d48f07e...da37283aab\n16 || distribution_chain_verified || verified || sha256:19cef46aa609830...2930010e056b || 0xc6dacfe374fe02c9...e7a449190a\n12. Signature Records\n\n[TABLE]\nSignature ID || Signer || Role || Organization || Evidence file || Signed at || Type || Signature hash\nSIG-001 || Maya Patel || Manufacturer QA Manager || EQUIP-MFG-077 || equipment-material-cert.json || 2026-05-10T09:15:00-04:00 || digital || sha256:db04e4ed075195d006dcc3b70e658d05eae5259b6fa2b5034f0b1f096b914e18\nSIG-002 || Maya Patel || Manufacturer QA Manager || EQUIP-MFG-077 || equipment-sanitary-design.json || 2026-05-18T14:35:00-04:00 || digital || sha256:b7d3676e4a4d070dbc302ef22f1686baa3306b14c27dd46b0234d57cd8835b4f\nSIG-003 || Luis Rivera || Plant Engineer || FAC-JUICE-NJ-01 || equipment-commissioning.json || 2026-06-01T16:05:00-04:00 || digital || sha256:ba902d582f06198c168e182b42e66cac65e42b37a57c6e9673635c696149b33b\nSIG-004 || Nora Chen || Organic Certifier || ORG-CERT-044 || organic-farm-certificate.json || 2026-06-02T10:10:00-04:00 || digital || sha256:1c9ed9ed7c03ec95dc9b63e7fc37a17da57958c9da5167785410a52bbd19e1df\nSIG-005 || Diego Martin || Farm Manager || ORG-FARM-211 || harvest-log.json || 2026-06-10T11:30:00-04:00 || digital || sha256:9fd57cda4050f9d3891c45e7a1be3854a70c326471d9d20ed07a7e6ed3fd1002\nSIG-006 || Avery Moore || Driver / Logistics || DIST-NE-501 || farm-to-facility-shipping.json || 2026-06-10T18:45:00-04:00 || digital || sha256:9b31a7f70e67ae6949716a0b93f2e6c59241a098adf1e70954bf01b27c32027f\nSIG-007 || Priya Shah || Receiving QC || FAC-JUICE-NJ-01 || receiving-log.json || 2026-06-10T19:10:00-04:00 || digital || sha256:8e49c632a4df834e516718e0cdfd56db42b3c0f86e2139e6085e6758a135f363\nSIG-008 || Owen Brooks || Wash Line Operator || FAC-JUICE-NJ-01 || wash-sort-log.json || 2026-06-11T09:05:00-04:00 || digital || sha256:e24c23cd076f111b974a8c4db00d39e431aa25338b1814c57148eb2a5cb4fd42\nSIG-009 || Hannah Lee || Processing Operator || FAC-JUICE-NJ-01 || pressing-log.json || 2026-06-11T12:40:00-04:00 || digital || sha256:48758e2679eb7c0f745ba9f270b8c3387d1fb9e335525308012c724f84b97d45\nSIG-010 || Hannah Lee || Processing Operator || FAC-JUICE-NJ-01 || filtration-log.json || 2026-06-11T13:25:00-04:00 || digital || sha256:080cc6b97424fb70ff8805a336232bbc36d28851db03f57f938feeb1356bb4f0\nSIG-011 || Rafael Ortiz || HACCP QA Lead || FAC-JUICE-NJ-01 || pasteurization-log.json || 2026-06-11T14:15:00-04:00 || digital || sha256:b0d65cb7d6da26474b4ccb24ce34a4d0f4f9d8932d278f8407ec3b0c042637fb\nSIG-012 || Simran Kaur || Lab Analyst || LAB-ISO-118 || lab-results.json || 2026-06-12T09:30:00-04:00 || digital || sha256:6f4c63fb674bdaadb56d48e102b33648ababce2265d3134ba32bc739b0efe7c6\nSIG-013 || Nora Chen || Organic Certifier || ORG-CERT-044 || organic-processing-label-review.json || 2026-06-12T12:15:00-04:00 || digital || sha256:c9e0773ed5553cb5dcf92ce50cf3fdddb59eb6f3611c285ba13835ba59d86fdc\nSIG-014 || Mateo Garcia || Sanitation Lead || FAC-JUICE-NJ-01 || cip-cleaning-log.json || 2026-06-13T06:15:00-04:00 || digital || sha256:364ec3705bfdc242f4fda15815d1d3bf6f6ad5d93105d90ad34d4d7d73cabe7f\nSIG-015 || Priya Shah || Packaging QA || FAC-JUICE-NJ-01 || packaging-log.json || 2026-06-13T10:20:00-04:00 || digital || sha256:d9645335c84ba035d1d19e1f54de55b8a2e96c42123874dfef7025e7c494b93b\nSIG-016 || Avery Moore || Logistics Coordinator || DIST-NE-501 || storage-distribution-log.json || 2026-06-13T18:35:00-04:00 || digital || sha256:69933dce8dda2785aefbcc2490eea6bab62e73e9253e1b6d27297556a4bb4c28\n13. Consumer QR View Data\n\n[TABLE]\nUI field || Demo value\nTop title || Proof of Plate Organic Apple Juice\nBatch || POP-JUICE-ORG-APPLE-0613\nVerification score || 96%\nClaim count || 16 verified claims\nRecall badge || Not recalled\nHash banner || 16/16 evidence hashes verified\nJourney tracker || Equipment -> Orchard -> Harvest -> Facility -> Processing -> Lab -> Bottle -> Distribution\nPlain-language summary || This bottle is linked to a verified organic apple lot, facility processing records, lab reports, pasteurization data, equipment sanitation records, and distribution records.\n14. Inspector View Data\nShow full Sui batch object ID and Sui claim object IDs.\nShow HCS topic ID, event sequence, consensus timestamp, and transaction IDs if real testnet data is used.\nShow full SHA-256 evidence hashes and a button to fetch evidence JSON and re-check the hash.\nShow signature ID, signer role, organization ID, signed timestamp, and signature hash for every evidence file.\nShow mismatch warnings if a JSON evidence file has been edited after its hash was anchored.\n15. AI Verifier Answer Rules\n\n[TABLE]\nQuestion type || Required answer rule\nIs it organic? || Answer yes only if organic_farm_certified and organic_processing_verified are verified.\nIs it pesticide-free? || Do not say organic means pesticide-free. Say whether pesticide_residue_test_passed exists and what the lab result says.\nIs sugar added? || Answer based on no_added_sugar_verified, formula, and lab/nutrition evidence.\nIs it raw juice? || If pasteurized_5log_validated is verified, answer that the demo product is pasteurized, not raw.\nIs it 100% juice? || Answer based on one_hundred_percent_juice_verified and label review.\nWas equipment cleaned? || Answer based on equipment_cleaned_before_batch and CIP evidence.\nIs it kosher/vegan/non-GMO? || If no claim exists, say no verified claim exists for that topic and list what is verified.\n16. Copy-Paste JSON Examples\n16.1 Product batch JSON\n{  \"batch_id\": \"POP-JUICE-ORG-APPLE-0613\",  \"product_name\": \"Proof of Plate Organic Apple Juice\",  \"category\": \"Juice\",  \"verification_score\": 96,  \"recall_state\": \"not_recalled\",  \"hcs_topic_id\": \"0.0.ORGJUICE0613\",  \"claim_count\": 16,  \"created_at\": \"2026-06-13T12:00:00-04:00\",  \"demo_url_path\": \"/p/POP-JUICE-ORG-APPLE-0613\"}\n16.2 Example claim JSON\n{  \"hcs_sequence\": 5,  \"claim_id\": \"pesticide_residue_test_passed\",  \"label\": \"Final pesticide residue test passed\",  \"issuer_role\": \"third_party_lab\",  \"status\": \"verified\",  \"evidence_uri\": \"/evidence/organic-juice/lab-results.json\",  \"evidence_hash\": \"sha256:be6e9663cf999d3bf352bc2e90c5eef51a532cd11ad6ec93521483c339a79a14\",  \"stage_id\": \"STG-12\",  \"sui_object_demo\": \"0xf065cdad9efc8cb00f8f08ccad6933731916793d3eb1b7754dc0ceeca895e450\"}\n16.3 Example HCS event JSON\n{  \"event_type\": \"claim_submitted\",  \"batch_id\": \"POP-JUICE-ORG-APPLE-0613\",  \"claim_id\": \"pesticide_residue_test_passed\",  \"issuer_role\": \"third_party_lab\",  \"issuer_id\": \"LAB-ISO-118\",  \"evidence_uri\": \"/evidence/organic-juice/lab-results.json\",  \"evidence_hash\": \"sha256:be6e9663cf999d3bf352bc2e90c5eef51a532cd11ad6ec93521483c339a79a14\",  \"timestamp\": \"2026-06-13T10:35:00-04:00\",  \"signature_id\": \"SIG-012\",  \"signature_hash\": \"sha256:6f4c63fb674bdaadb56d48e102b33648ababce2265d3134ba32bc739b0efe7c6\"}\n16.4 Example evidence JSON\n{  \"evidence_file\": \"/evidence/organic-juice/lab-results.json\",  \"batch_id\": \"POP-JUICE-ORG-APPLE-0613\",  \"record_id\": \"LAB-JUICE-0613-A\",  \"sample_id\": \"SAMPLE-JUICE-0613-A\",  \"tests\": {    \"pH\": \"3.72\",    \"brix\": \"11.8\",    \"E_coli\": \"not detected\",    \"Salmonella\": \"not detected\",    \"pesticide_residue_screen\": \"not detected / below reporting limits\",    \"added_sugar_consistency\": \"no added sugar indicated\"  },  \"signed_by\": \"Simran Kaur\",  \"signature_id\": \"SIG-012\",  \"evidence_hash_demo\": \"sha256:be6e9663cf999d3bf352bc2e90c5eef51a532cd11ad6ec93521483c339a79a14\"}\n17. Suggested File Path Structure\ndata/products/organic-juice-batch.jsondata/organic-juice-deployment.jsondata/organic-juice-hcs-events.jsondata/organic-juice-evidence-manifest.jsonpublic/evidence/organic-juice/equipment-material-cert.jsonpublic/evidence/organic-juice/equipment-sanitary-design.jsonpublic/evidence/organic-juice/equipment-commissioning.jsonpublic/evidence/organic-juice/organic-farm-certificate.jsonpublic/evidence/organic-juice/harvest-log.jsonpublic/evidence/organic-juice/farm-to-facility-shipping.jsonpublic/evidence/organic-juice/receiving-log.jsonpublic/evidence/organic-juice/wash-sort-log.jsonpublic/evidence/organic-juice/pressing-log.jsonpublic/evidence/organic-juice/filtration-log.jsonpublic/evidence/organic-juice/pasteurization-log.jsonpublic/evidence/organic-juice/lab-results.jsonpublic/evidence/organic-juice/organic-processing-label-review.jsonpublic/evidence/organic-juice/cip-cleaning-log.jsonpublic/evidence/organic-juice/packaging-log.jsonpublic/evidence/organic-juice/storage-distribution-log.json\n18. Developer Checklist\nCreate a new product route: /p/POP-JUICE-ORG-APPLE-0613.\nAdd product batch JSON with nutrition, ingredient, storage, recall state, and verification score.\nAdd the 16 evidence JSON files listed in this document.\nRun the evidence hashing script and create an evidence manifest for the organic juice files.\nCreate HCS events in sequence order for all verified claims.\nCreate or seed Sui claim objects using claim_id, evidence_hash, HCS sequence, issuer role, and status.\nUpdate the UI journey tracker so organic juice uses Equipment -> Orchard -> Harvest -> Facility -> Processing -> Lab -> Bottle -> Distribution.\nUpdate AI verifier context to include the organic juice claim IDs and the no-overclaim rules in Section 15.\nTest consumer mode with simple questions and inspector mode with hash/object details.\n19. Reference Notes Used for Field Design\n\n[TABLE]\nReference || URL\nProof of Plate repository || https://github.com/viny1ic/Proof-of-Plate\nProof of Plate SPEC.md || https://github.com/viny1ic/Proof-of-Plate/blob/main/SPEC.md\nUSDA AMS organic labeling || https://www.ams.usda.gov/rules-regulations/organic/labeling\nFDA Juice HACCP guidance || https://www.fda.gov/regulatory-information/search-fda-guidance-documents/guidance-industry-questions-and-answers-juice-haccp-regulation\n21 CFR 101.30 percentage juice declaration || https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-B/section-101.30"
+}

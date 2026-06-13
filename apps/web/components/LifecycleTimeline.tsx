@@ -23,10 +23,12 @@ export function LifecycleTimeline({ events, claims = [] }: Props) {
   );
   const claimSuiMap = new Map(claims.map(c => [c.claimType, c.suiObjectId]));
 
+  const isWalrusTimeline = events.length > 0 && events.every((event) => event.evidenceStorage === "walrus");
+
   return (
     <div className="pp-section pp-section-trace">
       <div className="pp-section-head">
-        <span className="pp-section-title">Hedera HCS Audit Log</span>
+        <span className="pp-section-title">{isWalrusTimeline ? "Walrus Evidence Log" : "Hedera HCS Audit Log"}</span>
         <span className="pp-section-meta">{events.length} events</span>
       </div>
 
@@ -44,7 +46,7 @@ export function LifecycleTimeline({ events, claims = [] }: Props) {
             </div>
             <div className="pp-hcs-body">
               <div className={"pp-hcs-seq" + (isWarn ? " warn" : "")}>
-                {"HCS #" + ev.sequenceNumber}
+                {`${ev.evidenceStorage === "walrus" ? "Walrus" : "HCS"} #${ev.sequenceNumber}`}
               </div>
               <div className="pp-hcs-claim">{ev.claimType.replace(/_/g, " ")}</div>
               <div className="pp-hcs-meta">{ev.issuerName + " · " + ev.issuerRole}</div>

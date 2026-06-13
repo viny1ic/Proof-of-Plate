@@ -12,9 +12,11 @@
     "hash:evidence": "tsx scripts/hash-evidence.ts",
     "hedera:create-topic": "tsx scripts/create-hcs-topic.ts",
     "hedera:create-token": "tsx scripts/create-hts-token.ts",
+    "hedera:create-cert-sbt": "tsx scripts/create-cert-sbt.ts",
     "hedera:submit": "tsx scripts/submit-hcs-events.ts",
     "sui:deploy": "tsx scripts/deploy-sui.ts",
     "sui:seed": "tsx scripts/seed-sui-batch.ts",
+    "sui:seed-juice": "node scripts/seed-juice-sui.mjs",
     "demo:add-claim": "tsx scripts/demo-add-claim.ts",
     "demo:seed": "npm run hash:evidence && npm run hedera:create-topic && npm run hedera:submit && npm run sui:deploy && npm run sui:seed && npm run hedera:create-token"
   },

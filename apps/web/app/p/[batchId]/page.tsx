@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { AgentChat } from "../../../components/AgentChat";
+import { CertificationBadges } from "../../../components/CertificationBadges";
 import { ClaimList } from "../../../components/ClaimList";
 import { HtsMetadataCard } from "../../../components/HtsMetadataCard";
 import { LifecycleTimeline } from "../../../components/LifecycleTimeline";
@@ -9,9 +10,9 @@ import { ProductHeader } from "../../../components/ProductHeader";
 import { ProductInfo } from "../../../components/ProductInfo";
 import { StatStrip } from "../../../components/StatStrip";
 import { SupplyChainJourney } from "../../../components/SupplyChainJourney";
-import { TamperDetection } from "../../../components/TamperDetection";
 import { VerdictCard } from "../../../components/VerdictCard";
 import { hederaTokenLink, hederaTopicLink, suiExplorerLink } from "../../../lib/explorer-links";
+import { getCertificationsForBatch } from "../../../lib/certifications";
 import { getBatch, getClaims, getHcsMessages, getHtsMetadata } from "../../../lib/data";
 import { verifyEvidenceHash } from "../../../lib/evidence";
 
@@ -81,9 +82,13 @@ export default async function ProductPassport({ params }: { params: Promise<{ ba
   }
 
   const claims = getClaims(batchId);
+  const certifications = getCertificationsForBatch(batchId);
   const events = getHcsMessages(batch.hcsTopicId);
   const htsStatus = getHtsMetadata(batchId);
   const hts = htsStatus.hts;
+  const suiUrl = suiExplorerLink(batch.suiBatchObjectId);
+  const hcsUrl = hederaTopicLink(batch.hcsTopicId);
+  const htsUrl = hts ? hederaTokenLink(hts.tokenId) : null;
 
   const verifResults: VerifRow[] = claims.map(claim => {
     try {
@@ -99,7 +104,11 @@ export default async function ProductPassport({ params }: { params: Promise<{ ba
     verifResults.map(r => "- " + r.label + ": " + (r.ok ? "VERIFIED" : "MISMATCH")).join("\n") +
     "\nTotal: " + verifResults.filter(r => r.ok).length + "/" + verifResults.length + " verified." +
     "\nHTS product metadata: " +
-    (hts ? `${htsStatus.ok ? "PARSED" : "WARNING"} token ${hts.tokenId} serial ${hts.serialNumber}, metadata hash ${hts.metadataHash}, product URL ${hts.productMetadata.productPageUrl}.` : "not configured.");
+    (hts ? `${htsStatus.ok ? "PARSED" : "WARNING"} token ${hts.tokenId} serial ${hts.serialNumber}, metadata hash ${hts.metadataHash}, product URL ${hts.productMetadata.productPageUrl}.` : "not configured.") +
+    "\nAuthority certificate SBTs: " +
+    (certifications.length > 0
+      ? certifications.map(cert => `${cert.shortLabel} (${cert.status}, ${cert.tokenId}/${cert.serialNumber}, issuer ${cert.issuerName})`).join("; ")
+      : "none configured.");
 
   return (
     <main className="pp-shell">
@@ -127,6 +136,7 @@ export default async function ProductPassport({ params }: { params: Promise<{ ba
           <StatStrip batch={batch} claimCount={claims.length} eventCount={events.length} />
           <RecallBanner recalled={batch.recalled} batchId={batch.batchId} />
           <HashVerificationBanner results={verifResults} />
+          <CertificationBadges certifications={certifications} />
           <SupplyChainJourney claims={claims} />
           {/* Mobile: passport summary right after supply chain */}
           <div className="pp-consumer-mobile">
@@ -137,31 +147,38 @@ export default async function ProductPassport({ params }: { params: Promise<{ ba
 
           <div className="pp-footer">
             <div className="pp-footer-chain">
-              <a
-                className="pp-footer-chip sui"
-                href={suiExplorerLink(batch.suiBatchObjectId) ?? undefined}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Sui Blockchain
-              </a>
-              <a
-                className="pp-footer-chip hedera"
-                href={hederaTopicLink(batch.hcsTopicId) ?? undefined}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Hedera HCS
-              </a>
-              {hts && (
+              {suiUrl && (
+                <a
+                  className="pp-footer-chip sui"
+                  href={suiUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Sui Blockchain
+                </a>
+              )}
+              {hcsUrl && (
                 <a
                   className="pp-footer-chip hedera"
-                  href={hederaTokenLink(hts.tokenId) ?? undefined}
+                  href={hcsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Hedera HCS
+                </a>
+              )}
+              {hts && htsUrl && (
+                <a
+                  className="pp-footer-chip hedera"
+                  href={htsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   Hedera HTS
                 </a>
+              )}
+              {!suiUrl && !hcsUrl && !htsUrl && (
+                <span className="pp-footer-chip hedera">Walrus Evidence</span>
               )}
             </div>
             <div className="pp-footer-note">
@@ -180,7 +197,6 @@ export default async function ProductPassport({ params }: { params: Promise<{ ba
             }
             chatSection={<AgentChat batchId={batch.batchId} verificationContext={verifContext} />}
             claimsSection={<ClaimList claims={claims} />}
-            tamperSection={<TamperDetection />}
             traceSection={<LifecycleTimeline events={events} claims={claims} />}
           />
         </div>

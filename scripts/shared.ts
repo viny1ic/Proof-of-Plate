@@ -55,8 +55,8 @@ export function readJson<T>(filePath: string): T {
   return JSON.parse(readFileSync(filePath, "utf8")) as T;
 }
 
-export function writeJson(filePath: string, value: unknown) {
-  ensureDataDir();
+export function writeJson<T>(filePath: string, value: T) {
+  mkdirSync(path.dirname(filePath), { recursive: true });
   writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`);
 }
 
@@ -69,6 +69,11 @@ export function evidenceFilePath(uri: string) {
   return path.join(root, "public", uri.startsWith("/") ? uri.slice(1) : uri);
 }
 
+/**
+ * Load the seed/build manifest used to create initial HCS claim events.
+ * Runtime evidence verification must compare evidence bytes to the hash stored
+ * on the claim/HCS event, not to this generated manifest.
+ */
 export function loadManifest(): Record<string, string> {
   if (!existsSync(manifestPath)) {
     throw new Error("Missing data/evidence-manifest.json. Run npm run hash:evidence first.");
@@ -150,7 +155,22 @@ const INITIAL_CLAIM_DEFS = [
   },
 ];
 
-/** Build the five initial HCS intake events using hashes from the evidence manifest. */
+function requireManifestHash(manifest: Record<string, string>, evidenceUri: string) {
+  const evidenceHash = manifest[evidenceUri];
+  if (!evidenceHash) {
+    throw new Error(
+      `Missing evidence hash for ${evidenceUri} in data/evidence-manifest.json. ` +
+        "Run npm run hash:evidence before seeding HCS events."
+    );
+  }
+  return evidenceHash;
+}
+
+/**
+ * Build the five initial HCS intake events using hashes from the seed manifest.
+ * The manifest is only an input to event creation; once a claim/HCS event exists,
+ * its evidenceHash is the stored source of truth for verification.
+ */
 export function buildHcsEvents(
   topicId: string,
   manifest: Record<string, string>
@@ -165,7 +185,7 @@ export function buildHcsEvents(
       issuerRole: def.issuerRole,
       issuerName: def.issuerName,
       evidenceUri: def.evidenceUri,
-      evidenceHash: manifest[def.evidenceUri] ?? "",
+      evidenceHash: requireManifestHash(manifest, def.evidenceUri),
       createdAt: def.createdAt,
       sequenceNumber: seq,
       transactionId: `${topicId}@${seq}`,
@@ -277,18 +297,37 @@ function buildBatch(
 
 // ─── writeDeployment ──────────────────────────────────────────────────────────
 
-/** Build and persist deployment.json from a topic ID, evidence manifest, and HCS events.
+function isRealSuiObjectId(value?: string) {
+  return !!value && /^0x[0-9a-fA-F]{64}$/.test(value) && !value.toLowerCase().includes("tracebite_local");
+}
+
+/** Build and persist deployment.json from a topic ID and HCS/stored claim events.
+ *  The manifest parameter is retained for existing seed script call sites, but
+ *  is not a verification truth source and is never used to backfill claim hashes.
  *  Preserves existing Sui package / batch IDs so sui:deploy output is not overwritten.
  *  Returns the written Deployment for callers that need to inspect it. */
 export function writeDeployment(
   topicId: string,
-  manifest: Record<string, string>,
+  _manifest: Record<string, string>,
   events: HcsEvent[]
 ): Deployment {
-  const existing = loadDeployment();
+  // Resolve paths at call time so tests that chdir to an isolated tmpdir
+  // see their own data/deployment.json rather than the module-init snapshot.
+  const localDeploymentPath = path.join(process.cwd(), "data", "deployment.json");
+  const existing: Deployment | null = existsSync(localDeploymentPath)
+    ? readJson<Deployment>(localDeploymentPath)
+    : null;
 
   const claims: Claim[] = events.map((event) => {
+    if (!event.evidenceHash?.trim()) {
+      throw new Error(
+        `HCS/stored claim event ${event.claimType} (${event.evidenceUri}) is missing evidenceHash; ` +
+          "refusing to backfill it from data/evidence-manifest.json."
+      );
+    }
+
     const meta = CLAIM_META[event.claimType];
+    const existingClaim = existing?.claims.find((candidate) => candidate.claimType === event.claimType);
     const claim: Claim = {
       batchId: event.batchId,
       claimType: event.claimType,
@@ -297,10 +336,12 @@ export function writeDeployment(
       issuerRole: event.issuerRole,
       issuerName: event.issuerName,
       evidenceUri: event.evidenceUri,
-      evidenceHash: event.evidenceHash || manifest[event.evidenceUri] || "",
+      evidenceHash: event.evidenceHash,
       hcsTopicId: topicId,
       hcsSequence: event.sequenceNumber,
-      suiObjectId: `0xtracebite_local_claim_${event.sequenceNumber}`,
+      suiObjectId: isRealSuiObjectId(existingClaim?.suiObjectId)
+        ? existingClaim!.suiObjectId
+        : `0xtracebite_local_claim_${event.sequenceNumber}`,
       createdAt: event.consensusTimestamp ?? event.createdAt,
     };
     if (meta?.reason) claim.reason = meta.reason;
@@ -315,9 +356,10 @@ export function writeDeployment(
     claims,
     hcs: { topicId, network: process.env.HEDERA_NETWORK ?? "testnet" },
     hts: existing?.hts,
+    certifications: existing?.certifications,
   };
 
-  writeJson(deploymentPath, deployment);
+  writeJson(localDeploymentPath, deployment);
   return deployment;
 }
 

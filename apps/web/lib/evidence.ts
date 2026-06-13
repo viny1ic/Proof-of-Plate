@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import type { EvidenceDocument } from "./types";
 import { resolveProofOfPlatePath, sha256Hex } from "./files";
+import { getWalrusEvidence, getWalrusEvidenceRaw, hashWalrusEvidence, isWalrusReference, verifyWalrusEvidence } from "./walrus";
 
 const evidenceRoot = resolveProofOfPlatePath("public", "evidence");
 
@@ -35,19 +36,36 @@ export function evidencePathFromUri(uri: string) {
 }
 
 export function getEvidence(uri: string): EvidenceDocument {
+  if (isWalrusReference(uri)) {
+    return getWalrusEvidence(uri) as EvidenceDocument;
+  }
   const raw = readFileSync(evidencePathFromUri(uri), "utf8");
   return JSON.parse(raw) as EvidenceDocument;
 }
 
 export function getEvidenceRaw(uri: string) {
+  if (isWalrusReference(uri)) {
+    return getWalrusEvidenceRaw(uri);
+  }
   return readFileSync(evidencePathFromUri(uri));
 }
 
 export function hashEvidence(uri: string) {
+  if (isWalrusReference(uri)) {
+    return hashWalrusEvidence(uri);
+  }
   return sha256Hex(getEvidenceRaw(uri));
 }
 
+/**
+ * Verify the original evidence JSON bytes against the trusted hash from the
+ * stored claim/HCS event. data/evidence-manifest.json is intentionally not read
+ * here; it is only a seed/build artifact for creating initial claims.
+ */
 export function verifyEvidenceHash(uri: string, expectedHash: string) {
+  if (isWalrusReference(uri)) {
+    return verifyWalrusEvidence(uri, expectedHash);
+  }
   const actualHash = hashEvidence(uri);
   return {
     ok: actualHash.toLowerCase() === expectedHash.toLowerCase(),

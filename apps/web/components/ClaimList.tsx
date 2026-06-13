@@ -86,6 +86,8 @@ export function ClaimList({ claims }: { claims: Claim[] }) {
           const hv = claimVers[claim.claimType];
           const icon = ICONS[claim.claimType] ?? "📋";
           const plainText = PLAIN_ENGLISH[claim.claimType];
+          const suiUrl = suiExplorerLink(claim.suiObjectId);
+          const hcsUrl = hederaTopicLink(claim.hcsTopicId);
           return (
             <div className={"pp-claim-row" + (isOpen ? " open" : "")} key={claim.claimType}>
               <div className="pp-claim-main" onClick={() => toggle(claim.claimType)}>
@@ -123,10 +125,12 @@ export function ClaimList({ claims }: { claims: Claim[] }) {
                       <div className="pp-detail-label">Issuer Role</div>
                       <div className="pp-detail-val">{claim.issuerRole}</div>
                     </div>
-                    <div className="pp-detail-item pp-detail-full">
-                      <div className="pp-detail-label">Sui Object ID</div>
-                      <div className="pp-detail-val mono">{claim.suiObjectId}</div>
-                    </div>
+                    {suiUrl && (
+                      <div className="pp-detail-item pp-detail-full">
+                        <div className="pp-detail-label">Sui Object ID</div>
+                        <div className="pp-detail-val mono">{claim.suiObjectId}</div>
+                      </div>
+                    )}
                     <div className="pp-detail-item pp-detail-full">
                       <div className="pp-detail-label">
                         Evidence Hash
@@ -153,12 +157,19 @@ export function ClaimList({ claims }: { claims: Claim[] }) {
                   )}
 
                   <div className="pp-chain-links">
-                    <a className="pp-chain-link sui" href={suiExplorerLink(claim.suiObjectId) ?? undefined} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
-                      Sui Explorer ↗
-                    </a>
-                    <a className="pp-chain-link hedera" href={hederaTopicLink(claim.hcsTopicId) ?? undefined} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
-                      HashScan ↗
-                    </a>
+                    {suiUrl && (
+                      <a className="pp-chain-link sui" href={suiUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
+                        Sui Explorer ↗
+                      </a>
+                    )}
+                    {hcsUrl && (
+                      <a className="pp-chain-link hedera" href={hcsUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
+                        HashScan ↗
+                      </a>
+                    )}
+                    {claim.evidenceStorage === "walrus" && (
+                      <span className="pp-chain-link hedera">Walrus evidence</span>
+                    )}
                     <button className="pp-verify-btn inspector-only" onClick={e => openEvidence(claim, e)}>
                       Verify Hash
                     </button>

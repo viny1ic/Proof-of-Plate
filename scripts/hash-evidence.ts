@@ -4,6 +4,9 @@ import { ensureDataDir, evidenceDir, manifestPath, sha256Hex, writeJson } from "
 
 ensureDataDir();
 
+// Build-time seed artifact only. These hashes are copied into initial HCS/Sui
+// claim records during seeding; runtime verification compares evidence bytes to
+// the stored claim hash, not back to data/evidence-manifest.json.
 const manifest = Object.fromEntries(
   readdirSync(evidenceDir)
     .filter((file) => file.endsWith(".json"))
@@ -16,5 +19,5 @@ const manifest = Object.fromEntries(
 );
 
 writeJson(manifestPath, manifest);
-console.log(`Wrote ${manifestPath}`);
+console.log(`Wrote seed evidence manifest ${manifestPath}`);
 console.log(manifest);

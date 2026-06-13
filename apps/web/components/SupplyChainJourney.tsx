@@ -28,7 +28,8 @@ function seqRange(claims: Claim[], roles: string[]): string {
   const m = claims.filter(c => roles.some(r => c.issuerRole.toLowerCase().includes(r)));
   if (!m.length) return "";
   const s = m.map(c => c.hcsSequence).sort((a,b) => a - b);
-  return s.length === 1 ? `HCS #${s[0]}` : `HCS #${s[0]}-${s[s.length-1]}`;
+  const prefix = m.every(c => c.evidenceStorage === "walrus") ? "Walrus" : "HCS";
+  return s.length === 1 ? `${prefix} #${s[0]}` : `${prefix} #${s[0]}-${s[s.length-1]}`;
 }
 
 const STATUS_BADGE: Record<Status, string> = {
@@ -40,7 +41,7 @@ const STATUS_BADGE: Record<Status, string> = {
 export function SupplyChainJourney({ claims }: { claims: Claim[] }) {
   const statuses = STEPS.map(s => stepStatus(claims, s.roles));
   const doneCount = statuses.filter(s => s === "done").length;
-  const fillPct = Math.round((doneCount / (STEPS.length - 1)) * 100);
+  const fillPct = Math.min(100, Math.round((doneCount / STEPS.length) * 100));
 
   return (
     <div className="pp-journey">

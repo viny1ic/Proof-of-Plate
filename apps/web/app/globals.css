@@ -396,6 +396,25 @@ pre{white-space:pre-wrap;word-break:break-word;background:var(--surface2);border
 .pp-hash-banner.ok .pp-hash-banner-pill{background:var(--s-t);color:#fff;}
 .pp-hash-banner.warn .pp-hash-banner-pill{background:var(--amber);color:var(--dark);}
 
+/* == CERTIFICATION SBT BADGES ================================= */
+.pp-cert-panel{margin:8px 12px 0;padding:12px 14px;background:var(--surface);border:1px solid rgba(52,211,153,.22);border-top:3px solid var(--s-c);border-radius:var(--r);box-shadow:0 0 18px rgba(52,211,153,.04);}
+@media(min-width:768px){.pp-cert-panel{margin:10px 0 0;}}
+.pp-cert-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;}
+.pp-cert-title{font-size:12px;font-weight:800;color:var(--s-c);letter-spacing:.06em;text-transform:uppercase;}
+.pp-cert-sub{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.35;}
+.pp-cert-count{font-family:var(--m);font-size:10px;font-weight:800;color:var(--s-c);background:var(--s-c-bg);border:1px solid var(--s-c-bd);border-radius:999px;padding:3px 8px;}
+.pp-cert-badges{display:grid;gap:8px;}
+.pp-cert-badge{--cert-accent:var(--s-c);display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;border:1px solid color-mix(in srgb,var(--cert-accent) 40%,transparent);background:linear-gradient(135deg,color-mix(in srgb,var(--cert-accent) 16%,transparent),rgba(255,255,255,.02));transition:transform .15s ease,border-color .15s ease,opacity .15s ease;}
+.pp-cert-badge:hover{transform:translateY(-1px);border-color:var(--cert-accent);}
+.pp-cert-badge.expired,.pp-cert-badge.revoked{--cert-accent:var(--muted);opacity:.72;}
+.pp-cert-badge.revoked{--cert-accent:var(--red);}
+.pp-cert-logo{width:28px;height:28px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:var(--cert-accent);color:#06120c;font-size:10px;font-weight:900;letter-spacing:-.02em;box-shadow:0 0 12px color-mix(in srgb,var(--cert-accent) 28%,transparent);}
+.pp-cert-copy{min-width:0;display:grid;gap:1px;}
+.pp-cert-label{font-size:12px;font-weight:800;color:var(--navy);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pp-cert-issuer{font-size:10px;color:var(--muted);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pp-cert-status{font-size:9px;font-weight:800;color:var(--cert-accent);text-transform:uppercase;letter-spacing:.05em;border:1px solid color-mix(in srgb,var(--cert-accent) 32%,transparent);border-radius:999px;padding:3px 6px;white-space:nowrap;}
+.pp-cert-note{font-size:10px;color:var(--muted);line-height:1.5;margin:9px 0 0;padding-top:8px;border-top:1px solid var(--border);}
+
 /* == HCS EVIDENCE HASH LINK =================================== */
 .pp-hcs-hash-row{display:flex;align-items:center;gap:5px;margin-top:4px;flex-wrap:wrap;}
 .pp-hcs-hash-label{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0;}
