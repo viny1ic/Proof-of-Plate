@@ -13,6 +13,15 @@ const ICONS: Record<string, string> = {
   final_pesticide_residue_test: "⚗️",
 };
 
+const PLAIN_ENGLISH: Record<string, string> = {
+  lactose_free: "Safe for lactose-intolerant people — no lactose detected in lab tests",
+  ultra_filtered: "Processed through ultra-filtration to remove impurities and concentrate proteins",
+  pasteurized: "Heat-treated to eliminate harmful bacteria — standard food safety",
+  equipment_cleaned: "All processing equipment was sanitized before use",
+  feed_pesticide_declaration: "Supplier declares no pesticides were used in animal feed",
+  final_pesticide_residue_test: "Lab-confirmed: pesticide levels are below safe limits",
+};
+
 function shortHash(h: string) {
   if (!h || h.length < 14) return h;
   return h.slice(0, 6) + "…" + h.slice(-6);
@@ -76,6 +85,7 @@ export function ClaimList({ claims }: { claims: Claim[] }) {
           const isOpen = openClaim === claim.claimType;
           const hv = claimVers[claim.claimType];
           const icon = ICONS[claim.claimType] ?? "📋";
+          const plainText = PLAIN_ENGLISH[claim.claimType];
           return (
             <div className={"pp-claim-row" + (isOpen ? " open" : "")} key={claim.claimType}>
               <div className="pp-claim-main" onClick={() => toggle(claim.claimType)}>
@@ -84,8 +94,11 @@ export function ClaimList({ claims }: { claims: Claim[] }) {
                 </div>
                 <div className="pp-claim-text">
                   <div className="pp-claim-name">{claim.label}</div>
-                  <div className="pp-claim-issuer">{claim.issuerName}</div>
-                  <div className="pp-claim-hash">{shortHash(claim.evidenceHash)}</div>
+                  {plainText && (
+                    <div className="pp-claim-plain consumer-only">{plainText}</div>
+                  )}
+                  <div className="pp-claim-issuer inspector-only">{claim.issuerName}</div>
+                  <div className="pp-claim-hash inspector-only">{shortHash(claim.evidenceHash)}</div>
                 </div>
                 <div className="pp-claim-right">
                   <span className={"pp-status-dot " + claim.status} />
@@ -131,6 +144,13 @@ export function ClaimList({ claims }: { claims: Claim[] }) {
                       )}
                     </div>
                   </div>
+
+                  {/* Consumer mode: show plain English expanded detail */}
+                  {plainText && (
+                    <div className="pp-claim-plain consumer-only" style={{ marginTop: 12, padding: "10px 12px", background: "var(--surface2)", borderRadius: "var(--rs)", border: "1px solid var(--border)" }}>
+                      {plainText}
+                    </div>
+                  )}
 
                   <div className="pp-chain-links">
                     <a className="pp-chain-link sui" href={suiExplorerLink(claim.suiObjectId) ?? undefined} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>

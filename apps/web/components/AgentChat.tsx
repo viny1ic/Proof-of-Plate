@@ -4,12 +4,12 @@ import { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
 type Message = { role: "user" | "assistant"; content: string; time?: string };
 
 const QUICK_QS = [
-  "Is this lactose-free?",
-  "Were pesticides used?",
-  "How does tamper detection work?",
+  "Is this safe for my lactose-intolerant child?",
+  "Were any pesticides used on this product?",
   "Is this batch recalled?",
-  "What is the EU DPP status?",
-  "Was equipment cleaned?",
+  "Where was this product made?",
+  "Is it safe during pregnancy?",
+  "What does 'verified' mean here?",
 ];
 
 function nowStr() {

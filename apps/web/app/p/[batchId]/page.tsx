@@ -10,6 +10,7 @@ import { ProductInfo } from "../../../components/ProductInfo";
 import { StatStrip } from "../../../components/StatStrip";
 import { SupplyChainJourney } from "../../../components/SupplyChainJourney";
 import { TamperDetection } from "../../../components/TamperDetection";
+import { VerdictCard } from "../../../components/VerdictCard";
 import { hederaTokenLink, hederaTopicLink, suiExplorerLink } from "../../../lib/explorer-links";
 import { getBatch, getClaims, getHcsMessages, getHtsMetadata } from "../../../lib/data";
 import { verifyEvidenceHash } from "../../../lib/evidence";
@@ -118,11 +119,19 @@ export default async function ProductPassport({ params }: { params: Promise<{ ba
 
       <div className="pp-layout">
         <div className="pp-left">
+          {/* Mobile consumer verdict — hidden on desktop, hidden in inspector mode via CSS */}
+          <div className="pp-consumer-mobile">
+            <VerdictCard batch={batch} claims={claims} />
+          </div>
           <ProductHeader batch={batch} />
           <StatStrip batch={batch} claimCount={claims.length} eventCount={events.length} />
           <RecallBanner recalled={batch.recalled} batchId={batch.batchId} />
           <HashVerificationBanner results={verifResults} />
           <SupplyChainJourney claims={claims} />
+          {/* Mobile: passport summary right after supply chain */}
+          <div className="pp-consumer-mobile">
+            <PassportSummary batch={batch} claims={claims} verifResults={verifResults} />
+          </div>
           <ProductInfo batch={batch} />
           <HtsMetadataCard hts={hts} ok={htsStatus.ok} errors={htsStatus.errors} />
 
