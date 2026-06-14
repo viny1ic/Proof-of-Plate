@@ -33,9 +33,6 @@ export function isCertificationActive(certification: AuthorityCertification, now
 
 export function getCertificationsForBatch(batchId: string) {
   const deployment = getDeployment();
-  if (deployment.batch.batchId !== batchId) {
-    return [];
-  }
 
   return (deployment.certifications ?? [])
     .filter((certification) => certification.batchId === batchId)

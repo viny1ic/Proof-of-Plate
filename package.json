@@ -14,6 +14,7 @@
     "hedera:create-token": "tsx scripts/create-hts-token.ts",
     "hedera:create-token-juice": "tsx scripts/create-hts-token-juice.ts",
     "hedera:create-cert-sbt": "tsx scripts/create-cert-sbt.ts",
+    "hedera:create-cert-sbt-juice": "tsx scripts/create-cert-sbt-juice.ts",
     "hedera:submit": "tsx scripts/submit-hcs-events.ts",
     "sui:deploy": "tsx scripts/deploy-sui.ts",
     "sui:seed": "tsx scripts/seed-sui-batch.ts",
