@@ -22,6 +22,269 @@ Two demo products are live on testnet:
 | **Claude AI** | Tool-based verifier — LangGraph ReAct loop reads Sui, HCS, HTS, and evidence before answering |
 | **Next.js 15** | Server-rendered product passport with RSC + client components |
 
+### Architecture and Data Flow Diagrams
+
+#### 1. End-to-end system architecture
+
+```text
+                                      +--------------------------------+
+                                      |        Consumer / Judge         |
+                                      |  QR scan, product URL, AI chat  |
+                                      +---------------+----------------+
+                                                      |
+                                                      v
++--------------------------------------------------------------------------------+
+|                              Next.js 15 Web App                                 |
+|                                                                                |
+|  apps/web/app/p/[batchId]/page.tsx                                             |
+|  - server-rendered product passport                                            |
+|  - left panel: hero, recall, cert SBTs, product details, HTS card              |
+|  - right panel: summary, AI chat, claims tab, trace tab                        |
+|                                                                                |
+|  Client components                                                             |
+|  - AgentChat.tsx: asks server API for verified answers                         |
+|  - ClaimList.tsx: expands claims and opens explorer/evidence links             |
+|  - LifecycleTimeline.tsx: renders HCS audit trail                              |
++----------------------+----------------------+----------------------+-----------+
+                       |                      |                      |
+                       v                      v                      v
++------------------------------+  +-----------------------------+  +-----------------------------+
+|        Data Readers          |  |          API Routes         |  |       UI Link Builders       |
+| apps/web/lib/data.ts         |  | apps/web/app/api/*         |  | explorer-links.ts            |
+| apps/web/lib/files.ts        |  | - /api/batch/[batchId]     |  | - Sui Explorer URLs          |
+| apps/web/lib/walrus.ts       |  | - /api/claims/[batchId]    |  | - HashScan HCS URLs          |
+| certifications.ts            |  | - /api/hcs/[topicId]       |  | - HashScan HTS URLs          |
+| hts.ts / evidence.ts         |  | - /api/hts/[tokenId]       |  | - hides local/demo IDs       |
++--------------+---------------+  | - /api/evidence            |  +-----------------------------+
+               |                  | - /api/chat                |
+               |                  +-------------+---------------+
+               |                                |
+               v                                v
++--------------------------------------------------------------------------------+
+|                          Repository Runtime State                               |
+|                                                                                |
+|  data/deployment.json       live Sui/HCS/HTS/cert deployment records           |
+|  data/hcs-events.json       milk HCS event cache                               |
+|  data/walrus-evidence.json  Walrus evidence index for juice                    |
+|  public/evidence/*.json     inline milk evidence documents                     |
+|  public/evidence/walrus/... juice raw data pack used by Walrus demo index      |
++-----------+----------------------+----------------------+---------------------+
+            |                      |                      |
+            v                      v                      v
++----------------------+  +----------------------+  +--------------------------+
+|     Sui Testnet      |  |   Hedera Testnet     |  |          Walrus          |
+|                      |  |                      |  |                          |
+| ProductBatch object  |  | HCS topics           |  | Large evidence pack      |
+| Claim shared objects |  | ordered claim events |  | walrus://blob/... URI    |
+| evidence hashes      |  | HTS product NFT      |  | SHA-256 anchored in Sui  |
+| recall state         |  | HTS cert SBT NFTs    |  | and Hedera HCS           |
++----------------------+  +----------------------+  +--------------------------+
+```
+
+#### 2. Product passport page-load flow
+
+```text
+Browser opens /p/[batchId]
+        |
+        v
+Next.js server component: apps/web/app/p/[batchId]/page.tsx
+        |
+        +--> getBatch(batchId)
+        |       |
+        |       +--> Milk: data/deployment.json -> deployment.batch
+        |       |
+        |       +--> Juice: data/walrus-evidence.json
+        |                + public/evidence/walrus/organic-juice/raw-data-pack.json
+        |                + deployment.juiceBatch overlay for real Sui object IDs
+        |
+        +--> getClaims(batchId)
+        |       |
+        |       +--> Milk: deployment.claims with inline evidence hashes
+        |       |
+        |       +--> Juice: Walrus raw data pack claims
+        |                + deployment.juiceClaims overlay for real Sui object IDs
+        |
+        +--> getHcsMessages(topicId)
+        |       |
+        |       +--> Milk: data/hcs-events.json
+        |       |
+        |       +--> Juice: Walrus HCS events indexed under topic 0.0.9226673
+        |
+        +--> getCertificationsForBatch(batchId)
+        |       |
+        |       +--> data/deployment.json certifications[]
+        |       +--> HashScan links for active HTS NFT cert SBTs
+        |
+        +--> verifyAllClaims(batchId)
+        |       |
+        |       +--> read evidence bytes
+        |       +--> SHA-256 hash
+        |       +--> compare with claim/HCS/Sui-anchored evidenceHash
+        |
+        v
+Render passport UI
+        |
+        +--> ProductHeader / StatStrip / RecallBanner
+        +--> CertificationBadges / SupplyChainJourney / ProductInfo
+        +--> HtsMetadataCard / PassportSummary / AgentChat
+        +--> ClaimList / LifecycleTimeline / TamperDetection
+```
+
+#### 3. Label-claim verification data flow
+
+```text
+                         One label claim, e.g. "No added sugar used"
+                                            |
+                                            v
++-------------------+       +-------------------------+       +-------------------+
+| Evidence document | ----> | SHA-256 evidence hash   | ----> | Claim data record |
+| inline JSON or    |       | 0x...                   |       | label, issuer,    |
+| Walrus raw pack   |       +------------+------------+       | status, hash, URI |
++-------------------+                    |                    +---------+---------+
+                                         |                              |
+             +---------------------------+------------------------------+
+             |                           |                              |
+             v                           v                              v
++-------------------------+   +--------------------------+   +--------------------------+
+| Sui Claim object        |   | Hedera HCS message       |   | UI/API runtime verifier  |
+| - claimType             |   | - ordered sequence       |   | - reload evidence bytes  |
+| - evidenceUri           |   | - batchId + claimType    |   | - recompute SHA-256      |
+| - evidenceHash          |   | - evidenceUri/hash       |   | - compare expected hash  |
+| - status                |   | - tx + consensus time    |   | - show pass/fail in UI   |
++-------------------------+   +--------------------------+   +--------------------------+
+             |                           |                              |
+             v                           v                              v
+       Sui Explorer                 HashScan HCS                 Product passport
+       claim link                   topic link                   green/red hash state
+```
+
+#### 4. Hedera HTS product-token and certificate-SBT flow
+
+```text
+Product metadata
+batch ID, product name, nutrition, ingredients, product URL,
+HCS topic ID, Sui batch object ID
+        |
+        v
+apps/web/lib/hts.ts
+        |
+        +--> canonical metadata JSON
+        +--> hashProductTokenMetadata(metadata)
+        +--> metadata payload: pop:<batchId>:<metadataHash>
+        |
+        v
+scripts/create-hts-token*.ts
+        |
+        +--> create NON_FUNGIBLE_UNIQUE token
+        +--> mint serial #1
+        +--> write deployment.hts or deployment.juiceHts
+        |
+        v
+Hedera HTS product batch NFT
+        |
+        +--> HtsMetadataCard shows token ID, serial, metadata hash, product URL
+        +--> HashScan token/serial link opens public token record
+
+Third-party authority certificates
+        |
+        v
+scripts/create-cert-sbt*.ts
+        |
+        +--> create one HTS NFT token per certification authority record
+        +--> mint serial #1 to authority/treasury account
+        +--> mark metadata as nonTransferable demo SBT semantics
+        +--> append to deployment.certifications[]
+        |
+        v
+CertificationBadges.tsx
+        |
+        +--> USDA Organic / Food Safe / Lactose-Free / Facility Audit badges
+        +--> each badge links to its HashScan NFT serial page
+```
+
+#### 5. AI question-answering flow
+
+```text
+User asks in AgentChat.tsx
+"Is this safe for my lactose-intolerant child?"
+        |
+        v
+POST /api/chat
+        |
+        v
+apps/web/lib/agent.ts
+Claude ReAct agent with verification tools
+        |
+        +--> get_batch_summary(batchId)
+        +--> get_claims(batchId)
+        +--> get_hcs_messages(topicId)
+        +--> get_hts_metadata(batchId)
+        +--> verify_evidence(batchId / claimType)
+        |
+        v
+Tool results from local runtime state + hash verifier
+        |
+        +--> product facts
+        +--> claim statuses
+        +--> Sui object IDs
+        +--> HCS topic / sequence / transaction IDs
+        +--> HTS token and cert SBT IDs
+        +--> evidence hash pass/fail
+        |
+        v
+Claude answer
+        |
+        +--> concise consumer-safe explanation
+        +--> cites only retrieved product data
+        +--> includes Sui / HashScan / evidence links when relevant
+        +--> refuses unsupported claims instead of guessing
+```
+
+#### 6. Testnet provisioning flow
+
+```text
+Developer/operator with funded Sui + Hedera testnet credentials
+        |
+        +--> Sui
+        |     |
+        |     +--> npm run sui:seed-juice
+        |             |
+        |             +--> create ProductBatch shared object
+        |             +--> create 16 Claim shared objects
+        |             +--> store Walrus evidence URI + SHA-256 hash per claim
+        |             +--> write deployment.juiceBatch and deployment.juiceClaims
+        |
+        +--> Hedera HCS
+        |     |
+        |     +--> npm run hedera:create-topic / hedera:create-topic-juice
+        |     +--> npm run hedera:submit
+        |             |
+        |             +--> one topic per product batch
+        |             +--> one ordered message per claim event
+        |             +--> write topic/message state into data files
+        |
+        +--> Hedera HTS
+        |     |
+        |     +--> npm run hedera:create-token / hedera:create-token-juice
+        |     |       |
+        |     |       +--> product-batch NFT, serial #1
+        |     |       +--> metadata payload includes batch ID + metadata hash
+        |     |
+        |     +--> npm run hedera:create-cert-sbt / hedera:create-cert-sbt-juice
+        |             |
+        |             +--> authority-issued certification NFTs
+        |             +--> deployment.certifications[]
+        |
+        v
+Commit data/*.json updates
+        |
+        v
+Vercel deploy / local npm run dev
+        |
+        v
+Consumer opens product passport with real explorer links only
+```
+
 ---
 
 ## Live Testnet Artifacts
