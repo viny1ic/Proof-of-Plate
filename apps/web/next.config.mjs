@@ -2,6 +2,10 @@
 const nextConfig = {
   reactStrictMode: true,
   outputFileTracingRoot: new URL("../../", import.meta.url).pathname,
+  outputFileTracingIncludes: {
+    "/api/**": ["../../data/**", "../../public/**"],
+    "/p/**":   ["../../data/**", "../../public/**"],
+  },
 
   async headers() {
     return [
