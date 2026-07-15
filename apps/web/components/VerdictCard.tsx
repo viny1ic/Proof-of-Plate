@@ -13,10 +13,6 @@ export function VerdictCard({ batch, claims }: Props) {
       ? Math.round((batch.scoreVerified / batch.scoreTotal) * 100)
       : 0;
 
-  const trustLabel = pct >= 80 ? "Strong evidence coverage" : pct >= 50 ? "Mixed evidence coverage" : "Limited evidence coverage";
-  const trustColor =
-    pct >= 80 ? "#4ADE80" : pct >= 50 ? "#FBBF24" : "#F87171";
-
   return (
     <section className={"pp-verdict-card " + (batch.recalled ? "danger" : "safe")}>
       <div className="pp-verdict-top">
@@ -29,7 +25,7 @@ export function VerdictCard({ batch, claims }: Props) {
       <div className="pp-verdict-bar-track">
         <div
           className="pp-verdict-bar-fill"
-          style={{ width: pct + "%", background: trustColor }}
+          style={{ width: pct + "%", background: "var(--green)" }}
         />
       </div>
 
@@ -37,7 +33,7 @@ export function VerdictCard({ batch, claims }: Props) {
         <span className="pp-verdict-pill">
           {verifiedCount}/{total} claims verified
         </span>
-        <span className="pp-verdict-pill">{trustLabel}</span>
+        <span className="pp-verdict-pill">{batch.scoreVerified}/{batch.scoreTotal} passport score</span>
         <span
           className={
             "pp-verdict-pill " +

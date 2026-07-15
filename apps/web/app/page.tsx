@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
+import { getDeployment } from "../lib/data";
 
 export default function Home() {
-  redirect(`/p/${process.env.NEXT_PUBLIC_BATCH_ID || "TB-MILK-0612"}`);
+  const batchId = getDeployment().batch.batchId;
+  redirect(`/p/${batchId}`);
 }

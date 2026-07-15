@@ -13,8 +13,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const batchId = body.batchId || "TB-MILK-0612";
+  const batchId = body.batchId?.trim();
   const question = body.question?.trim();
+  if (!batchId) {
+    return NextResponse.json({ error: "Missing batchId" }, { status: 400 });
+  }
   if (!question) {
     return NextResponse.json({ error: "Missing question" }, { status: 400 });
   }

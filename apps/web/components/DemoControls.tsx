@@ -11,7 +11,7 @@ export function DemoControls() {
     try {
       const res = await fetch("/api/demo/add-claim", { method: "POST" });
       const data = await res.json();
-      setState(data.ok ? "Added final pesticide residue claim. Refresh the product page." : (data.error ?? "Unknown error"));
+      setState(data.ok ? "Backend operation completed. Refresh the product page." : (data.error ?? `Request failed with status ${res.status}`));
     } catch (err) {
       setState(`Request failed: ${(err as Error).message}`);
     }

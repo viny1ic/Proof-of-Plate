@@ -55,6 +55,7 @@ function CertificationBadge({ certification }: { certification: AuthorityCertifi
 
 export function CertificationBadges({ certifications }: { certifications: AuthorityCertification[] }) {
   if (certifications.length === 0) return null;
+  const enforcementNotes = [...new Set(certifications.map((certification) => certification.sbt.note).filter(Boolean))];
 
   return (
     <section className="pp-cert-panel" aria-label="Third-party certificate tokens">
@@ -71,9 +72,9 @@ export function CertificationBadges({ certifications }: { certifications: Author
           <CertificationBadge key={certification.certId} certification={certification} />
         ))}
       </div>
-      <p className="pp-cert-note inspector-only">
-        SBT means the certificate is intended to be non-transferable: minted by the authority treasury for this batch with no public transfer path in the demo. Production HTS deployments should add custom custody, pause/freeze/KYC/admin-key, or contract controls where hard non-transferability is required.
-      </p>
+      {enforcementNotes.map((note) => (
+        <p className="pp-cert-note inspector-only" key={note}>{note}</p>
+      ))}
     </section>
   );
 }

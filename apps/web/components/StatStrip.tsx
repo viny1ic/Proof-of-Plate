@@ -1,8 +1,6 @@
-import type { ProductBatch } from "../lib/types";
+type Props = { claimCount: number; eventCount: number; certificationCount: number };
 
-type Props = { batch: ProductBatch; claimCount: number; eventCount: number };
-
-export function StatStrip({ claimCount, eventCount }: Props) {
+export function StatStrip({ claimCount, eventCount, certificationCount }: Props) {
   return (
     <div className="pp-stat-strip">
       <div className="pp-stat">
@@ -19,9 +17,9 @@ export function StatStrip({ claimCount, eventCount }: Props) {
       </div>
       <div className="pp-stat">
         <div className="pp-stat-val" style={{ color: "var(--green)" }}>
-          {"<3s"}
+          {certificationCount}
         </div>
-        <div className="pp-stat-lbl">vs 48hr FDA Recall</div>
+        <div className="pp-stat-lbl">Third-party certificates</div>
       </div>
     </div>
   );

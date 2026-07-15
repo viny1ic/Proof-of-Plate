@@ -137,11 +137,22 @@ export default async function ProductPassport({ params }: { params: Promise<{ ba
           </div>
         </section>
 
-        <StatStrip batch={batch} claimCount={claims.length} eventCount={events.length} />
+        <StatStrip
+          claimCount={claims.length}
+          eventCount={events.length}
+          certificationCount={certifications.length}
+        />
 
         <PassportRight
           summarySection={<PassportSummary batch={batch} claims={claims} verifResults={verifResults} />}
-          chatSection={<AgentChat batchId={batch.batchId} verificationContext={verifContext} />}
+          chatSection={
+            <AgentChat
+              batchId={batch.batchId}
+              productName={batch.productName}
+              claimLabels={claims.map((claim) => claim.label)}
+              verificationContext={verifContext}
+            />
+          }
           claimsSection={<ClaimList claims={claims} />}
           traceSection={<LifecycleTimeline events={events} claims={claims} />}
         />
@@ -208,9 +219,6 @@ export default async function ProductPassport({ params }: { params: Promise<{ ba
                 >
                   Hedera HTS
                 </a>
-              )}
-              {!suiUrl && !hcsUrl && !htsUrl && (
-                <span className="pp-footer-chip hedera">Walrus Evidence</span>
               )}
             </div>
             <div className="pp-footer-note">

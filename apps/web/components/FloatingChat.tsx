@@ -3,13 +3,6 @@ import { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
 
 type Message = { role: "user" | "assistant"; content: string; time?: string };
 
-const QUICK_QS = [
-  "Is this lactose-free?",
-  "Were pesticides used?",
-  "Is this batch recalled?",
-  "What is the EU DPP status?",
-];
-
 function nowStr() {
   return new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
 }
@@ -41,10 +34,11 @@ function renderLinks(text: string): ReactNode[] {
 
 type Props = {
   batchId: string;
+  suggestedQuestions: string[];
   verificationContext?: string;
 };
 
-export function FloatingChat({ batchId, verificationContext }: Props) {
+export function FloatingChat({ batchId, suggestedQuestions, verificationContext }: Props) {
   const [open, setOpen] = useState(false);
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState<Message[]>([
@@ -119,7 +113,7 @@ export function FloatingChat({ batchId, verificationContext }: Props) {
           </div>
 
           <div className="pp-fc-qs">
-            {QUICK_QS.map(q => (
+            {suggestedQuestions.map(q => (
               <button key={q} className="pp-quick-q" onClick={() => ask(q)} disabled={loading}>
                 {q}
               </button>

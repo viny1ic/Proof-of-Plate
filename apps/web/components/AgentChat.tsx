@@ -3,15 +3,6 @@ import { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
 
 type Message = { role: "user" | "assistant"; content: string; time?: string };
 
-const QUICK_QS = [
-  "Is this safe for my lactose-intolerant child?",
-  "Were any pesticides used on this product?",
-  "Is this batch recalled?",
-  "Where was this product made?",
-  "Is it safe during pregnancy?",
-  "What does 'verified' mean here?",
-];
-
 function nowStr() {
   return new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
 }
@@ -41,9 +32,19 @@ function renderLinks(text: string) {
   return parts;
 }
 
-type Props = { batchId: string; verificationContext?: string };
+type Props = {
+  batchId: string;
+  productName: string;
+  claimLabels: string[];
+  verificationContext?: string;
+};
 
-export function AgentChat({ batchId, verificationContext }: Props) {
+export function AgentChat({ batchId, productName, claimLabels, verificationContext }: Props) {
+  const quickQuestions = [
+    `What can you verify about ${productName}?`,
+    `Is batch ${batchId} recalled?`,
+    ...claimLabels.slice(0, 4).map((label) => `What evidence supports “${label}”?`),
+  ];
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -104,7 +105,7 @@ export function AgentChat({ batchId, verificationContext }: Props) {
       </div>
 
       <div className="pp-quick-qs">
-        {QUICK_QS.map(q => (
+        {quickQuestions.map(q => (
           <button key={q} className="pp-quick-q" onClick={() => ask(q)} disabled={loading}>
             {q}
           </button>

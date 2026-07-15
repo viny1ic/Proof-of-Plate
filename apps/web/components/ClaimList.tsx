@@ -1,40 +1,27 @@
 "use client";
 import { useState } from "react";
-import { hederaTopicLink, suiExplorerLink, walrusEvidenceLink } from "../lib/explorer-links";
+import { hederaTopicLink, suiExplorerLink } from "../lib/explorer-links";
 import type { Claim, EvidenceDocument } from "../lib/types";
 import { EvidenceDrawer } from "./EvidenceDrawer";
 
 /** Build the best clickable URL for a Walrus evidence pointer inline. */
 function getWalrusUrl(claim: Claim): string | null {
   if (claim.evidenceStorage !== "walrus") return null;
-  // Only use the aggregator URL if blobId is a real 64-char hex Walrus hash
-  const blobId = claim.walrus?.blobId ?? "";
-  if (/^[0-9a-fA-F]{64}$/.test(blobId)) {
-    return `https://aggregator.walrus-testnet.walrus.space/v1/blobs/${blobId}`;
+  if (claim.walrus?.url?.startsWith("https://")) {
+    return claim.walrus.url;
   }
-  // Demo blob — use our own evidence API which verifies the hash and returns the data
   if (claim.evidenceUri) {
     return `/api/evidence?uri=${encodeURIComponent(claim.evidenceUri)}&expectedHash=${encodeURIComponent(claim.evidenceHash)}`;
   }
   return null;
 }
 
-const ICONS: Record<string, string> = {
-  lactose_free: "🧪",
-  ultra_filtered: "🔬",
-  pasteurized: "🌡",
-  equipment_cleaned: "🧹",
-  feed_pesticide_declaration: "🌾",
-  final_pesticide_residue_test: "⚗️",
-};
-
-const PLAIN_ENGLISH: Record<string, string> = {
-  lactose_free: "Safe for lactose-intolerant people — no lactose detected in lab tests",
-  ultra_filtered: "Processed through ultra-filtration to remove impurities and concentrate proteins",
-  pasteurized: "Heat-treated to eliminate harmful bacteria — standard food safety",
-  equipment_cleaned: "All processing equipment was sanitized before use",
-  feed_pesticide_declaration: "Supplier declares no pesticides were used in animal feed",
-  final_pesticide_residue_test: "Lab-confirmed: pesticide levels are below safe limits",
+const STATUS_ICON: Record<Claim["status"], string> = {
+  verified: "✓",
+  warning: "!",
+  failed: "×",
+  pending: "·",
+  revoked: "×",
 };
 
 function shortHash(h: string) {
@@ -99,8 +86,6 @@ export function ClaimList({ claims }: { claims: Claim[] }) {
         {claims.map(claim => {
           const isOpen = openClaim === claim.claimType;
           const hv = claimVers[claim.claimType];
-          const icon = ICONS[claim.claimType] ?? "📋";
-          const plainText = PLAIN_ENGLISH[claim.claimType];
           const suiUrl = suiExplorerLink(claim.suiObjectId);
           const hcsUrl = hederaTopicLink(claim.hcsTopicId);
           const walrusUrl = getWalrusUrl(claim);
@@ -108,13 +93,11 @@ export function ClaimList({ claims }: { claims: Claim[] }) {
             <div className={"pp-claim-row" + (isOpen ? " open" : "")} key={claim.claimType}>
               <div className="pp-claim-main" onClick={() => toggle(claim.claimType)}>
                 <div className={"pp-claim-icon " + claim.status} style={{ fontSize: 18 }}>
-                  {icon}
+                  {STATUS_ICON[claim.status]}
                 </div>
                 <div className="pp-claim-text">
                   <div className="pp-claim-name">{claim.label}</div>
-                  {plainText && (
-                    <div className="pp-claim-plain consumer-only">{plainText}</div>
-                  )}
+                  <div className="pp-claim-plain consumer-only">Evidence issued by {claim.issuerName}</div>
                   <div className="pp-claim-issuer inspector-only">{claim.issuerName}</div>
                   <div className="pp-claim-hash inspector-only">{shortHash(claim.evidenceHash)}</div>
                 </div>
@@ -165,13 +148,6 @@ export function ClaimList({ claims }: { claims: Claim[] }) {
                     </div>
                   </div>
 
-                  {/* Consumer mode: show plain English expanded detail */}
-                  {plainText && (
-                    <div className="pp-claim-plain consumer-only" style={{ marginTop: 12, padding: "10px 12px", background: "var(--surface2)", borderRadius: "var(--rs)", border: "1px solid var(--border)" }}>
-                      {plainText}
-                    </div>
-                  )}
-
                   <div className="pp-chain-links">
                     {suiUrl && (
                       <a className="pp-chain-link sui" href={suiUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
@@ -187,9 +163,6 @@ export function ClaimList({ claims }: { claims: Claim[] }) {
                       <a className="pp-chain-link hedera" href={walrusUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
                         Walrus evidence ↗
                       </a>
-                    )}
-                    {claim.evidenceStorage === "walrus" && !walrusUrl && (
-                      <span className="pp-chain-link hedera" title="Walrus evidence (demo blob — not yet uploaded to Walrus network)">Walrus evidence</span>
                     )}
                     <button className="pp-verify-btn inspector-only" onClick={e => openEvidence(claim, e)}>
                       Verify Hash
