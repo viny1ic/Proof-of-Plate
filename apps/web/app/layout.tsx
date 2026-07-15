@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ThemeToggle } from "../components/ThemeToggle";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -7,9 +8,23 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const themeScript = `
+    (function () {
+      try {
+        var saved = localStorage.getItem("proof-of-plate-theme");
+        var theme = saved === "dark" || saved === "light"
+          ? saved
+          : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+      } catch (_) {}
+    })();
+  `;
+
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
@@ -17,7 +32,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <ThemeToggle />
+      </body>
     </html>
   );
 }
