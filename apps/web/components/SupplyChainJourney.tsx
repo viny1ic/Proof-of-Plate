@@ -44,8 +44,11 @@ export function SupplyChainJourney({ claims }: { claims: Claim[] }) {
   const fillPct = Math.min(100, Math.round((doneCount / STEPS.length) * 100));
 
   return (
-    <div className="pp-journey">
-      <div className="pp-journey-title">Supply Chain Journey</div>
+    <section className="pp-journey" aria-label="Supply chain journey">
+      <div className="pp-journey-head">
+        <p className="pp-section-kicker">From source to shelf</p>
+        <h2 className="pp-journey-title">Supply chain journey</h2>
+      </div>
       <div className="pp-journey-steps">
         <div className="pp-journey-line">
           <div className="pp-journey-line-fill" style={{ width: fillPct + "%" }} />
@@ -67,6 +70,6 @@ export function SupplyChainJourney({ claims }: { claims: Claim[] }) {
           );
         })}
       </div>
-    </div>
+    </section>
   );
 }

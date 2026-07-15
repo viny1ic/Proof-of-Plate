@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 
 type Tab = "claims" | "trace";
@@ -14,67 +15,47 @@ export function PassportRight({ summarySection, chatSection, claimsSection, trac
   const [tab, setTab] = useState<Tab>("claims");
 
   return (
-    <>
-      {/* Summary + AI always visible at top — each in its own div to avoid key warnings */}
-      <div className="pp-always-top">
+    <div className="pp-passport-workspace">
+      <section className="pp-overview-grid" id="overview" aria-label="Passport overview">
         <div className="pp-always-top-summary">{summarySection}</div>
-        <div className="pp-always-top-chat">{chatSection}</div>
-      </div>
+        <aside className="pp-always-top-chat" id="ask-ai">{chatSection}</aside>
+      </section>
 
-      {/* Inline tab bar — desktop only */}
-      <div className="pp-tab-bar-inline">
-        <button
-          className={"pp-tab-btn" + (tab === "claims" ? " active" : "")}
-          onClick={() => setTab("claims")}
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M9 11l3 3L22 4" />
-            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-          </svg>
-          Claims
-        </button>
-        <button
-          className={"pp-tab-btn" + (tab === "trace" ? " active" : "")}
-          onClick={() => setTab("trace")}
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-          </svg>
-          Trace
-        </button>
-      </div>
+      <section className="pp-records" id="claims">
+        <div className="pp-records-intro">
+          <div>
+            <p className="pp-section-kicker">Proof, not promises</p>
+            <h2>Open the verification record</h2>
+          </div>
+          <p>Review every label claim or follow the ordered audit trail behind it.</p>
+        </div>
 
-      {/* Mobile tab bar (3 tabs: claims, trace — chat hidden on mobile since it's in always-top) */}
-      <div className="pp-tab-bar">
-        <button
-          className={"pp-tab-btn" + (tab === "claims" ? " active" : "")}
-          onClick={() => setTab("claims")}
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M9 11l3 3L22 4" />
-            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-          </svg>
-          Claims
-        </button>
-        <button
-          className={"pp-tab-btn" + (tab === "trace" ? " active" : "")}
-          onClick={() => setTab("trace")}
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-          </svg>
-          Trace
-        </button>
-      </div>
+        <div className="pp-tab-bar-inline" role="tablist" aria-label="Verification record">
+          <button
+            className={"pp-tab-btn" + (tab === "claims" ? " active" : "")}
+            onClick={() => setTab("claims")}
+            role="tab"
+            aria-selected={tab === "claims"}
+          >
+            Claims &amp; evidence
+          </button>
+          <button
+            className={"pp-tab-btn" + (tab === "trace" ? " active" : "")}
+            onClick={() => setTab("trace")}
+            role="tab"
+            aria-selected={tab === "trace"}
+          >
+            Audit trail
+          </button>
+        </div>
 
-      <div style={{ display: tab === "claims" ? "block" : "none" }}>
-        <div>{claimsSection}</div>
-      </div>
-      <div style={{ display: tab === "trace" ? "block" : "none" }}>
-        <div>{traceSection}</div>
-      </div>
-
-      <div className="pp-tab-spacer" />
-    </>
+        <div className="pp-tab-panel" role="tabpanel" hidden={tab !== "claims"}>
+          {claimsSection}
+        </div>
+        <div className="pp-tab-panel" role="tabpanel" hidden={tab !== "trace"}>
+          {traceSection}
+        </div>
+      </section>
+    </div>
   );
 }

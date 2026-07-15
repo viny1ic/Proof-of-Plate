@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import {
   certificationExplorerUrl,
   certificationSbtDescription,
@@ -16,9 +15,6 @@ function CertificationBadge({ certification }: { certification: AuthorityCertifi
   const href = certificationExplorerUrl(certification);
   const status = certificationStatusLabel(certification);
   const className = `pp-cert-badge ${statusClass(certification)}`;
-  const style = certification.accentColor
-    ? ({ "--cert-accent": certification.accentColor } as CSSProperties)
-    : undefined;
 
   const inner = (
     <>
@@ -37,7 +33,7 @@ function CertificationBadge({ certification }: { certification: AuthorityCertifi
 
   if (!href) {
     return (
-      <span className={className} style={style} title={title} aria-label={certification.logoAlt}>
+      <span className={className} title={title} aria-label={certification.logoAlt}>
         {inner}
       </span>
     );
@@ -46,7 +42,6 @@ function CertificationBadge({ certification }: { certification: AuthorityCertifi
   return (
     <a
       className={className}
-      style={style}
       href={href}
       target="_blank"
       rel="noopener noreferrer"
@@ -65,8 +60,9 @@ export function CertificationBadges({ certifications }: { certifications: Author
     <section className="pp-cert-panel" aria-label="Third-party certificate tokens">
       <div className="pp-cert-head">
         <div>
-          <div className="pp-cert-title">Third-party certificates</div>
-          <div className="pp-cert-sub">Authority-issued SBT badges linked to HTS token pages</div>
+          <p className="pp-section-kicker">Checked by others</p>
+          <h2 className="pp-cert-title">Third-party certificates</h2>
+          <div className="pp-cert-sub">Authority-issued certificate tokens. Select one to inspect it on HashScan.</div>
         </div>
         <span className="pp-cert-count">{certifications.length}</span>
       </div>

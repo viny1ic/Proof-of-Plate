@@ -10,16 +10,18 @@ export function ModeToggle() {
   }
 
   return (
-    <div className="pp-mode-toggle">
+    <div className="pp-mode-toggle" role="group" aria-label="Passport detail level">
       <button
         className={"pp-mode-btn" + (mode === "consumer" ? " active" : "")}
         onClick={() => toggle("consumer")}
+        aria-pressed={mode === "consumer"}
       >
         Consumer
       </button>
       <button
         className={"pp-mode-btn" + (mode === "inspector" ? " active" : "")}
         onClick={() => toggle("inspector")}
+        aria-pressed={mode === "inspector"}
       >
         Inspector
       </button>

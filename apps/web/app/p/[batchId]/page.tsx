@@ -38,11 +38,11 @@ function HashVerificationBanner({ results }: { results: VerifRow[] }) {
       </div>
       <div className="pp-hash-banner-text">
         <span className="pp-hash-banner-title">
-          {allOk ? "All evidence hashes verified" : passed + "/" + total + " hashes verified"}
+          {allOk ? "Evidence integrity confirmed" : passed + "/" + total + " hashes verified"}
         </span>
         <span className="pp-hash-banner-sub">
           {allOk
-            ? "On-chain hashes match local evidence files"
+            ? "Recorded hashes match the original evidence bytes"
             : results.filter(r => !r.ok).map(r => r.label).join(", ") + " mismatch"}
         </span>
       </div>
@@ -56,15 +56,15 @@ function HashVerificationBanner({ results }: { results: VerifRow[] }) {
 function RecallBanner({ recalled, batchId }: { recalled: boolean; batchId: string }) {
   return (
     <div className={"pp-recall-banner " + (recalled ? "danger" : "safe")}>
-      <span className="pp-recall-banner-icon">{recalled ? "🚨" : "🛡️"}</span>
+      <span className="pp-recall-banner-icon" aria-hidden="true">{recalled ? "!" : "✓"}</span>
       <div className="pp-recall-banner-body">
         <div className="pp-recall-banner-title">
-          {recalled ? "Active FDA Recall — Do Not Consume" : "No Active FDA Recall"}
+          {recalled ? "Active recall — do not consume" : "No active recall"}
         </div>
         <div className="pp-recall-banner-sub">
           {recalled
-            ? "This batch has been recalled. Check FDA.gov for details."
-            : "Batch " + batchId + " · verified against openFDA database"}
+            ? "This product batch is marked as recalled in its finalized record."
+            : "Batch " + batchId + " · recall state read from the product passport"}
         </div>
       </div>
     </div>
@@ -126,26 +126,58 @@ export default async function ProductPassport({ params }: { params: Promise<{ ba
         </div>
       </div>
 
-      <div className="pp-layout">
-        <div className="pp-left">
-          {/* Mobile consumer verdict — hidden on desktop, hidden in inspector mode via CSS */}
-          <div className="pp-consumer-mobile">
-            <VerdictCard batch={batch} claims={claims} />
-          </div>
-          <ProductHeader batch={batch} />
-          <StatStrip batch={batch} claimCount={claims.length} eventCount={events.length} />
-          <RecallBanner recalled={batch.recalled} batchId={batch.batchId} />
-          <HashVerificationBanner results={verifResults} />
-          <CertificationBadges certifications={certifications} />
-          <SupplyChainJourney claims={claims} />
-          {/* Mobile: passport summary right after supply chain */}
-          <div className="pp-consumer-mobile">
-            <PassportSummary batch={batch} claims={claims} verifResults={verifResults} />
-          </div>
-          <ProductInfo batch={batch} />
-          <HtsMetadataCard hts={hts} ok={htsStatus.ok} errors={htsStatus.errors} />
+      <div className="pp-page">
+        <ProductHeader batch={batch} />
 
-          <div className="pp-footer">
+        <section className="pp-signal-grid" aria-label="Batch status">
+          <VerdictCard batch={batch} claims={claims} />
+          <div className="pp-signal-stack">
+            <RecallBanner recalled={batch.recalled} batchId={batch.batchId} />
+            <HashVerificationBanner results={verifResults} />
+          </div>
+        </section>
+
+        <StatStrip batch={batch} claimCount={claims.length} eventCount={events.length} />
+
+        <PassportRight
+          summarySection={<PassportSummary batch={batch} claims={claims} verifResults={verifResults} />}
+          chatSection={<AgentChat batchId={batch.batchId} verificationContext={verifContext} />}
+          claimsSection={<ClaimList claims={claims} />}
+          traceSection={<LifecycleTimeline events={events} claims={claims} />}
+        />
+
+        <section className="pp-details-section" aria-label="Product and provenance details">
+          <div className="pp-records-intro">
+            <div>
+              <p className="pp-section-kicker">The complete passport</p>
+              <h2>Product &amp; provenance</h2>
+            </div>
+            <p>Trace where the product came from, who certified it, and what its tokenized metadata contains.</p>
+          </div>
+
+          <div className="pp-details-grid">
+            <div className="pp-details-column">
+              <SupplyChainJourney claims={claims} />
+              <CertificationBadges certifications={certifications} />
+            </div>
+            <div className="pp-details-column">
+              <ProductInfo batch={batch} />
+              <div className="inspector-only">
+                <HtsMetadataCard hts={hts} ok={htsStatus.ok} errors={htsStatus.errors} />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <footer className="pp-footer">
+          <div className="pp-footer-brand">
+            <span className="pp-brand-mark" aria-hidden="true">P</span>
+            <div>
+              <strong>Proof of Plate</strong>
+              <span>Evidence you can inspect, not just claims you have to trust.</span>
+            </div>
+          </div>
+          <div>
             <div className="pp-footer-chain">
               {suiUrl && (
                 <a
@@ -188,18 +220,7 @@ export default async function ProductPassport({ params }: { params: Promise<{ ba
               EU Digital Product Passport (DPP) - ESPR compliant structure
             </div>
           </div>
-        </div>
-
-        <div className="pp-right">
-          <PassportRight
-            summarySection={
-              <PassportSummary batch={batch} claims={claims} verifResults={verifResults} />
-            }
-            chatSection={<AgentChat batchId={batch.batchId} verificationContext={verifContext} />}
-            claimsSection={<ClaimList claims={claims} />}
-            traceSection={<LifecycleTimeline events={events} claims={claims} />}
-          />
-        </div>
+        </footer>
       </div>
     </main>
   );

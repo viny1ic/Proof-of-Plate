@@ -323,23 +323,16 @@ Consumer opens product passport with real explorer links only
 
 ## Frontend
 
-The passport UI is a two-column layout (sticky left panel + scrollable right panel on desktop, bottom tab bar on mobile).
+The passport uses a responsive neo-brutalist interface with a strict plain-language-first hierarchy. It leads with the product identity and immediate trust signals, keeps the evidence-grounded AI visible beside the summary on larger screens, and progressively reveals dense product and blockchain detail.
 
-### Left panel
-- **Dark hero** — product name, batch ID, verification score ring, Consumer / Inspector mode toggle, recall badge
-- **Stat strip** — claims count, HCS audit events count, recall speed vs FDA window
-- **Hash verification banner** — server-side SHA-256 check on every page load; all hashes verified or mismatch warning
-- **Certification SBT badges** — third-party certificate/audit stickers; click to open HashScan HTS NFT serial page
-- **Supply chain journey** — Farm → Facility → Lab → Certified tracker with HCS/Walrus sequence labels
-- **Product details** — product name, net contents, serving size, allergens, storage; FDA-style nutrition facts; ingredient cards with claim tag chips; data from HTS token metadata
-- **HTS metadata card** — token ID, serial, metadata parse/verify status, metadata hash, HashScan link
+### Passport flow
+- **Product identity hero** — product name, description, batch ID, recall state, verification score, and Consumer / Inspector mode
+- **Immediate status** — plain-language recall verdict, claims coverage, evidence hash integrity, claim count, and HCS event count
+- **Summary + AI** — claims-at-a-glance and explanation beside the always-available Claude agent
+- **Verification record** — tabs for expandable claims/evidence and the ordered HCS/Walrus audit trail
+- **Product & provenance** — supply-chain tracker, certificate SBT badges, product facts, and progressively disclosed nutrition/ingredient detail
+- **Inspector metadata** — HTS product-token metadata, raw hashes, object IDs, sequences, and transaction IDs
 - **Footer** — Sui Explorer, HashScan HCS, and HashScan HTS links
-
-### Right panel
-- **Summary** — trust score, hash check result, recall badge, claims-at-a-glance, plain-English explanation
-- **AI chat** — always visible; Claude answers using live Sui + HCS + HTS + evidence data; clickable explorer links in responses
-- **Claims tab** — expandable rows; Sui Explorer + HashScan + Walrus evidence buttons per claim; "Verify Hash" on demand
-- **Trace tab** — Hedera HCS audit log timeline; evidence hash links to Sui claim objects
 
 ### Consumer / Inspector mode
 - **Consumer** — hides blockchain IDs and technical detail

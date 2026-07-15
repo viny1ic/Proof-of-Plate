@@ -1,62 +1,48 @@
 import type { ProductBatch } from "../lib/types";
 import { ModeToggle } from "./ModeToggle";
 
-const CIRCUM = 2 * Math.PI * 18;
-
 export function ProductHeader({ batch }: { batch: ProductBatch }) {
-  const pct = batch.scoreTotal > 0 ? batch.scoreVerified / batch.scoreTotal : 0;
-  const offset = CIRCUM * (1 - pct);
-  const scoreLabel = batch.scoreVerified + "/" + batch.scoreTotal;
-  const strokeColor = pct >= 0.8 ? "#22C55E" : pct >= 0.5 ? "#FCD34D" : "#F87171";
+  const pct = batch.scoreTotal > 0 ? Math.round((batch.scoreVerified / batch.scoreTotal) * 100) : 0;
 
   return (
-    <div className="pp-hero">
-      <div className="pp-hero-top">
-        <div className="pp-brand-chip">
-          <span className="pp-brand-dot" />
+    <header className="pp-hero">
+      <div className="pp-hero-nav">
+        <div className="pp-brand-lockup" aria-label="Proof of Plate">
+          <span className="pp-brand-mark" aria-hidden="true">P</span>
           <span className="pp-brand-name">Proof of Plate</span>
         </div>
         <ModeToggle />
       </div>
 
-      <div className="pp-hero-product">
-        <div className="pp-product-category">{batch.category}</div>
-        <div className="pp-product-name">{batch.productName}</div>
-        <div className="pp-batch-id">{batch.batchId}</div>
-        <div className="pp-hero-badges">
-          {batch.recalled ? (
-            <span className="pp-recalled-badge">PRODUCT RECALLED</span>
-          ) : (
-            <span className="pp-recall-badge">
+      <div className="pp-hero-grid">
+        <div className="pp-hero-copy">
+          <p className="pp-eyebrow">Verifiable food passport · {batch.category}</p>
+          <h1 className="pp-product-name">{batch.productName}</h1>
+          <p className="pp-product-description">{batch.description}</p>
+          <div className="pp-hero-meta">
+            <span className="pp-batch-id">Batch {batch.batchId}</span>
+            <span className={"pp-recall-badge " + (batch.recalled ? "danger" : "safe")}>
               <span className="pp-recall-dot" />
-              Active - No Recall
+              {batch.recalled ? "Recall active" : "No active recall"}
             </span>
-          )}
-          <span className="pp-dpp-badge inspector-only">EU DPP Ready</span>
+            <span className="pp-dpp-badge inspector-only">EU DPP structure</span>
+          </div>
         </div>
-      </div>
 
-      <div className="pp-score-bar">
-        <div className="pp-score-left">
-          <div className="pp-score-ring">
-            <svg width="46" height="46" viewBox="0 0 46 46">
-              <circle cx="23" cy="23" r="18" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="4" />
-              <circle
-                cx="23" cy="23" r="18" fill="none"
-                stroke={strokeColor} strokeWidth="4"
-                strokeDasharray={CIRCUM + " " + CIRCUM}
-                strokeDashoffset={offset}
-                strokeLinecap="round"
-              />
-            </svg>
-            <div className="pp-score-ring-num">{batch.scoreVerified}</div>
+        <div className="pp-hero-score" aria-label={`${batch.scoreVerified} of ${batch.scoreTotal} claims verified`}>
+          <div className="pp-score-kicker">Verification score</div>
+          <div className="pp-score-number">
+            <strong>{pct}</strong><span>%</span>
           </div>
-          <div>
-            <div className="pp-score-label">{scoreLabel} Claims Verified</div>
-            <div className="pp-score-sub">Sui claims - Hedera HCS + HTS</div>
+          <div className="pp-score-blocks" aria-hidden="true">
+            {Array.from({ length: batch.scoreTotal }, (_, index) => (
+              <span className={index < batch.scoreVerified ? "filled" : ""} key={index} />
+            ))}
           </div>
+          <div className="pp-score-label">{batch.scoreVerified} of {batch.scoreTotal} claims verified</div>
+          <div className="pp-score-sub">Evidence checked at page load</div>
         </div>
       </div>
-    </div>
+    </header>
   );
 }

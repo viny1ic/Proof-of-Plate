@@ -194,23 +194,17 @@ Next.js Frontend (apps/web)
 
 ## Frontend Design
 
-### Left panel
+The frontend uses a responsive neo-brutalist visual system and a plain-language-first information hierarchy.
 
-- **Hero** — product name, batch ID, score ring (verified/total), Consumer/Inspector toggle, recall badge
-- **Stat strip** — claims on-chain, HCS audit events, recall speed
-- **Hash verification banner** — server-side SHA-256 check on every page load
-- **Certification SBT badges** — sticker logos for each authority cert; click → HashScan NFT serial page
-- **Supply chain journey** — Farm → Facility → Lab → Certified with HCS/Walrus sequence labels
-- **Product details** — nutrition facts, ingredient cards, allergens, storage; data from HTS token metadata
-- **HTS metadata card** — token ID, parse/verify status, metadata hash, HashScan link
+### Passport flow
+
+- **Product identity hero** — product name, description, batch ID, verification percentage, Consumer/Inspector toggle, and recall state
+- **Immediate status** — recall verdict, evidence-integrity result, claims count, HCS event count, and recall-speed comparison
+- **Summary + AI** — plain-language passport summary beside the always-available Claude agent on larger screens
+- **Verification record** — tabs for claim/evidence expansion and the ordered HCS/Walrus audit trail
+- **Product & provenance** — supply-chain journey, certificate SBT stickers, product facts, and collapsible nutrition/ingredient detail
+- **Inspector metadata** — HTS token record, Sui object IDs, HCS sequences, evidence hashes, transaction IDs, and SBT enforcement notes
 - **Footer** — Sui Explorer + HashScan HCS + HashScan HTS links; Walrus evidence link where applicable
-
-### Right panel
-
-- **Summary** — trust score, hash result, recall status, claims-at-a-glance, plain-English explanation
-- **AI chat** — always visible; answers grounded in live on-chain tool calls
-- **Claims tab** — per-claim Sui Explorer / HashScan / Walrus evidence buttons; "Verify Hash" on demand
-- **Trace tab** — HCS audit timeline; each event links evidence hash to Sui claim object
 
 ### Consumer / Inspector mode
 

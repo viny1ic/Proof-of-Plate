@@ -13,17 +13,16 @@ export function VerdictCard({ batch, claims }: Props) {
       ? Math.round((batch.scoreVerified / batch.scoreTotal) * 100)
       : 0;
 
-  const trustLabel =
-    pct >= 80 ? "High Trust" : pct >= 50 ? "Medium Trust" : "Low Trust";
+  const trustLabel = pct >= 80 ? "Strong evidence coverage" : pct >= 50 ? "Mixed evidence coverage" : "Limited evidence coverage";
   const trustColor =
     pct >= 80 ? "#4ADE80" : pct >= 50 ? "#FBBF24" : "#F87171";
 
   return (
-    <div className={"pp-verdict-card " + (batch.recalled ? "danger" : "safe")}>
+    <section className={"pp-verdict-card " + (batch.recalled ? "danger" : "safe")}>
       <div className="pp-verdict-top">
-        <span className="pp-verdict-icon">{batch.recalled ? "🚨" : "✅"}</span>
+        <span className="pp-verdict-icon" aria-hidden="true">{batch.recalled ? "!" : "✓"}</span>
         <div className="pp-verdict-title">
-          {batch.recalled ? "Do Not Consume" : "Safe to Consume"}
+          {batch.recalled ? "Recall active" : "No recall found for this batch"}
         </div>
       </div>
 
@@ -45,9 +44,9 @@ export function VerdictCard({ batch, claims }: Props) {
             (batch.recalled ? "recall-yes" : "recall-no")
           }
         >
-          {batch.recalled ? "⚠ FDA Recall Active" : "✓ No FDA Recall"}
+          {batch.recalled ? "Recall active" : "No active recall"}
         </span>
       </div>
-    </div>
+    </section>
   );
 }

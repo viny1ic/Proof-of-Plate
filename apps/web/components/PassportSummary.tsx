@@ -10,111 +10,78 @@ type Props = {
 
 const STATUS_LABEL: Record<string, string> = {
   verified: "Verified",
-  warning:  "Advisory",
-  failed:   "Failed",
-  pending:  "Pending",
-  revoked:  "Revoked",
+  warning: "Advisory",
+  failed: "Failed",
+  pending: "Pending",
+  revoked: "Revoked",
 };
 
 export function PassportSummary({ batch, claims, verifResults }: Props) {
-  const verifiedCount = claims.filter(c => c.status === "verified").length;
-  const warningCount  = claims.filter(c => c.status === "warning" || c.status === "failed").length;
-  const hashPassed    = verifResults.filter(r => r.ok).length;
-  const hashTotal     = verifResults.length;
-  const allHashOk     = hashPassed === hashTotal;
-  const pct           = batch.scoreTotal > 0
-    ? Math.round((batch.scoreVerified / batch.scoreTotal) * 100)
-    : 0;
-
-  // SVG ring params
-  const r = 26;
-  const circ = 2 * Math.PI * r;
-  const dash = (pct / 100) * circ;
-
-  const ringColor = pct >= 80 ? "var(--green)" : pct >= 50 ? "var(--amber)" : "var(--red)";
+  const verifiedCount = claims.filter((claim) => claim.status === "verified").length;
+  const advisoryCount = claims.filter((claim) => claim.status === "warning" || claim.status === "failed").length;
+  const hashPassed = verifResults.filter((result) => result.ok).length;
+  const hashTotal = verifResults.length;
+  const allHashOk = hashPassed === hashTotal;
 
   return (
-    <div className="pp-summary">
-      {/* Header */}
+    <section className="pp-summary">
       <div className="pp-summary-head">
-        <div className="pp-summary-title">Product Passport</div>
-        <div className="pp-summary-sub">{batch.productName}</div>
+        <p className="pp-section-kicker">The answer first</p>
+        <h2>What this passport says</h2>
       </div>
 
-      {/* Trust ring row */}
-      <div className="pp-trust-ring-row">
-        <svg width="64" height="64" viewBox="0 0 64 64" style={{ flexShrink: 0 }}>
-          <circle cx="32" cy="32" r={r} fill="none" stroke="var(--border2)" strokeWidth="6" />
-          <circle
-            cx="32" cy="32" r={r}
-            fill="none"
-            stroke={ringColor}
-            strokeWidth="6"
-            strokeDasharray={`${dash} ${circ}`}
-            strokeDashoffset={circ / 4}
-            strokeLinecap="round"
-            style={{ transition: "stroke-dasharray .6s ease" }}
-          />
-          <text x="32" y="37" textAnchor="middle" fontSize="13" fontWeight="700" fontFamily="Arial, sans-serif" fill="var(--navy)">
-            {pct}%
-          </text>
-        </svg>
-        <div className="pp-trust-ring-info">
-          <div className="pp-trust-val">{batch.scoreVerified}/{batch.scoreTotal} verified</div>
-          <div className="pp-trust-lbl">Sui blockchain · Hedera HCS</div>
-          <div className="pp-trust-sub">
-            {warningCount > 0
-              ? warningCount + " claim" + (warningCount > 1 ? "s" : "") + " advisory — supplier declaration only"
-              : "All claims independently verified"}
-          </div>
+      <div className="pp-summary-verdict">
+        <span className={"pp-summary-stamp " + (batch.recalled ? "danger" : "safe")} aria-hidden="true">
+          {batch.recalled ? "!" : "✓"}
+        </span>
+        <div>
+          <strong>{batch.recalled ? "This batch has an active recall" : `${verifiedCount} of ${claims.length} claims are verified`}</strong>
+          <p>
+            {batch.recalled
+              ? "Do not consume this product. Review the recall record before taking action."
+              : advisoryCount > 0
+                ? `${advisoryCount} claim${advisoryCount === 1 ? " is" : "s are"} advisory and should be read with care.`
+                : "Every listed claim has independent evidence attached to its record."}
+          </p>
         </div>
       </div>
 
-      {/* Hash + recall row */}
       <div className="pp-summary-scores">
         <div className="pp-summary-score-card">
-          <div className="pp-summary-score-val" style={{ color: allHashOk ? "var(--green)" : "var(--amber)" }}>
-            {hashPassed}/{hashTotal}
-          </div>
-          <div className="pp-summary-score-lbl">Hash Check</div>
-          <div className="pp-summary-score-sub">{allHashOk ? "All match on-chain" : "Mismatch detected"}</div>
+          <strong>{batch.scoreVerified}/{batch.scoreTotal}</strong>
+          <span>Claims verified</span>
         </div>
-        <div className="pp-summary-score-card" style={{ borderRight: "none" }}>
-          <div className="pp-summary-score-val" style={{ color: batch.recalled ? "var(--red)" : "var(--green)" }}>
-            {batch.recalled ? "Yes" : "No"}
-          </div>
-          <div className="pp-summary-score-lbl">Recalled</div>
-          <div className="pp-summary-score-sub">{batch.recalled ? "Active recall" : "No active recall"}</div>
+        <div className="pp-summary-score-card">
+          <strong>{hashPassed}/{hashTotal}</strong>
+          <span>{allHashOk ? "Evidence intact" : "Hash mismatch"}</span>
+        </div>
+        <div className="pp-summary-score-card">
+          <strong>{batch.recalled ? "Yes" : "No"}</strong>
+          <span>Active recall</span>
         </div>
       </div>
 
-      {/* Claims snapshot */}
       <div className="pp-summary-claims">
-        <div className="pp-summary-section-label">Claims at a Glance</div>
-        {claims.map(c => (
-          <div className="pp-summary-claim-row" key={c.claimType}>
-            <span className={"pp-summary-claim-dot " + c.status} />
-            <span className="pp-summary-claim-name">{c.label}</span>
-            <span className={"pp-summary-claim-status " + c.status}>
-              {STATUS_LABEL[c.status] ?? c.status}
+        <div className="pp-summary-section-label">Claims at a glance</div>
+        {claims.map((claim) => (
+          <div className="pp-summary-claim-row" key={claim.claimType}>
+            <span className={"pp-summary-claim-dot " + claim.status} />
+            <span className="pp-summary-claim-name">{claim.label}</span>
+            <span className={"pp-summary-claim-status " + claim.status}>
+              {STATUS_LABEL[claim.status] ?? claim.status}
             </span>
           </div>
         ))}
       </div>
 
-      {/* What this means */}
       <div className="pp-summary-desc">
-        <div className="pp-summary-section-label">What This Means</div>
+        <div className="pp-summary-section-label">How to read this</div>
         <p className="pp-summary-desc-text">
-          {verifiedCount} out of {claims.length} label claims on this product have been independently
-          verified with cryptographic evidence anchored on the Sui blockchain and logged on Hedera HCS.
-          Product identity, ingredients, and the passport URL are tokenized in the Hedera HTS batch token.
-          {warningCount > 0
-            ? " " + warningCount + " claim" + (warningCount > 1 ? "s are" : " is") + " advisory — based on supplier declarations without independent lab testing."
-            : " All claims have independent lab or facility evidence."}
-          {" "}Evidence files are tamper-evident: any modification would change the hash and fail verification.
+          Claims are finalized on Sui, ordered through Hedera HCS, and checked against the original evidence bytes.
+          Product identity and ingredients come from the Hedera HTS batch token. A matching hash means the evidence
+          has not changed since it was recorded.
         </p>
       </div>
-    </div>
+    </section>
   );
 }
