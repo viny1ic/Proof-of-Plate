@@ -249,6 +249,7 @@ body:not(.inspector) .inspector-only { display: none !important; }
   font-weight: 700;
   text-transform: uppercase;
 }
+.pp-batch-id { color: var(--ink); }
 .pp-recall-badge.safe { background: var(--green); }
 .pp-recall-badge.danger { background: var(--red); color: var(--surface); }
 .pp-recall-dot { width: 9px; height: 9px; border: 2px solid var(--ink); border-radius: 50%; background: currentColor; }
@@ -409,7 +410,7 @@ body:not(.inspector) .inspector-only { display: none !important; }
 .pp-section { border: 3px solid var(--ink); background: var(--surface); }
 .pp-section-head { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 15px 17px; border-bottom: 3px solid var(--ink); background: var(--yellow); }
 .pp-section-title { font-family: var(--font-display); font-size: 17px; }
-.pp-section-meta { border: 2px solid var(--ink); background: var(--surface); padding: 4px 7px; font-family: var(--m); font-size: 9px; font-weight: 800; text-transform: uppercase; }
+.pp-section-meta { border: 2px solid var(--ink); background: var(--surface); color: var(--ink); padding: 4px 7px; font-family: var(--m); font-size: 9px; font-weight: 800; text-transform: uppercase; }
 
 .pp-claim-row { border-bottom: 2px solid var(--ink); }
 .pp-claim-row:last-child { border-bottom: 0; }
